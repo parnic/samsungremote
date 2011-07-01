@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.Net.Sockets;
 using System.Text;
+using System.IO;
 
 namespace SamsungRemoteWP7
 {
@@ -36,6 +37,11 @@ namespace SamsungRemoteWP7
         Socket TvDirectSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         byte[] TvSearchMessage = Encoding.UTF8.GetBytes(String.Format(SearchTemplate, "urn:samsung.com:device:RemoteControlReceiver:1", 1));
+
+        private static char[] ALLOWED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x01, (char)0x00 };
+        private static char[] DENIED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x00, (char)0x00 };
+        private static char[] TIMEOUT_BYTES = new char[] { (char)0x65, (char)0x00 };
+        private static char[] AWAITING_APPROVAL_BYTES = new char[] { (char)0xa, (char)0x00, (char)0x02, (char)0x00, (char)0x00, (char)0x00 };
 
         // Constructor
         public MainPage()
@@ -142,14 +148,51 @@ namespace SamsungRemoteWP7
                 {
                     if (e.SocketError == SocketError.Success)
                     {
+                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "regdone"; }));
+
                         for (int i = e.Offset; i < e.BytesTransferred; i++)
                         {
                             System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
                         }
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "regdone"; }));
-                        e.UserToken = 1;
-                        TvDirectSock.Close();
-                        //tvt.ReceiveFromAsync(e);
+
+                        StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
+                        sr.Read();
+                        string regApp = ReadString(sr);
+                        char[] regResponse = ReadCharArray(sr);
+
+                        bool bDisconnect = true;
+
+                        if (regResponse == ALLOWED_BYTES)
+                        {
+                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "allowed"; }));
+                        }
+                        else if (regResponse == DENIED_BYTES)
+                        {
+                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "denied"; }));
+                        }
+                        else if (regResponse == TIMEOUT_BYTES)
+                        {
+                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "timeout"; }));
+                        }
+                        else if (regResponse == AWAITING_APPROVAL_BYTES) // not 100% working just yet...sometimes it sends back 0200 sometimes 0100...debug this!
+                        {
+                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "reg waiting..."; }));
+                            bDisconnect = false;
+                        }
+                        else
+                        {
+                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "unknown reg response"; }));
+                        }
+
+                        if (bDisconnect)
+                        {
+                            e.UserToken = 1;
+                            TvDirectSock.Close();
+                        }
+                        else
+                        {
+                            TvDirectSock.ReceiveFromAsync(e);
+                        }
                     }
                     else
                     {
@@ -180,6 +223,25 @@ namespace SamsungRemoteWP7
                     }
                 }
             }
+        }
+
+        private string ReadString(StreamReader sr)
+        {
+            char[] buffer = ReadCharArray(sr);
+            return new string(buffer);
+        }
+
+        private char[] ReadCharArray(StreamReader sr)
+        {
+            int length = sr.Read();
+            int delimiter = sr.Read();
+            if (delimiter != 0)
+            {
+                throw new Exception("Unexpected input " + delimiter);
+            }
+            char[] buffer = new char[length];
+            sr.Read(buffer, 0, length);
+            return buffer;
         }
 
         private String GetRegistrationPayload(String ip)
