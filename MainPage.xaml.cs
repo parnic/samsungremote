@@ -41,7 +41,9 @@ namespace SamsungRemoteWP7
         private static char[] ALLOWED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x01, (char)0x00 };
         private static char[] DENIED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x00, (char)0x00 };
         private static char[] TIMEOUT_BYTES = new char[] { (char)0x65, (char)0x00 };
-        private static char[] AWAITING_APPROVAL_BYTES = new char[] { (char)0xa, (char)0x00, (char)0x02, (char)0x00, (char)0x00, (char)0x00 };
+        private static char[] AWAITING_APPROVAL_PREFIX = new char[] { (char)0xa, (char)0x00 };//, (char)0x02, (char)0x00, (char)0x00, (char)0x00 };
+
+        private static int AWAITING_APPROVAL_TOTAL = 6;
 
         // Constructor
         public MainPage()
@@ -78,7 +80,7 @@ namespace SamsungRemoteWP7
         {
             if (e.SocketError == SocketError.Success)
             {
-                if (e.LastOperation == SocketAsyncOperation.Receive || e.LastOperation == SocketAsyncOperation.ReceiveFrom)
+                if (e.LastOperation == SocketAsyncOperation.ReceiveFrom)
                 {
                     string response = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
                     System.Diagnostics.Debug.WriteLine("Received from {0}: {1}", e.RemoteEndPoint.ToString(), response);
@@ -86,8 +88,8 @@ namespace SamsungRemoteWP7
                     if (response.Contains("RemoteControlReceiver.xml"))
                     {
                         first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "found tv"; }));
-                        TvSearchSock.Close();
                         ConnectTo(new IPEndPoint((e.RemoteEndPoint as IPEndPoint).Address, TvDirectPort));
+                        TvSearchSock.Close();
                     }
                     else
                     {
@@ -155,26 +157,30 @@ namespace SamsungRemoteWP7
                             System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
                         }
 
+                        string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
+
                         StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
                         sr.Read();
                         string regApp = ReadString(sr);
                         char[] regResponse = ReadCharArray(sr);
 
+                        System.Diagnostics.Debug.WriteLine("tv returned: " + regApp);
+
                         bool bDisconnect = true;
 
-                        if (regResponse == ALLOWED_BYTES)
+                        if (AreArraysEqual(regResponse, ALLOWED_BYTES))
                         {
                             first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "allowed"; }));
                         }
-                        else if (regResponse == DENIED_BYTES)
+                        else if (AreArraysEqual(regResponse, DENIED_BYTES))
                         {
                             first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "denied"; }));
                         }
-                        else if (regResponse == TIMEOUT_BYTES)
+                        else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
                         {
                             first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "timeout"; }));
                         }
-                        else if (regResponse == AWAITING_APPROVAL_BYTES) // not 100% working just yet...sometimes it sends back 0200 sometimes 0100...debug this!
+                        else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL)) // not 100% working just yet...sometimes it sends back 0200 sometimes 0100...debug this!
                         {
                             first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "reg waiting..."; }));
                             bDisconnect = false;
@@ -206,14 +212,7 @@ namespace SamsungRemoteWP7
                 {
                     if (e.SocketError == SocketError.Success)
                     {
-                        StringBuilder sb = new StringBuilder();
-                        sb.Append((char)0x0);
-                        WriteText(sb, "iphone.iapp.samsung");
-                        WriteText(sb, GetRegistrationPayload("10.0.0.3"));
-
-                        byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(sb.ToString());
-                        e.SetBuffer(TvRegistrationMessage, 0, TvRegistrationMessage.Length);
-                        TvDirectSock.SendToAsync(e);
+                        SendRegistrationTo(e);
 
                         first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "connected..."; }));
                     }
@@ -223,6 +222,18 @@ namespace SamsungRemoteWP7
                     }
                 }
             }
+        }
+
+        private void SendRegistrationTo(SocketAsyncEventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append((char)0x0);
+            WriteText(sb, "iphone.iapp.samsung");
+            WriteText(sb, GetRegistrationPayload("0.0.0.0"));
+
+            byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(sb.ToString());
+            e.SetBuffer(TvRegistrationMessage, 0, TvRegistrationMessage.Length);
+            TvDirectSock.SendToAsync(e);
         }
 
         private string ReadString(StreamReader sr)
@@ -264,6 +275,42 @@ namespace SamsungRemoteWP7
         {
             string s = Convert.ToBase64String(Encoding.UTF8.GetBytes(text));
             return WriteText(writer, s);
+        }
+
+        private bool AreArraysEqual(char[] arr1, char[] arr2)
+        {
+            if (arr1.Length != arr2.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < arr1.Length; i++)
+            {
+                if (arr1[i] != arr2[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool ArrayStartsWith(char[] prefixArray, char[] fullArray, int fullArrayLength)
+        {
+            if (fullArray.Length != fullArrayLength)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < prefixArray.Length; i++)
+            {
+                if (fullArray[i] != prefixArray[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
