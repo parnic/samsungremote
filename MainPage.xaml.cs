@@ -22,7 +22,7 @@ namespace SamsungRemoteWP7
             "M-SEARCH * HTTP/1.1\r\n" +
             "HOST: 239.255.255.250:1900\r\n" +
             "MAN: \"ssdp:discover\"\r\n" +
-            "USER-AGENT: Windows/6.5 UPnP/1.1 Parnics Remote\r\n" +
+            "USER-AGENT: Windows/6.5 UPnP/1.1 Parnic's Remote\r\n" +
             "ST: {0}\r\n" +
             "MX: {1}\r\n" +
             "\r\n";
@@ -63,7 +63,6 @@ namespace SamsungRemoteWP7
                 App.ViewModel.LoadData();
             }
 
-            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "asking..."; }));
             TvListen();
         }
 
@@ -87,7 +86,7 @@ namespace SamsungRemoteWP7
 
                     if (response.Contains("RemoteControlReceiver.xml"))
                     {
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "found tv"; }));
+                        SetProgressText("Found TV.");
                         ConnectTo(new IPEndPoint((e.RemoteEndPoint as IPEndPoint).Address, TvDirectPort));
                         TvSearchSock.Close();
                     }
@@ -100,22 +99,31 @@ namespace SamsungRemoteWP7
                 {
                     e.SetBuffer(new byte[0x1000], 0, 0x1000);
                     e.RemoteEndPoint = listenEndpoint;
-                    first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "listening..."; }));
+                    SetProgressText("Searching for TV...");
                     if (!TvSearchSock.ReceiveFromAsync(e))
                     {
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "listen fail"; }));
+                        SetProgressText("TV search failed.");
                     }
                 }
             }
             else
             {
                 System.Diagnostics.Debug.WriteLine("op: {0}, error: {1}", e.LastOperation, e.SocketError);
+                SetProgressText("Network error when searching for a TV.");
             }
+        }
+
+        private void SetProgressText(string p)
+        {
+            progressText.Dispatcher.BeginInvoke(new Action(delegate
+            {
+                progressText.Text = p;
+            }));
         }
 
         private void ConnectTo(IPEndPoint endpoint)
         {
-            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "connecting..."; }));
+            SetProgressText("Connecting to TV at " + endpoint.Address.ToString() + "...");
 
             SocketAsyncEventArgs socketEventArg = new SocketAsyncEventArgs();
             socketEventArg.RemoteEndPoint = endpoint;
@@ -133,14 +141,15 @@ namespace SamsungRemoteWP7
                     if (e.SocketError == SocketError.Success)
                     {
                         // registration complete
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "regsent"; }));
+                        SetProgressText("Registering remote with TV...");
 
                         e.SetBuffer(new byte[0x1000], 0, 0x1000);
                         TvDirectSock.ReceiveFromAsync(e);
                     }
                     else
                     {
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "regfail"; }));
+                        SetProgressText("Sending remote registration failed.");
+                        ToggleProgressBar(false);
                     }
                 }
             }
@@ -150,8 +159,6 @@ namespace SamsungRemoteWP7
                 {
                     if (e.SocketError == SocketError.Success)
                     {
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "regdone"; }));
-
                         for (int i = e.Offset; i < e.BytesTransferred; i++)
                         {
                             System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
@@ -170,30 +177,31 @@ namespace SamsungRemoteWP7
 
                         if (AreArraysEqual(regResponse, ALLOWED_BYTES))
                         {
-                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "allowed"; }));
+                            SetProgressText("Remote approved!");
                         }
                         else if (AreArraysEqual(regResponse, DENIED_BYTES))
                         {
-                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "denied"; }));
+                            SetProgressText("Remote connection denied.");
                         }
                         else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
                         {
-                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "timeout"; }));
+                            SetProgressText("Remote connection timed out.");
                         }
-                        else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL)) // not 100% working just yet...sometimes it sends back 0200 sometimes 0100...debug this!
+                        else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
                         {
-                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "reg waiting..."; }));
+                            SetProgressText("Waiting for user authorization...");
                             bDisconnect = false;
                         }
                         else
                         {
-                            first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "unknown reg response"; }));
+                            SetProgressText("Unknown response from TV.");
                         }
 
                         if (bDisconnect)
                         {
                             e.UserToken = 1;
                             TvDirectSock.Close();
+                            ToggleProgressBar(false);
                         }
                         else
                         {
@@ -202,7 +210,9 @@ namespace SamsungRemoteWP7
                     }
                     else
                     {
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "received fail"; }));
+                        SetProgressText("Failure communicating with the TV.");
+                        ToggleProgressBar(false);
+                        TvDirectSock.Close();
                     }
                 }
             }
@@ -214,11 +224,12 @@ namespace SamsungRemoteWP7
                     {
                         SendRegistrationTo(e);
 
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "connected..."; }));
+                        SetProgressText("Connected to TV. Sending registration...");
                     }
                     else
                     {
-                        first.Dispatcher.BeginInvoke(new Action(delegate { first.Header = "connect fail"; }));
+                        SetProgressText("Failure connecting to TV at " + (e.RemoteEndPoint as IPEndPoint).Address.ToString() + ".");
+                        ToggleProgressBar(false);
                     }
                 }
             }
@@ -228,7 +239,7 @@ namespace SamsungRemoteWP7
         {
             StringBuilder sb = new StringBuilder();
             sb.Append((char)0x0);
-            WriteText(sb, "iphone.iapp.samsung");
+            WriteText(sb, "wp7.app.perniciousgames");
             WriteText(sb, GetRegistrationPayload("0.0.0.0"));
 
             byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(sb.ToString());
@@ -261,8 +272,13 @@ namespace SamsungRemoteWP7
             sb.Append((char)0x64);
             sb.Append((char)0x00);
             WriteBase64Text(sb, ip);
-            WriteBase64Text(sb, "00:50:C2:00:11:22");
-            WriteBase64Text(sb, "WP7 Remote");
+            string phoneId = PhoneInfoExtendedProperties.GetWindowsLiveAnonymousID();
+            if (string.IsNullOrWhiteSpace(phoneId))
+            {
+                phoneId = "Anonymous WP7 phone";
+            }
+            WriteBase64Text(sb, phoneId);
+            WriteBase64Text(sb, Microsoft.Phone.Info.DeviceStatus.DeviceName);
             return sb.ToString();
         }
 
@@ -311,6 +327,40 @@ namespace SamsungRemoteWP7
             }
 
             return true;
+        }
+
+        private void PhoneApplicationPage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TvSearchSock.Close();
+            }
+            catch { }
+            try
+            {
+                TvDirectSock.Close();
+            }
+            catch { }
+        }
+
+        private void ToggleProgressBar(bool? bEnable = false)
+        {
+            if (!bEnable.HasValue)
+            {
+                ToggleProgressBar(!customIndeterminateProgressBar.IsIndeterminate);
+                return;
+            }
+
+            customIndeterminateProgressBar.IsIndeterminate = bEnable.Value;
+
+            if (bEnable.Value)
+            {
+                customIndeterminateProgressBar.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                customIndeterminateProgressBar.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
