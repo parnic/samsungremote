@@ -45,6 +45,8 @@ namespace SamsungRemoteWP7
 
         private static int AWAITING_APPROVAL_TOTAL = 6;
 
+        private string appName = "wp7.app.perniciousgames";
+
         // Constructor
         public MainPage()
         {
@@ -73,6 +75,8 @@ namespace SamsungRemoteWP7
             e.SetBuffer(TvSearchMessage, 0, TvSearchMessage.Length);
             e.RemoteEndPoint = multicastEndpoint;
             TvSearchSock.SendToAsync(e);
+
+            ToggleProgressBar(true);
         }
 
         void TvListenCompleted(object sender, SocketAsyncEventArgs e)
@@ -178,6 +182,8 @@ namespace SamsungRemoteWP7
                         if (AreArraysEqual(regResponse, ALLOWED_BYTES))
                         {
                             SetProgressText("Remote approved!");
+                            bDisconnect = false;
+                            ToggleProgressBar(false);
                         }
                         else if (AreArraysEqual(regResponse, DENIED_BYTES))
                         {
@@ -239,7 +245,7 @@ namespace SamsungRemoteWP7
         {
             StringBuilder sb = new StringBuilder();
             sb.Append((char)0x0);
-            WriteText(sb, "wp7.app.perniciousgames");
+            WriteText(sb, appName);
             WriteText(sb, GetRegistrationPayload("0.0.0.0"));
 
             byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(sb.ToString());
@@ -351,16 +357,73 @@ namespace SamsungRemoteWP7
                 return;
             }
 
-            customIndeterminateProgressBar.IsIndeterminate = bEnable.Value;
+            customIndeterminateProgressBar.Dispatcher.BeginInvoke(new Action(delegate
+            {
+                customIndeterminateProgressBar.IsIndeterminate = bEnable.Value;
 
-            if (bEnable.Value)
-            {
-                customIndeterminateProgressBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                customIndeterminateProgressBar.Visibility = Visibility.Collapsed;
-            }
+                if (bEnable.Value)
+                {
+                    customIndeterminateProgressBar.Visibility = Visibility.Visible;
+                    TransparentOverlay.Visibility = Visibility.Visible;
+                    progressText.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    customIndeterminateProgressBar.Visibility = Visibility.Collapsed;
+                    TransparentOverlay.Visibility = Visibility.Collapsed;
+                    progressText.Visibility = Visibility.Collapsed;
+                }
+            }));
+        }
+
+        private void InternalSendKey(Key.EKey key) {
+            StringBuilder writer = new StringBuilder();
+		    writer.Append((char)0x00);
+		    WriteText(writer, appName);
+		    WriteText(writer, GetKeyPayload(key));
+
+            byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(writer.ToString());
+            SocketAsyncEventArgs e = new SocketAsyncEventArgs();
+            e.RemoteEndPoint = TvDirectSock.RemoteEndPoint;
+            e.SetBuffer(TvRegistrationMessage, 0, TvRegistrationMessage.Length);
+            TvDirectSock.SendToAsync(e);
+
+// 		    int i = reader.read(); // Unknown byte 0x00
+// 		    String t = readText(reader);  // Read "iapp.samsung"
+// 		    char[] c = readCharArray(reader);
+// 		    System.out.println(i);
+// 		    System.out.println(t);
+// 		    for (char a : c) System.out.println(Integer.toHexString(a));
+		    //System.out.println(c);
+	    }
+
+        public void SendKey(Key.EKey key)
+        {
+// 		    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + "...");
+// 		    checkConnection();
+		    try {
+			    InternalSendKey(key);
+		    } catch (SocketException) {
+// 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
+// 			    initialize();
+// 			    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + " again...");
+// 			    internalSendKey(key);
+		    }
+//		    if (logger != null) logger.v(TAG, "Successfully sent key " + key.getValue());
+	    }
+
+	    private String GetKeyPayload(Key.EKey key) {
+		    StringBuilder writer = new StringBuilder();
+		    writer.Append((char)0x00);
+		    writer.Append((char)0x00);
+		    writer.Append((char)0x00);
+		    WriteBase64Text(writer, key.ToString());
+		    return writer.ToString();
+	    }
+
+        private void StackPanel_Tap(object sender, GestureEventArgs e)
+        {
+            SendKey(Key.EKey.KEY_POWEROFF);
         }
     }
 }
