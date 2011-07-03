@@ -16,6 +16,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.Phone.Net.NetworkInformation;
 
 namespace SamsungRemoteWP7
 {
@@ -51,6 +52,8 @@ namespace SamsungRemoteWP7
 
         private string appName = "wp7.app.perniciousgames";
 
+        private bool bEnabled = false;
+
         // Constructor
         public MainPage()
         {
@@ -59,6 +62,17 @@ namespace SamsungRemoteWP7
             // Set the data context of the listbox control to the sample data
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+
+            if (NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
+                || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+            {
+                bEnabled = true;
+            }
+            else
+            {
+                MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
+                    "Can't search for TV", MessageBoxButton.OK);
+            }
         }
 
         // Load data for the ViewModel Items
@@ -72,6 +86,13 @@ namespace SamsungRemoteWP7
 
         private void TvListen()
         {
+            if (!bEnabled)
+            {
+                SetProgressText("Remote disabled.");
+                ToggleProgressBar(true);
+                return;
+            }
+
             SocketAsyncEventArgs e = new SocketAsyncEventArgs();
             e.Completed += new EventHandler<SocketAsyncEventArgs>(TvListenCompleted);
             e.SetBuffer(TvSearchMessage, 0, TvSearchMessage.Length);
@@ -474,7 +495,15 @@ namespace SamsungRemoteWP7
 
                 if (bEnable.Value)
                 {
-                    customIndeterminateProgressBar.Visibility = Visibility.Visible;
+                    if (!bEnabled)
+                    {
+                        customIndeterminateProgressBar.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        customIndeterminateProgressBar.Visibility = Visibility.Visible;
+                    }
+
                     TransparentOverlay.Visibility = Visibility.Visible;
                 }
                 else
