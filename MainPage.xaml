@@ -20,7 +20,27 @@
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <!--Pivot Control-->
-        <controls:Pivot Title="Samsung Remote">
+        <controls:Pivot Title="Samsung Remote" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
+            <controls:PivotItem Header="tv list">
+                <ListBox x:Name="TvListBox" Margin="0,0,-12,0" ItemsSource="{Binding TvItems}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Tap="TvListPanel_Tap">
+                                <Image Source="ApplicationIcon.png"/>
+                                <StackPanel Margin="0,0,0,17" Width="432" Height="78">
+                                    <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                    <StackPanel Orientation="Horizontal" Margin="12,-6,12,0">
+                                        <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                        <TextBlock Text=":" Margin="3,-2,3,0"/>
+                                        <TextBlock Text="{Binding Port}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </controls:PivotItem>
+            
             <!--Pivot item one-->
             <controls:PivotItem Header="first" Name="first">
                 <!--Double line list with text wrapping-->
@@ -35,7 +55,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </controls:PivotItem>
- 
+
             <!--Pivot item two-->
             <controls:PivotItem Header="second"> 
                 <!--Triple line list no text wrapping-->
@@ -52,15 +72,15 @@
             </controls:PivotItem>
         </controls:Pivot>
 
-        <Grid Background="Black" Opacity="0.85" Name="TransparentOverlay"/>
-
-        <StackPanel VerticalAlignment="Center">
-            <ProgressBar 
+        <Grid Background="Black" Opacity="0.85" Name="TransparentOverlay" Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center">
+                <ProgressBar 
             IsIndeterminate="true"
             x:Name="customIndeterminateProgressBar"
             Style="{StaticResource CustomIndeterminateProgressBar}"/>
-            <TextBlock Text="Loading..." Margin="30,0,30,0" FontSize="28" Name="progressText" TextWrapping="Wrap" TextAlignment="Center"/>
-        </StackPanel>
+                <TextBlock Text="Loading..." Margin="30,0,30,0" FontSize="28" Name="progressText" TextWrapping="Wrap" TextAlignment="Center"/>
+            </StackPanel>
+        </Grid>
     </Grid>
  
     <!--Sample code showing usage of ApplicationBar-->

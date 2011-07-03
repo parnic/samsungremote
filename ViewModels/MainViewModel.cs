@@ -21,12 +21,18 @@ namespace SamsungRemoteWP7
         public MainViewModel()
         {
             this.Items = new ObservableCollection<ItemViewModel>();
+            this.TvItems = new ObservableCollection<TvItemViewModel>();
         }
 
         /// <summary>
         /// A collection for ItemViewModel objects.
         /// </summary>
         public ObservableCollection<ItemViewModel> Items { get; private set; }
+
+        /// <summary>
+        /// A collection for ItemViewModel objects.
+        /// </summary>
+        public ObservableCollection<TvItemViewModel> TvItems { get; private set; }
 
         private string _sampleProperty = "Sample Runtime Property Value";
         /// <summary>

@@ -13,6 +13,9 @@ using Microsoft.Phone.Controls;
 using System.Net.Sockets;
 using System.Text;
 using System.IO;
+using System.Collections.ObjectModel;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace SamsungRemoteWP7
 {
@@ -41,6 +44,7 @@ namespace SamsungRemoteWP7
         private static char[] ALLOWED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x01, (char)0x00 };
         private static char[] DENIED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x00, (char)0x00 };
         private static char[] TIMEOUT_BYTES = new char[] { (char)0x65, (char)0x00 };
+        // this seems to sometimes end with 0200 and sometimes 0100...who knows if there are other endings too, but i have no idea if each message means something different or not
         private static char[] AWAITING_APPROVAL_PREFIX = new char[] { (char)0xa, (char)0x00 };//, (char)0x02, (char)0x00, (char)0x00, (char)0x00 };
 
         private static int AWAITING_APPROVAL_TOTAL = 6;
@@ -64,8 +68,6 @@ namespace SamsungRemoteWP7
             {
                 App.ViewModel.LoadData();
             }
-
-            TvListen();
         }
 
         private void TvListen()
@@ -90,9 +92,11 @@ namespace SamsungRemoteWP7
 
                     if (response.Contains("RemoteControlReceiver.xml"))
                     {
+                        ToggleProgressBar(false);
                         SetProgressText("Found TV.");
-                        ConnectTo(new IPEndPoint((e.RemoteEndPoint as IPEndPoint).Address, TvDirectPort));
-                        TvSearchSock.Close();
+                        AddTvUnique(e.RemoteEndPoint);
+
+                        GetTvNameFrom(e.RemoteEndPoint, response);
                     }
                     else
                     {
@@ -115,6 +119,113 @@ namespace SamsungRemoteWP7
                 System.Diagnostics.Debug.WriteLine("op: {0}, error: {1}", e.LastOperation, e.SocketError);
                 SetProgressText("Network error when searching for a TV.");
             }
+        }
+
+        private void GetTvNameFrom(EndPoint endPoint, string tvData)
+        {
+            var tvDataLines = tvData.Split('\n');
+            var TvKeyValuePairs = new Dictionary<string, string>();
+
+            foreach (var line in tvDataLines)
+            {
+                string key = null, value = null;
+                for (int i=0; i<line.Length; i++)
+                {
+                    if (line[i] == ':')
+                    {
+                        key = line.Substring(0, i).Trim();
+                        value = line.Substring(i + 1).Trim();
+                        break;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                {
+                    TvKeyValuePairs.Add(key.ToLower(), value);
+                }
+            }
+
+            if (TvKeyValuePairs.Count > 0)
+            {
+                SetMetaDataForTv(endPoint, TvKeyValuePairs);
+
+                if (TvKeyValuePairs.ContainsKey("location"))
+                {
+                    WebClient client = new WebClient();
+                    client.OpenReadCompleted += new OpenReadCompletedEventHandler(TvReceiverDataRequestComplete);
+                    client.OpenReadAsync(new Uri(TvKeyValuePairs["location"]), endPoint);
+                }
+            }
+        }
+
+        void TvReceiverDataRequestComplete(object sender, OpenReadCompletedEventArgs e)
+        {
+            if (e.Error == null && e.UserState is EndPoint)
+            {
+                try
+                {
+                    string resultData = new StreamReader(e.Result).ReadToEnd();
+                    var doc = XDocument.Parse(resultData);
+                    string tvName = doc.Descendants().Where(x => x.Name.LocalName == "friendlyName").First().Value;
+
+                    SetTvName(e.UserState as EndPoint, tvName);
+                }
+                catch(Exception) { }
+            }
+        }
+
+        private void SetTvName(EndPoint endPoint, string tvName)
+        {
+            TvListBox.Dispatcher.BeginInvoke(new Action(delegate
+            {
+                IPAddress addr = (endPoint as IPEndPoint).Address;
+                foreach (var i in App.ViewModel.TvItems)
+                {
+                    if (i.TvAddress == addr)
+                    {
+                        i.TvName = tvName;
+                        break;
+                    }
+                }
+            }));
+        }
+
+        private void SetMetaDataForTv(EndPoint endPoint, Dictionary<string, string> TvKeyValuePairs)
+        {
+            TvListBox.Dispatcher.BeginInvoke(new Action(delegate
+            {
+                IPAddress addr = (endPoint as IPEndPoint).Address;
+                foreach (var i in App.ViewModel.TvItems)
+                {
+                    if (i.TvAddress == addr)
+                    {
+                        i.TvMetaData = TvKeyValuePairs;
+                        break;
+                    }
+                }
+            }));
+        }
+
+        private void AddTvUnique(EndPoint endPoint, string inTvName = "")
+        {
+            TvListBox.Dispatcher.BeginInvoke(new Action(delegate
+            {
+                IPAddress addr = (endPoint as IPEndPoint).Address;
+                foreach (var i in App.ViewModel.TvItems)
+                {
+                    if (i.TvAddress.ToString() == addr.ToString())
+                    {
+                        return;
+                    }
+                }
+
+                App.ViewModel.TvItems.Add(new TvItemViewModel()
+                {
+                    Port = TvDirectPort,
+                    TvAddress = addr,
+                    TvName = string.IsNullOrWhiteSpace(inTvName) ? addr.ToString() : inTvName,
+                });
+            }));
         }
 
         private void SetProgressText(string p)
@@ -365,13 +476,11 @@ namespace SamsungRemoteWP7
                 {
                     customIndeterminateProgressBar.Visibility = Visibility.Visible;
                     TransparentOverlay.Visibility = Visibility.Visible;
-                    progressText.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     customIndeterminateProgressBar.Visibility = Visibility.Collapsed;
                     TransparentOverlay.Visibility = Visibility.Collapsed;
-                    progressText.Visibility = Visibility.Collapsed;
                 }
             }));
         }
@@ -424,6 +533,43 @@ namespace SamsungRemoteWP7
         private void StackPanel_Tap(object sender, GestureEventArgs e)
         {
             SendKey(Key.EKey.KEY_POWEROFF);
+        }
+
+        private void TvListPanel_Tap(object sender, GestureEventArgs e)
+        {
+            if (TvSearchSock != null && TvSearchSock.Connected)
+            {
+                TvSearchSock.Close();
+            }
+
+            ToggleProgressBar(true);
+            TvItemViewModel selectedItem = (TvListBox.SelectedItem as TvItemViewModel);
+            ConnectTo(new IPEndPoint(selectedItem.TvAddress, selectedItem.Port));
+            MainPivot.SelectedIndex = 1;
+        }
+
+        private void MainPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Pivot piv = sender as Pivot;
+            if (piv == null)
+            {
+                return;
+            }
+
+            if (piv.SelectedIndex == 0)
+            {
+/*                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    if (App.ViewModel.TvItems.Count == 0)
+                    {
+                        App.ViewModel.TvItems.Add(new TvItemViewModel() { Port = TvDirectPort, TvAddress = IPAddress.Parse("10.0.0.38"), TvName = "good times" });
+                    }
+                }
+                else
+*/              {
+                    TvListen();
+                }
+            }
         }
     }
 }
