@@ -67,7 +67,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Key.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -75,7 +74,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelativeAnimatingContentControl.cs" />
     <Compile Include="TiltEffect.cs" />
-    <Compile Include="ViewModels\ItemViewModel.cs" />
+    <Compile Include="TvKeyControl.xaml.cs">
+      <DependentUpon>TvKeyControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\TvItemViewModel.cs" />
   </ItemGroup>
@@ -92,6 +93,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
+    <Page Include="TvKeyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
@@ -104,6 +109,125 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Images\refresh.png" />
+    <Resource Include="Resources\Images\ch_down.png" />
+    <Resource Include="Resources\Images\ch_down_focus.png" />
+    <Resource Include="Resources\Images\ch_up.png" />
+    <Resource Include="Resources\Images\ch_up_focus.png" />
+    <Resource Include="Resources\Images\color_btn01.png" />
+    <Resource Include="Resources\Images\color_btn01_focus.png" />
+    <Resource Include="Resources\Images\color_btn02.png" />
+    <Resource Include="Resources\Images\color_btn02_focus.png" />
+    <Resource Include="Resources\Images\color_btn03.png" />
+    <Resource Include="Resources\Images\color_btn03_focus.png" />
+    <Resource Include="Resources\Images\color_btn04.png" />
+    <Resource Include="Resources\Images\color_btn04_focus.png" />
+    <Resource Include="Resources\Images\direction_bg.png" />
+    <Resource Include="Resources\Images\direction_content.png" />
+    <Resource Include="Resources\Images\direction_content_focus.png" />
+    <Resource Include="Resources\Images\direction_exit.png" />
+    <Resource Include="Resources\Images\direction_exit_focus.png" />
+    <Resource Include="Resources\Images\direction_info.png" />
+    <Resource Include="Resources\Images\direction_info_focus.png" />
+    <Resource Include="Resources\Images\direction_internet.png" />
+    <Resource Include="Resources\Images\direction_internet_focus.png" />
+    <Resource Include="Resources\Images\direction_menu.png" />
+    <Resource Include="Resources\Images\direction_menu_focus.png" />
+    <Resource Include="Resources\Images\direction_return.png" />
+    <Resource Include="Resources\Images\direction_return_focus.png" />
+    <Resource Include="Resources\Images\direction_tools.png" />
+    <Resource Include="Resources\Images\direction_tools_focus.png" />
+    <Resource Include="Resources\Images\key4_keyboard_focus.png" />
+    <Resource Include="Resources\Images\keypad_00.png" />
+    <Resource Include="Resources\Images\keypad_00_focus.png" />
+    <Resource Include="Resources\Images\keypad_01.png" />
+    <Resource Include="Resources\Images\keypad_01_focus.png" />
+    <Resource Include="Resources\Images\keypad_02.png" />
+    <Resource Include="Resources\Images\keypad_02_focus.png" />
+    <Resource Include="Resources\Images\keypad_03.png" />
+    <Resource Include="Resources\Images\keypad_03_focus.png" />
+    <Resource Include="Resources\Images\keypad_04.png" />
+    <Resource Include="Resources\Images\keypad_04_focus.png" />
+    <Resource Include="Resources\Images\keypad_05.png" />
+    <Resource Include="Resources\Images\keypad_05_focus.png" />
+    <Resource Include="Resources\Images\keypad_06.png" />
+    <Resource Include="Resources\Images\keypad_06_focus.png" />
+    <Resource Include="Resources\Images\keypad_07.png" />
+    <Resource Include="Resources\Images\keypad_07_focus.png" />
+    <Resource Include="Resources\Images\keypad_08.png" />
+    <Resource Include="Resources\Images\keypad_08_focus.png" />
+    <Resource Include="Resources\Images\keypad_09.png" />
+    <Resource Include="Resources\Images\keypad_09_focus.png" />
+    <Resource Include="Resources\Images\keypad_ch.png" />
+    <Resource Include="Resources\Images\keypad_ch_focus.png" />
+    <Resource Include="Resources\Images\keypad_enter.png" />
+    <Resource Include="Resources\Images\keypad_enter_focus.png" />
+    <Resource Include="Resources\Images\keypad_minus.png" />
+    <Resource Include="Resources\Images\keypad_minus_focus.png" />
+    <Resource Include="Resources\Images\key_down.png" />
+    <Resource Include="Resources\Images\key_down_focus.png" />
+    <Resource Include="Resources\Images\key_keyboard.png" />
+    <Resource Include="Resources\Images\key_keyboard_focus.png" />
+    <Resource Include="Resources\Images\key_left.png" />
+    <Resource Include="Resources\Images\key_left_focus.png" />
+    <Resource Include="Resources\Images\key_right.png" />
+    <Resource Include="Resources\Images\key_right_focus.png" />
+    <Resource Include="Resources\Images\key_up.png" />
+    <Resource Include="Resources\Images\key_up_focus.png" />
+    <Resource Include="Resources\Images\mute_btn.png" />
+    <Resource Include="Resources\Images\mute_btn_focus.png" />
+    <Resource Include="Resources\Images\nav_power.png" />
+    <Resource Include="Resources\Images\nav_power_focus.png" />
+    <Resource Include="Resources\Images\playcontrol_ff.png" />
+    <Resource Include="Resources\Images\playcontrol_ff_focus.png" />
+    <Resource Include="Resources\Images\playcontrol_pause.png" />
+    <Resource Include="Resources\Images\playcontrol_pause_focus.png" />
+    <Resource Include="Resources\Images\playcontrol_play.png" />
+    <Resource Include="Resources\Images\playcontrol_play_focus.png" />
+    <Resource Include="Resources\Images\playcontrol_rec.png" />
+    <Resource Include="Resources\Images\playcontrol_rec_focus.png" />
+    <Resource Include="Resources\Images\playcontrol_rew.png" />
+    <Resource Include="Resources\Images\playcontrol_rew_focus.png" />
+    <Resource Include="Resources\Images\playcontrol_stop.png" />
+    <Resource Include="Resources\Images\playcontrol_stop_focus.png" />
+    <Resource Include="Resources\Images\power_btn.png" />
+    <Resource Include="Resources\Images\power_btn_focus.png" />
+    <Resource Include="Resources\Images\qwerty_bt01_down.png" />
+    <Resource Include="Resources\Images\qwerty_bt01_down_focus.png" />
+    <Resource Include="Resources\Images\qwerty_bt01_menu.png" />
+    <Resource Include="Resources\Images\qwerty_bt01_menu_focus.png" />
+    <Resource Include="Resources\Images\qwerty_bt01_up.png" />
+    <Resource Include="Resources\Images\qwerty_bt01_up_focus.png" />
+    <Resource Include="Resources\Images\qwerty_bt02_down.png" />
+    <Resource Include="Resources\Images\qwerty_bt02_down_focus.png" />
+    <Resource Include="Resources\Images\qwerty_bt02_menu.png" />
+    <Resource Include="Resources\Images\qwerty_bt02_menu_focus.png" />
+    <Resource Include="Resources\Images\qwerty_bt02_up.png" />
+    <Resource Include="Resources\Images\qwerty_bt02_up_focus.png" />
+    <Resource Include="Resources\Images\rack.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_connection.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_connection_focus.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_navigation.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_navigation_focus.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_poweroff.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_poweroff_focus.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_qwerty.png" />
+    <Resource Include="Resources\Images\remoter_toolbar_qwerty_focus.png" />
+    <Resource Include="Resources\Images\source_btn.png" />
+    <Resource Include="Resources\Images\source_btn_focus.png" />
+    <Resource Include="Resources\Images\tab_4key.png" />
+    <Resource Include="Resources\Images\tab_4key_focus.png" />
+    <Resource Include="Resources\Images\tab_keyboard.png" />
+    <Resource Include="Resources\Images\tab_keyboard_focus.png" />
+    <Resource Include="Resources\Images\volch_btn_bg.png" />
+    <Resource Include="Resources\Images\volum_down.png" />
+    <Resource Include="Resources\Images\volum_icon.png" />
+    <Resource Include="Resources\Images\volum_up.png" />
+    <Resource Include="Resources\Images\volum_up_focus.png" />
+    <Resource Include="Resources\Images\nav_bg.png" />
+    <Resource Include="Resources\Images\colorkey_bg.png" />
+    <Resource Include="Resources\Images\ch_icon.png" />
+    <Resource Include="Resources\Images\volum_down_focus.png" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

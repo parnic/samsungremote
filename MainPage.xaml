@@ -15,11 +15,9 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
     local:TiltEffect.IsTiltEnabled="True"
-    shell:SystemTray.IsVisible="True" Unloaded="PhoneApplicationPage_Unloaded">
+    shell:SystemTray.IsVisible="True" Unloaded="PhoneApplicationPage_Unloaded" BackKeyPress="PhoneApplicationPage_BackKeyPress">
 
-    <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <!--Pivot Control-->
         <controls:Pivot Title="Samsung Remote" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
             <controls:PivotItem Header="tv list">
                 <ListBox x:Name="TvListBox" Margin="0,0,-12,0" ItemsSource="{Binding TvItems}">
@@ -40,59 +38,182 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </controls:PivotItem>
-            
-            <!--Pivot item one-->
-            <controls:PivotItem Header="first" Name="first">
-                <!--Double line list with text wrapping-->
-                <ListBox x:Name="FirstListBox" Margin="0,0,-12,0" ItemsSource="{Binding Items}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,17" Width="432" Height="78" Tap="StackPanel_Tap">
-                                <TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                <TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+
+            <controls:PivotItem Header="numpad" Name="first">
+                <Grid>
+                    <Image HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Source="Resources/Images/rack.png"  Margin="0,70,0,0"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,22,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_01.png" MyKey="KEY_1"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,22,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_02.png" MyKey="KEY_2"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,22,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_03.png" MyKey="KEY_3"/>
+
+                    <Image HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Source="Resources/Images/rack.png" Margin="0,220,0,0"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,178,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_04.png" MyKey="KEY_4"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,178,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_05.png" MyKey="KEY_5"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,178,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_06.png" MyKey="KEY_6"/>
+
+                    <Image HorizontalAlignment="Center" VerticalAlignment="Top"
+                           Source="Resources/Images/rack.png" Margin="0,370,0,0"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,322,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_07.png" MyKey="KEY_7"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,322,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_08.png" MyKey="KEY_8"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,322,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_09.png" MyKey="KEY_9"/>
+
+                    <Image HorizontalAlignment="Center" VerticalAlignment="Top"
+                           Source="Resources/Images/rack.png" Margin="0,520,0,0"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,470,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_minus.png" MyKey="KEY_11"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,470,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_00.png" MyKey="KEY_0"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,470,0,0" Width="90" Height="120"
+                           ImageLocation="Resources/Images/keypad_ch.png" MyKey="KEY_PRECH"/>
+                </Grid>
             </controls:PivotItem>
 
-            <!--Pivot item two-->
-            <controls:PivotItem Header="second"> 
-                <!--Triple line list no text wrapping-->
-                    <ListBox x:Name="SecondListBox" Margin="0,0,-12,0" ItemsSource="{Binding Items}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,0,0,17">
-                                    <TextBlock Text="{Binding LineOne}" TextWrapping="NoWrap" Margin="12,0,0,0" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                    <TextBlock Text="{Binding LineThree}" TextWrapping="NoWrap" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+            <controls:PivotItem Header="navigation">
+                <Grid>
+                    <!-- menu controls -->
+                    <Image VerticalAlignment="Top" Margin="0,0,0,0" Source="Resources/Images/direction_bg.png" />
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Width="164" Height="108"
+                        ImageLocation="Resources/Images/direction_content.png" MyKey="KEY_CONTENTS"/>
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Center" Width="156" Height="108"
+                        ImageLocation="Resources/Images/direction_menu.png" MyKey="KEY_MENU"/>
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Right" Width="164" Height="108"
+                        ImageLocation="Resources/Images/direction_internet.png" MyKey="KEY_APP_LIST"/>
+
+                    <!-- tools/info/return/exit -->
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,122,0,0" Width="120" Height="120"
+                        ImageLocation="Resources/Images/direction_tools.png" MyKey="KEY_TOOLS"/>
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="118,122,0,0" Width="120" Height="120"
+                        ImageLocation="Resources/Images/direction_info.png" MyKey="KEY_INFO"/>
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="232,122,0,0" Width="120" Height="120"
+                        ImageLocation="Resources/Images/direction_return.png" MyKey="KEY_RETURN"/>
+                    <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="344,122,0,0" Width="120" Height="120"
+                        ImageLocation="Resources/Images/direction_exit.png" MyKey="KEY_EXIT"/>
+
+                    <!-- navigation controls -->
+                    <Image HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,250,0,0" Width="449" Height="321"
+                           Source="Resources/Images/nav_bg.png"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,352,0,0" Width="160" Height="114"
+                        ImageLocation="Resources/Images/key_keyboard.png" MyKey="KEY_ENTER"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,466,0,0" Width="160" Height="120"
+                        ImageLocation="Resources/Images/key_down.png" MyKey="KEY_DOWN"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="307,348,0,0" Width="154" Height="124"
+                        ImageLocation="Resources/Images/key_right.png" MyKey="KEY_RIGHT"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-7,347,0,0" Width="154" Height="124"
+                        ImageLocation="Resources/Images/key_left.png" MyKey="KEY_LEFT"/>
+                    <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,232,0,0" Width="160" Height="120"
+                        ImageLocation="Resources/Images/key_up.png" MyKey="KEY_UP"/>
+
+                    <!-- misc controls -->
+                    <local:TvKeyControl Margin="25,487,327,57" Width="103" Height="64"
+                        ImageLocation="Resources/Images/source_btn.png" MyKey="KEY_SOURCE"/>
+                    <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
+                        ImageLocation="Resources/Images/power_btn.png" MyKey="KEY_POWEROFF"/>
+
+                    <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,366,0,0" Width="84" Height="65" -->
+<!--                         ImageLocation="Resources/Images/nav_down.png" MyKey="KEY_DOWN"/> -->
+<!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="271,308,0,0" Width="113" Height="57" -->
+<!--                         ImageLocation="Resources/Images/nav_right.png" MyKey="KEY_RIGHT"/> -->
+<!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="72,308,0,0" Width="113" Height="57" -->
+<!--                         ImageLocation="Resources/Images/nav_left.png" MyKey="KEY_LEFT"/> -->
+<!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,243,0,0" Width="84" Height="65" -->
+<!--                         ImageLocation="Resources/Images/nav_up.png" MyKey="KEY_UP"/> -->
+<!--                     <local:TvKeyControl HorizontalAlignment="Left" Margin="173,300,0,0" VerticalAlignment="Top" Width="108" Height="75" -->
+<!--                         ImageLocation="Resources/Images/nav_center.png" MyKey="KEY_ENTER"/> -->
+                </Grid>
+            </controls:PivotItem>
+
+            <controls:PivotItem Header="control">
+                <Grid>
+                    <!-- play/pause controls -->
+                    <!-- row 1 -->
+                    <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,70,0,0"
+                            Source="Resources/Images/rack.png"/>
+                    <local:TvKeyControl Margin="27,10,305,487" Width="124" Height="110"
+                            ImageLocation="Resources/Images/playcontrol_rew.png" MyKey="KEY_WHEEL_LEFT"/>
+                    <local:TvKeyControl Margin="166,10,166,487" Width="124" Height="110"
+                            ImageLocation="Resources/Images/playcontrol_pause.png" MyKey="KEY_PAUSE"/>
+                    <local:TvKeyControl Margin="303,10,29,487" Width="124" Height="110"
+                            ImageLocation="Resources/Images/playcontrol_ff.png" MyKey="KEY_WHEEL_RIGHT"/>
+                    <!-- row 2 -->
+                    <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,190,0,0"
+                            Source="Resources/Images/rack.png"/>
+                    <local:TvKeyControl Margin="27,130,305,367" Height="110" Width="124"
+                            ImageLocation="Resources/Images/playcontrol_rec.png" MyKey="KEY_REC"/>
+                    <local:TvKeyControl Margin="166,130,166,367" Height="110" Width="124"
+                            ImageLocation="Resources/Images/playcontrol_play.png" MyKey="KEY_PLAY"/>
+                    <local:TvKeyControl Margin="303,130,29,367" Height="110" Width="124"
+                            ImageLocation="Resources/Images/playcontrol_stop.png" MyKey="KEY_STOP"/>
+
+                    <!-- volume controls -->
+                    <Image Margin="74,251,282,130" Width="100" Height="226"
+                            Source="Resources/Images/volch_btn_bg.png"/>
+                    <local:TvKeyControl Margin="74,251,282,257" Width="100" Height="99"
+                            ImageLocation="Resources/Images/volum_up.png" MyKey="KEY_VOLUP"/>
+                    <Image Margin="74,347,282,226" Width="100" Height="34"
+                            Source="Resources/Images/volum_icon.png"/>
+                    <local:TvKeyControl Margin="74,378,282,130" Width="100" Height="99"
+                            ImageLocation="Resources/Images/volum_down.png" MyKey="KEY_VOLDOWN"/>
+
+                    <local:TvKeyControl Margin="178,334,174,209" Width="103" Height="64"
+                            ImageLocation="Resources/Images/mute_btn.png" MyKey="KEY_MUTE"/>
+                    
+                    <!-- channel controls -->
+                    <Image Margin="286,251,70,130" Width="100" Height="226"
+                            Source="Resources/Images/volch_btn_bg.png"/>
+                    <local:TvKeyControl Margin="286,251,70,257" Width="100" Height="99"
+                            ImageLocation="Resources/Images/ch_up.png" MyKey="KEY_CHUP"/>
+                    <Image Margin="286,347,70,226" Width="100" Height="34"
+                            Source="Resources/Images/ch_icon.png"/>
+                    <local:TvKeyControl Margin="286,378,70,130"  Width="100" Height="99"
+                            ImageLocation="Resources/Images/ch_down.png" MyKey="KEY_CHDOWN"/>
+
+                    <!-- color controls -->
+                    <Image HorizontalAlignment="Center" Margin="0,506,-7,20" Width="450" Height="81"
+                            Source="Resources/Images/colorkey_bg.png"/>
+                    <local:TvKeyControl Margin="14,509,336,23" Width="106" Height="75"
+                            ImageLocation="Resources/Images/color_btn01.png" MyKey="KEY_RED"/>
+                    <local:TvKeyControl Margin="123,509,227,23" Width="106" Height="75"
+                            ImageLocation="Resources/Images/color_btn02.png" MyKey="KEY_GREEN"/>
+                    <local:TvKeyControl Margin="232,509,118,23" Width="106" Height="75"
+                            ImageLocation="Resources/Images/color_btn03.png" MyKey="KEY_YELLOW"/>
+                    <local:TvKeyControl Margin="342,509,8,23" Width="106" Height="75"
+                            ImageLocation="Resources/Images/color_btn04.png" MyKey="KEY_BLUE"/>
+                </Grid>
             </controls:PivotItem>
         </controls:Pivot>
 
         <Grid Background="Black" Opacity="0.85" Name="TransparentOverlay" Visibility="Collapsed">
             <StackPanel VerticalAlignment="Center">
-                <ProgressBar 
-            IsIndeterminate="true"
-            x:Name="customIndeterminateProgressBar"
-            Style="{StaticResource CustomIndeterminateProgressBar}"/>
+                <ProgressBar
+                    IsIndeterminate="true"
+                    x:Name="customIndeterminateProgressBar"
+                    Style="{StaticResource CustomIndeterminateProgressBar}"/>
                 <TextBlock Text="Loading..." Margin="30,0,30,0" FontSize="28" Name="progressText" TextWrapping="Wrap" TextAlignment="Center"/>
+                <Button Content="Demo mode" Width="350" Click="btnDemoMode_Click" Name="btnDemoMode" Visibility="Collapsed"/>
             </StackPanel>
         </Grid>
     </Grid>
  
-    <!--Sample code showing usage of ApplicationBar-->
-    <!--<phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
-            <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
-                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
-            </shell:ApplicationBar.MenuItems>
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="False" IsMenuEnabled="False">
+            <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="Refresh list" Click="RefreshTvList_Click"/>
+<!--             <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/> -->
+<!--             <shell:ApplicationBar.MenuItems> -->
+<!--                 <shell:ApplicationBarMenuItem Text="MenuItem 1"/> -->
+<!--                 <shell:ApplicationBarMenuItem Text="MenuItem 2"/> -->
+<!--             </shell:ApplicationBar.MenuItems> -->
         </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>-->
+    </phone:PhoneApplicationPage.ApplicationBar>
 
 </phone:PhoneApplicationPage>

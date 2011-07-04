@@ -4,24 +4,35 @@ using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.Net.Sockets;
 using System.Text;
 using System.IO;
-using System.Collections.ObjectModel;
-using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Phone.Net.NetworkInformation;
+using System.Windows.Media.Imaging;
 
 namespace SamsungRemoteWP7
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        enum SearchState
+        {
+            NotSearching,
+            Searching,
+            SearcingCompleted,
+        }
+
+        enum TvConnectionState
+        {
+            NotConnected,
+            Connecting,
+            AwaitingAuthorization,
+            Connected,
+            Disconnected,
+        }
+
         private static String SearchTemplate =
             "M-SEARCH * HTTP/1.1\r\n" +
             "HOST: 239.255.255.250:1900\r\n" +
@@ -37,8 +48,8 @@ namespace SamsungRemoteWP7
         IPEndPoint multicastEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), MulticastPort);
         IPEndPoint listenEndpoint = new IPEndPoint(IPAddress.Any, MulticastPort);
 
-        Socket TvSearchSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        Socket TvDirectSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        Socket TvSearchSock = null;
+        static Socket TvDirectSock = null;
 
         byte[] TvSearchMessage = Encoding.UTF8.GetBytes(String.Format(SearchTemplate, "urn:samsung.com:device:RemoteControlReceiver:1", 1));
 
@@ -50,9 +61,12 @@ namespace SamsungRemoteWP7
 
         private static int AWAITING_APPROVAL_TOTAL = 6;
 
-        private string appName = "wp7.app.perniciousgames";
+        private static string appName = "wp7.app.perniciousgames";
 
         private bool bEnabled = false;
+
+        private SearchState searchState;
+        private TvConnectionState connectionState;
 
         // Constructor
         public MainPage()
@@ -63,8 +77,9 @@ namespace SamsungRemoteWP7
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
 
-            if (NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
+            if ((NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
                 || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                /*&& !System.Diagnostics.Debugger.IsAttached*/)
             {
                 bEnabled = true;
             }
@@ -72,6 +87,10 @@ namespace SamsungRemoteWP7
             {
                 MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
                     "Can't search for TV", MessageBoxButton.OK);
+
+                SetProgressText("Remote disabled.");
+                ToggleProgressBar(true);
+                btnDemoMode.Visibility = Visibility.Visible;
             }
         }
 
@@ -82,14 +101,14 @@ namespace SamsungRemoteWP7
             {
                 App.ViewModel.LoadData();
             }
+
+            TvListen();
         }
 
         private void TvListen()
         {
-            if (!bEnabled)
+            if (!bEnabled || searchState == SearchState.Searching)
             {
-                SetProgressText("Remote disabled.");
-                ToggleProgressBar(true);
                 return;
             }
 
@@ -97,9 +116,13 @@ namespace SamsungRemoteWP7
             e.Completed += new EventHandler<SocketAsyncEventArgs>(TvListenCompleted);
             e.SetBuffer(TvSearchMessage, 0, TvSearchMessage.Length);
             e.RemoteEndPoint = multicastEndpoint;
+
+            TvSearchSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             TvSearchSock.SendToAsync(e);
 
             ToggleProgressBar(true);
+
+            searchState = SearchState.Searching;
         }
 
         void TvListenCompleted(object sender, SocketAsyncEventArgs e)
@@ -139,6 +162,7 @@ namespace SamsungRemoteWP7
             {
                 System.Diagnostics.Debug.WriteLine("op: {0}, error: {1}", e.LastOperation, e.SocketError);
                 SetProgressText("Network error when searching for a TV.");
+                searchState = SearchState.NotSearching;
             }
         }
 
@@ -264,112 +288,155 @@ namespace SamsungRemoteWP7
             SocketAsyncEventArgs socketEventArg = new SocketAsyncEventArgs();
             socketEventArg.RemoteEndPoint = endpoint;
             socketEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(RegistrationComplete);
-            socketEventArg.UserToken = 0;
+
+            TvDirectSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             TvDirectSock.ConnectAsync(socketEventArg);
+
+            connectionState = TvConnectionState.Connecting;
         }
 
         void RegistrationComplete(object sender, SocketAsyncEventArgs e)
         {
-            if (e.LastOperation == SocketAsyncOperation.SendTo)
+            switch (e.LastOperation)
             {
-                if ((int)e.UserToken == 0)
-                {
-                    if (e.SocketError == SocketError.Success)
+                case SocketAsyncOperation.SendTo:
+                    if (connectionState == TvConnectionState.AwaitingAuthorization)
                     {
-                        // registration complete
-                        SetProgressText("Registering remote with TV...");
+                        if (e.SocketError == SocketError.Success)
+                        {
+                            // registration complete
+                            SetProgressText("Registering remote with TV...");
 
-                        e.SetBuffer(new byte[0x1000], 0, 0x1000);
-                        TvDirectSock.ReceiveFromAsync(e);
-                    }
-                    else
-                    {
-                        SetProgressText("Sending remote registration failed.");
-                        ToggleProgressBar(false);
-                    }
-                }
-            }
-            else if (e.LastOperation == SocketAsyncOperation.ReceiveFrom)
-            {
-                if ((int)e.UserToken == 0)
-                {
-                    if (e.SocketError == SocketError.Success)
-                    {
-                        for (int i = e.Offset; i < e.BytesTransferred; i++)
-                        {
-                            System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
-                        }
-
-                        string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
-
-                        StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
-                        sr.Read();
-                        string regApp = ReadString(sr);
-                        char[] regResponse = ReadCharArray(sr);
-
-                        System.Diagnostics.Debug.WriteLine("tv returned: " + regApp);
-
-                        bool bDisconnect = true;
-
-                        if (AreArraysEqual(regResponse, ALLOWED_BYTES))
-                        {
-                            SetProgressText("Remote approved!");
-                            bDisconnect = false;
-                            ToggleProgressBar(false);
-                        }
-                        else if (AreArraysEqual(regResponse, DENIED_BYTES))
-                        {
-                            SetProgressText("Remote connection denied.");
-                        }
-                        else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
-                        {
-                            SetProgressText("Remote connection timed out.");
-                        }
-                        else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
-                        {
-                            SetProgressText("Waiting for user authorization...");
-                            bDisconnect = false;
-                        }
-                        else
-                        {
-                            SetProgressText("Unknown response from TV.");
-                        }
-
-                        if (bDisconnect)
-                        {
-                            e.UserToken = 1;
-                            TvDirectSock.Close();
-                            ToggleProgressBar(false);
-                        }
-                        else
-                        {
+                            e.SetBuffer(new byte[0x1000], 0, 0x1000);
                             TvDirectSock.ReceiveFromAsync(e);
                         }
+                        else
+                        {
+                            SetProgressText("Sending remote registration failed.");
+                            ToggleProgressBar(false);
+                            connectionState = TvConnectionState.Disconnected;
+                        }
                     }
-                    else
-                    {
-                        SetProgressText("Failure communicating with the TV.");
-                        ToggleProgressBar(false);
-                        TvDirectSock.Close();
-                    }
-                }
-            }
-            else if (e.LastOperation == SocketAsyncOperation.Connect)
-            {
-                if ((int)e.UserToken == 0)
-                {
-                    if (e.SocketError == SocketError.Success)
-                    {
-                        SendRegistrationTo(e);
+                    break;
 
-                        SetProgressText("Connected to TV. Sending registration...");
-                    }
-                    else
+                case SocketAsyncOperation.ReceiveFrom:
+                    if (connectionState == TvConnectionState.AwaitingAuthorization)
                     {
-                        SetProgressText("Failure connecting to TV at " + (e.RemoteEndPoint as IPEndPoint).Address.ToString() + ".");
-                        ToggleProgressBar(false);
+                        if (e.SocketError == SocketError.Success)
+                        {
+                            for (int i = e.Offset; i < e.BytesTransferred; i++)
+                            {
+                                System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
+                            }
+
+                            string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
+
+                            StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
+                            sr.Read();
+                            string regApp = ReadString(sr);
+                            char[] regResponse = ReadCharArray(sr);
+
+                            System.Diagnostics.Debug.WriteLine("tv returned: " + regApp);
+
+                            bool bDisconnect = true;
+
+                            if (AreArraysEqual(regResponse, ALLOWED_BYTES))
+                            {
+                                SetProgressText("Remote approved!");
+                                bDisconnect = false;
+                                ToggleProgressBar(false);
+                            }
+                            else if (AreArraysEqual(regResponse, DENIED_BYTES))
+                            {
+                                SetProgressText("Remote connection denied.");
+                            }
+                            else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
+                            {
+                                SetProgressText("Remote connection timed out.");
+                            }
+                            else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
+                            {
+                                SetProgressText("Waiting for user authorization...");
+                                bDisconnect = false;
+                            }
+                            else
+                            {
+                                SetProgressText("Unknown response from TV.");
+                            }
+
+                            if (bDisconnect)
+                            {
+                                TvDirectSock.Close();
+                                ToggleProgressBar(false);
+                                connectionState = TvConnectionState.Disconnected;
+                            }
+                            else
+                            {
+                                TvDirectSock.ReceiveFromAsync(e);
+                                connectionState = TvConnectionState.Connected;
+                            }
+                        }
+                        else
+                        {
+                            //SetProgressText("Failure communicating with the TV.");
+                            connectionState = TvConnectionState.Disconnected;
+                            ToggleProgressBar(false);
+                        }
                     }
-                }
+                    else if (connectionState == TvConnectionState.Connected)
+                    {
+                        if (e.SocketError == SocketError.Success)
+                        {
+                            if (e.BytesTransferred > 0)
+                            {
+                                for (int i = e.Offset; i < e.BytesTransferred; i++)
+                                {
+                                    System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
+                                }
+
+                                string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
+
+                                StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
+                                sr.Read();
+                                string inApp = ReadString(sr);
+                                char[] keyResponse = ReadCharArray(sr);
+
+                                System.Diagnostics.Debug.WriteLine("tv returned: " + inApp);
+                            }
+                            try
+                            {
+                                TvDirectSock.ReceiveFromAsync(e);
+                            }
+                            catch (System.Exception)
+                            {
+                                connectionState = TvConnectionState.Disconnected;
+                            }
+                        }
+                        else
+                        {
+                            connectionState = TvConnectionState.Disconnected;
+                        }
+                    }
+                    break;
+
+                case SocketAsyncOperation.Connect:
+                    if (connectionState == TvConnectionState.Connecting)
+                    {
+                        if (e.SocketError == SocketError.Success)
+                        {
+                            SendRegistrationTo(e);
+
+                            connectionState = TvConnectionState.AwaitingAuthorization;
+                            SetProgressText("Connected to TV. Sending registration...");
+                        }
+                        else
+                        {
+                            //SetProgressText("Failure connecting to TV at " + (e.RemoteEndPoint as IPEndPoint).Address.ToString() + ".");
+                            ToggleProgressBar(false);
+                            connectionState = TvConnectionState.Disconnected;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -420,12 +487,12 @@ namespace SamsungRemoteWP7
             return sb.ToString();
         }
 
-        private StringBuilder WriteText(StringBuilder writer, String text)
+        private static StringBuilder WriteText(StringBuilder writer, String text)
         {
             return writer.Append((char)text.Length).Append((char)0x0).Append(text);
         }
 
-        private StringBuilder WriteBase64Text(StringBuilder writer, String text)
+        private static StringBuilder WriteBase64Text(StringBuilder writer, String text)
         {
             string s = Convert.ToBase64String(Encoding.UTF8.GetBytes(text));
             return WriteText(writer, s);
@@ -514,7 +581,13 @@ namespace SamsungRemoteWP7
             }));
         }
 
-        private void InternalSendKey(Key.EKey key) {
+        private static void InternalSendKey(TvKeyControl.EKey key)
+        {
+            if (TvDirectSock == null || !TvDirectSock.Connected)
+            {
+                return;
+            }
+
             StringBuilder writer = new StringBuilder();
 		    writer.Append((char)0x00);
 		    WriteText(writer, appName);
@@ -525,17 +598,9 @@ namespace SamsungRemoteWP7
             e.RemoteEndPoint = TvDirectSock.RemoteEndPoint;
             e.SetBuffer(TvRegistrationMessage, 0, TvRegistrationMessage.Length);
             TvDirectSock.SendToAsync(e);
-
-// 		    int i = reader.read(); // Unknown byte 0x00
-// 		    String t = readText(reader);  // Read "iapp.samsung"
-// 		    char[] c = readCharArray(reader);
-// 		    System.out.println(i);
-// 		    System.out.println(t);
-// 		    for (char a : c) System.out.println(Integer.toHexString(a));
-		    //System.out.println(c);
 	    }
 
-        public void SendKey(Key.EKey key)
+        public static void SendKey(TvKeyControl.EKey key)
         {
 // 		    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + "...");
 // 		    checkConnection();
@@ -550,7 +615,8 @@ namespace SamsungRemoteWP7
 //		    if (logger != null) logger.v(TAG, "Successfully sent key " + key.getValue());
 	    }
 
-	    private String GetKeyPayload(Key.EKey key) {
+        private static String GetKeyPayload(TvKeyControl.EKey key)
+        {
 		    StringBuilder writer = new StringBuilder();
 		    writer.Append((char)0x00);
 		    writer.Append((char)0x00);
@@ -558,18 +624,67 @@ namespace SamsungRemoteWP7
 		    WriteBase64Text(writer, key.ToString());
 		    return writer.ToString();
 	    }
+        /*
+        private void internalSendText(String text)
+        {
+		    writer.append((char)0x01);
+		    writeText(writer, TV_APP_STRING);
+		    writeText(writer, getTextPayload(text));
+		    writer.flush();
+		    if (!reader.ready()) {
+			    return;
+		    }
+		    int i = reader.read(); // Unknown byte 0x02
+		    System.out.println(i);
+		    String t = readText(reader); // Read "iapp.samsung"
+		    char[] c = readCharArray(reader);
+		    System.out.println(i);
+		    System.out.println(t);
+		    for (char a : c) System.out.println(Integer.toHexString(a));
+	    }
+	
+	    public void sendText(String text)
+        {
+		    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\"...");
+		    checkConnection();
+		    try {
+			    internalSendText(text);
+		    } catch (SocketException e) {
+			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
+			    initialize();
+			    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\" again...");
+			    internalSendText(text);
+		    }
+		    if (logger != null) logger.v(TAG, "Successfully sent text \"" + text + "\"");
+	    }
 
+	    private String getTextPayload(String text)
+        {
+		    StringWriter writer = new StringWriter();
+		    writer.append((char)0x01);
+		    writer.append((char)0x00);
+		    writeBase64Text(writer, text);
+		    writer.flush();
+		    return writer.toString();
+	    }
+        */
         private void StackPanel_Tap(object sender, GestureEventArgs e)
         {
-            SendKey(Key.EKey.KEY_POWEROFF);
+            SendKey(TvKeyControl.EKey.KEY_POWEROFF);
         }
 
         private void TvListPanel_Tap(object sender, GestureEventArgs e)
         {
+            if (!bEnabled)
+            {
+                return;
+            }
+
             if (TvSearchSock != null && TvSearchSock.Connected)
             {
                 TvSearchSock.Close();
             }
+            searchState = SearchState.SearcingCompleted;
 
             ToggleProgressBar(true);
             TvItemViewModel selectedItem = (TvListBox.SelectedItem as TvItemViewModel);
@@ -587,18 +702,49 @@ namespace SamsungRemoteWP7
 
             if (piv.SelectedIndex == 0)
             {
-/*                if (System.Diagnostics.Debugger.IsAttached)
-                {
-                    if (App.ViewModel.TvItems.Count == 0)
-                    {
-                        App.ViewModel.TvItems.Add(new TvItemViewModel() { Port = TvDirectPort, TvAddress = IPAddress.Parse("10.0.0.38"), TvName = "good times" });
-                    }
-                }
-                else
-*/              {
-                    TvListen();
-                }
+                ApplicationBar.IsVisible = true;
             }
+            else
+            {
+                ApplicationBar.IsVisible = false;
+            }
+        }
+
+        private void btnDemoMode_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleProgressBar(false);
+
+            var rand = new Random((int)DateTime.Now.Ticks);
+            for (int i = 1; i <= 9; i++ )
+            {
+                App.ViewModel.TvItems.Add(new TvItemViewModel()
+                {
+                    Port = TvDirectPort,
+                    TvAddress = IPAddress.Parse("192.168.100." + rand.Next(1, 255)),
+                    TvName = "Example TV " + i
+                });
+            }
+        }
+
+        private void RefreshTvList_Click(object sender, EventArgs e)
+        {
+            TvListen();
+        }
+
+        private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (searchState == SearchState.Searching)
+            {
+                StopSearching();
+                e.Cancel = true;
+            }
+        }
+
+        private void StopSearching()
+        {
+            TvSearchSock.Close();
+            ToggleProgressBar(false);
+            searchState = SearchState.NotSearching;
         }
     }
 }
