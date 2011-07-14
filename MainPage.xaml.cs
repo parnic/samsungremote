@@ -285,7 +285,6 @@ namespace SamsungRemoteWP7
 
             discoverer.StopSearching(Discovery.SearchEndReason.Complete);
 
-            ToggleProgressBar(true);
             TvItemViewModel selectedItem = (TvListBox.SelectedItem as TvItemViewModel);
             ConnectTo(new IPEndPoint(selectedItem.TvAddress, selectedItem.Port));
         }
@@ -357,9 +356,27 @@ namespace SamsungRemoteWP7
                         App.ViewModel.TvItems.RemoveAt(i);
                     }
                 }
+
+                directConn.bSentPowerOff = true;
             }
 
             MainPivot.SelectedIndex = 0;
+        }
+
+        public static void NotifyAppDeactivated()
+        {
+            if (directConn != null)
+            {
+                directConn.NotifyAppDeactivated();
+            }
+        }
+
+        public static void NotifyAppActivated()
+        {
+            if (directConn != null)
+            {
+                directConn.NotifyAppActivated();
+            }
         }
         #endregion
 
@@ -423,6 +440,7 @@ namespace SamsungRemoteWP7
 
         void directConn_Connecting()
         {
+            ToggleProgressBar(true);
             SetProgressText("Connecting to TV at " + directConn.connectedEndpoint.Address.ToString() + "...");
         }
         #endregion

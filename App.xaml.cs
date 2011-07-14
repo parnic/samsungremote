@@ -91,12 +91,15 @@ namespace SamsungRemoteWP7
             {
                 App.ViewModel.LoadData();
             }
+
+            MainPage.NotifyAppActivated();
         }
 
         // Code to execute when the application is deactivated (sent to background)
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+            MainPage.NotifyAppDeactivated();
         }
 
         // Code to execute when the application is closing (eg, user hit Back)

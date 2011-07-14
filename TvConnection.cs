@@ -61,6 +61,10 @@ namespace SamsungRemoteWP7
         public delegate void RegistrationWaitingDelegate();
         public event RegistrationWaitingDelegate RegistrationWaiting;
 
+        private bool bReconnectAfterUnlock;
+
+        public bool bSentPowerOff;
+
         public TvConnection(IPEndPoint endpoint)
         {
             connectedEndpoint = endpoint;
@@ -94,20 +98,41 @@ namespace SamsungRemoteWP7
 
         public void SendKey(TvKeyControl.EKey key)
         {
-            // 		    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + "...");
-            // 		    checkConnection();
+// 		    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + "...");
+// 		    checkConnection();
             try
             {
                 InternalSendKey(key);
             }
             catch (SocketException)
             {
-                // 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
-                // 			    initialize();
-                // 			    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + " again...");
-                // 			    internalSendKey(key);
+// 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
+// 			    initialize();
+// 			    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + " again...");
+// 			    internalSendKey(key);
             }
-            //		    if (logger != null) logger.v(TAG, "Successfully sent key " + key.getValue());
+//		    if (logger != null) logger.v(TAG, "Successfully sent key " + key.getValue());
+        }
+
+        public void NotifyAppDeactivated()
+        {
+            if (TvDirectSock != null && TvDirectSock.Connected)
+            {
+                bReconnectAfterUnlock = true;
+            }
+        }
+
+        public void NotifyAppActivated()
+        {
+            if (bReconnectAfterUnlock)
+            {
+                bReconnectAfterUnlock = false;
+
+                if (!bSentPowerOff)
+                {
+                    Connect();
+                }
+            }
         }
 
         private void RegistrationComplete(object sender, SocketAsyncEventArgs e)
