@@ -67,6 +67,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Discovery.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -74,6 +75,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelativeAnimatingContentControl.cs" />
     <Compile Include="TiltEffect.cs" />
+    <Compile Include="TvConnection.cs" />
     <Compile Include="TvKeyControl.xaml.cs">
       <DependentUpon>TvKeyControl.xaml</DependentUpon>
     </Compile>
