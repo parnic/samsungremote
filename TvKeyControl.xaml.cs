@@ -265,6 +265,9 @@ namespace SamsungRemoteWP7
         public BitmapImage PressedImage { get; private set; }
         public string ImageLocation { get; set; }
 
+        public delegate void KeyPressedDelegate(object sender, EventArgs args);
+        public event KeyPressedDelegate OnKeyPressed;
+
         public TvKeyControl()
         {
             InitializeComponent();
@@ -295,6 +298,11 @@ namespace SamsungRemoteWP7
         {
             VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
             MainPage.SendKey(MyKey);
+
+            if (OnKeyPressed != null)
+            {
+                OnKeyPressed(this, EventArgs.Empty);
+            }
         }
     }
 }

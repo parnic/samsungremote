@@ -118,7 +118,7 @@
                     <local:TvKeyControl Margin="25,487,327,57" Width="103" Height="64"
                         ImageLocation="Resources/Images/source_btn.png" MyKey="KEY_SOURCE"/>
                     <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
-                        ImageLocation="Resources/Images/power_btn.png" MyKey="KEY_POWEROFF"/>
+                        ImageLocation="Resources/Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"/>
 
                     <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,366,0,0" Width="84" Height="65" -->
 <!--                         ImageLocation="Resources/Images/nav_down.png" MyKey="KEY_DOWN"/> -->

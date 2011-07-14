@@ -345,6 +345,22 @@ namespace SamsungRemoteWP7
                 e.Cancel = true;
             }
         }
+
+        private void OnPowerButtonPressed(object sender, EventArgs args)
+        {
+            if (directConn != null && directConn.connectedEndpoint != null)
+            {
+                for (int i = App.ViewModel.TvItems.Count - 1; i >= 0; i--)
+                {
+                    if (App.ViewModel.TvItems[i].TvAddress.ToString() == directConn.connectedEndpoint.Address.ToString())
+                    {
+                        App.ViewModel.TvItems.RemoveAt(i);
+                    }
+                }
+            }
+
+            MainPivot.SelectedIndex = 0;
+        }
         #endregion
 
         #region direct connection handling/callbacks
