@@ -330,11 +330,8 @@ namespace SamsungRemoteWP7
 
         private void RefreshTvList_Click(object sender, EventArgs e)
         {
-            if (!bEnabled)
-            {
-                App.ViewModel.TvItems.Clear();
-                bEnabled = true;
-            }
+            App.ViewModel.TvItems.Clear();
+            bEnabled = true;
 
             btnDemoMode.Visibility = Visibility.Collapsed;
             discoverer.FindTvs();
