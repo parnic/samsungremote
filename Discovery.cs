@@ -111,6 +111,7 @@ namespace SamsungRemoteWP7
             if (tvSearchRetryTimer != null)
             {
                 tvSearchRetryTimer.Dispose();
+                tvSearchRetryTimer = null;
             }
             if (tvSearchTimeoutTimer != null)
             {
@@ -142,6 +143,10 @@ namespace SamsungRemoteWP7
             {
                 tvSearchSock.SendToAsync(GetSearchSocketEventArgs());
                 System.Diagnostics.Debug.WriteLine("pinging for tv's again...");
+            }
+            if (tvSearchRetryTimer != null)
+            {
+                tvSearchRetryTimer = new Timer(TvSearchRetry, null, TimeSpan.FromSeconds(tvSearchRetryTimeSeconds), TimeSpan.FromMilliseconds(-1));
             }
         }
 
