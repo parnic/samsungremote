@@ -257,6 +257,7 @@ namespace SamsungRemoteWP7
             KEY_ZOOM_IN,
             KEY_ZOOM_MOVE,
             KEY_ZOOM_OUT,
+            KEY_INVALID,
         }
 
         public EKey MyKey { get; set; }
@@ -297,7 +298,10 @@ namespace SamsungRemoteWP7
         private void UserControl_Tap(object sender, GestureEventArgs e)
         {
             VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
-            MainPage.SendKey(MyKey);
+            if (MyKey != EKey.KEY_INVALID)
+            {
+                MainPage.SendKey(MyKey);
+            }
 
             if (OnKeyPressed != null)
             {

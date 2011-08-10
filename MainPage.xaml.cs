@@ -56,6 +56,14 @@ namespace SamsungRemoteWP7
             }
         }
 
+        public static void SendText(string text)
+        {
+            if (directConn != null && bEnabled)
+            {
+                directConn.SendText(text);
+            }
+        }
+
         #region discovery callbacks and processing
         void discoverer_SearchingEnded(Discovery.SearchEndReason reason)
         {
@@ -339,10 +347,53 @@ namespace SamsungRemoteWP7
 
         private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (discoverer.HandleBackButton())
+            if (TextInputOverlay.Visibility == Visibility.Visible)
+            {
+                TextInputOverlay.Visibility = Visibility.Collapsed;
+                if (e != null)
+                {
+                    e.Cancel = true;
+                }
+                txtInput.Text = "";
+                MainPivot.Focus();
+            }
+            else if (discoverer.HandleBackButton())
             {
                 e.Cancel = true;
             }
+        }
+
+        // can't detect if keyboard is open, so this is the next best thing
+        private DateTime inputShown;
+        private void OnQwertyButtonPressed(object sender, EventArgs args)
+        {
+            txtInput.Focus();
+            TextInputOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void txtInput_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (txtInput.Text.Length > 0)
+                {
+                    SendText(txtInput.Text);
+                }
+                PhoneApplicationPage_BackKeyPress(null, EventArgs.Empty as System.ComponentModel.CancelEventArgs);
+            }
+        }
+
+        private void txtInput_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (TextInputOverlay.Visibility == Visibility.Visible && (DateTime.Now - inputShown).TotalMilliseconds > 250)
+            {
+                PhoneApplicationPage_BackKeyPress(null, EventArgs.Empty as System.ComponentModel.CancelEventArgs);
+            }
+        }
+
+        private void txtInput_GotFocus(object sender, RoutedEventArgs e)
+        {
+            inputShown = DateTime.Now;
         }
 
         private void OnPowerButtonPressed(object sender, EventArgs args)

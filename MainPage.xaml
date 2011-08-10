@@ -115,6 +115,8 @@
                         ImageLocation="Resources/Images/key_up.png" MyKey="KEY_UP"/>
 
                     <!-- misc controls -->
+                    <local:TvKeyControl Margin="25,53,327,57" Width="103" Height="64"
+                        ImageLocation="Resources/Images/qwerty_btn.png" MyKey="KEY_INVALID" OnKeyPressed="OnQwertyButtonPressed"/>
                     <local:TvKeyControl Margin="25,487,327,57" Width="103" Height="64"
                         ImageLocation="Resources/Images/source_btn.png" MyKey="KEY_SOURCE"/>
                     <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
@@ -192,6 +194,14 @@
                 </Grid>
             </controls:PivotItem>
         </controls:Pivot>
+
+        <Grid Background="Black" Opacity="0.85" Name="TextInputOverlay" Visibility="Collapsed">
+            <StackPanel Margin="0,0,0,150" VerticalAlignment="Center">
+                <TextBlock Text="Press Enter to submit the entered text," TextAlignment="Center"/>
+                <TextBlock Text="press back to cancel." TextAlignment="Center"/>
+                <TextBox Name="txtInput" Height="75" KeyUp="txtInput_KeyUp" LostFocus="txtInput_LostFocus" GotFocus="txtInput_GotFocus"/>
+            </StackPanel>
+        </Grid>
 
         <Grid Background="Black" Opacity="0.85" Name="TransparentOverlay" Visibility="Collapsed">
             <StackPanel VerticalAlignment="Center">

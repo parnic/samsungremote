@@ -387,50 +387,48 @@ namespace SamsungRemoteWP7
             return writer.ToString();
         }
 
-        /*
-        private void internalSendText(String text)
+        private void InternalSendText(String text)
         {
-		    writer.append((char)0x01);
-		    writeText(writer, TV_APP_STRING);
-		    writeText(writer, getTextPayload(text));
-		    writer.flush();
-		    if (!reader.ready()) {
-			    return;
-		    }
-		    int i = reader.read(); // Unknown byte 0x02
-		    System.out.println(i);
-		    String t = readText(reader); // Read "iapp.samsung"
-		    char[] c = readCharArray(reader);
-		    System.out.println(i);
-		    System.out.println(t);
-		    for (char a : c) System.out.println(Integer.toHexString(a));
-	    }
-	
-	    public void sendText(String text)
-        {
-		    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\"...");
-		    checkConnection();
-		    try {
-			    internalSendText(text);
-		    } catch (SocketException e) {
-			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
-			    initialize();
-			    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\" again...");
-			    internalSendText(text);
-		    }
-		    if (logger != null) logger.v(TAG, "Successfully sent text \"" + text + "\"");
+            if (TvDirectSock == null || !TvDirectSock.Connected)
+            {
+                return;
+            }
+
+            StringBuilder writer = new StringBuilder();
+		    writer.Append((char)0x01);
+		    WriteText(writer, appName);
+		    WriteText(writer, GetTextPayload(text));
+
+            byte[] keyMessage = Encoding.UTF8.GetBytes(writer.ToString());
+            SocketAsyncEventArgs e = new SocketAsyncEventArgs();
+            e.RemoteEndPoint = TvDirectSock.RemoteEndPoint;
+            e.SetBuffer(keyMessage, 0, keyMessage.Length);
+            TvDirectSock.SendToAsync(e);
 	    }
 
-	    private String getTextPayload(String text)
+	    public void SendText(String text)
         {
-		    StringWriter writer = new StringWriter();
-		    writer.append((char)0x01);
-		    writer.append((char)0x00);
-		    writeBase64Text(writer, text);
-		    writer.flush();
-		    return writer.toString();
+// 		    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\"...");
+// 		        checkConnection();
+		    try {
+			    InternalSendText(text);
+		    } catch (SocketException /*e*/) {
+// 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
+// 			    initialize();
+// 			    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\" again...");
+// 			    internalSendText(text);
+		    }
+		    //if (logger != null) logger.v(TAG, "Successfully sent text \"" + text + "\"");
 	    }
-        */
+
+	    private String GetTextPayload(String text)
+        {
+            StringBuilder writer = new StringBuilder();
+		    writer.Append((char)0x01);
+		    writer.Append((char)0x00);
+		    WriteBase64Text(writer, text);
+		    return writer.ToString();
+	    }
 
         protected void NotifyDisconnected()
         {

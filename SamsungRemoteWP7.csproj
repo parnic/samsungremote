@@ -230,6 +230,8 @@
     <Resource Include="Resources\Images\colorkey_bg.png" />
     <Resource Include="Resources\Images\ch_icon.png" />
     <Resource Include="Resources\Images\volum_down_focus.png" />
+    <Resource Include="Resources\Images\qwerty_btn.png" />
+    <Resource Include="Resources\Images\qwerty_btn_focus.png" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
