@@ -6,7 +6,7 @@ namespace SamsungRemoteWP7
     {  
         private static readonly int ANIDLength = 32;  
         private static readonly int ANIDOffset = 2;  
-
+        /*
         //Note: to get a result requires ID_CAP_IDENTITY_DEVICE  
         // to be added to the capabilities of the WMAppManifest  
         // this will then warn users in marketplace  
@@ -19,7 +19,7 @@ namespace SamsungRemoteWP7
   
             return result;  
         }  
-
+        */
         // NOTE: to get a result requires ID_CAP_IDENTITY_USER  
         //  to be added to the capabilities of the WMAppManifest  
         // this will then warn users in marketplace  

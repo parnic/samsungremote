@@ -3,7 +3,6 @@
   <App xmlns="" ProductID="{923e6d20-998e-47be-9e43-558dc2bbbf61}" Title="Samsung Remote" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="SamsungRemoteWP7 author" Description="Sample description" Publisher="SamsungRemoteWP7">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
-      <Capability Name="ID_CAP_IDENTITY_DEVICE" />
       <Capability Name="ID_CAP_IDENTITY_USER" />
       <Capability Name="ID_CAP_NETWORKING" />
     </Capabilities>
