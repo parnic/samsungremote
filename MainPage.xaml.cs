@@ -9,6 +9,7 @@ using Microsoft.Phone.Controls;
 using System.IO;
 using System.Xml.Linq;
 using Microsoft.Phone.Net.NetworkInformation;
+using System.Reflection;
 
 namespace SamsungRemoteWP7
 {
@@ -22,6 +23,8 @@ namespace SamsungRemoteWP7
         public MainPage()
         {
             InitializeComponent();
+
+            MainPivot.Title = MainPivot.Title.ToString().Replace("{v}", GetVersionNumber());
 
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
@@ -46,6 +49,38 @@ namespace SamsungRemoteWP7
                 ToggleProgressBar(true);
                 btnDemoMode.Visibility = Visibility.Visible;
             }
+        }
+
+        public static string GetVersionNumber()
+        {
+            int major, minor;
+            if (GetVersion(out major, out minor))
+            {
+                return major + "." + minor;
+            }
+
+            return "1.0";
+        }
+
+        public static bool GetVersion(out int Major, out int Minor)
+        {
+            try
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                var parts = asm.FullName.Split(',');
+                var version = parts[1].Split('=')[1].Split('.');
+
+                Major = Convert.ToInt32(version[0]);
+                Minor = Convert.ToInt32(version[1]);
+
+                return true;
+            }
+            catch (Exception) { }
+
+            Major = 0;
+            Minor = 0;
+
+            return false;
         }
 
         public static void SendKey(TvKeyControl.EKey key)
@@ -373,7 +408,7 @@ namespace SamsungRemoteWP7
 
         private void txtInput_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter || e.PlatformKeyCode == 10)
             {
                 if (txtInput.Text.Length > 0)
                 {
