@@ -13,6 +13,6 @@
     Tap="UserControl_Tap">
     
     <Grid x:Name="LayoutRoot">
-        <Image Name="Img"  Source="Resources/Images/keypad_00.png"/>
+        <Image Name="Img"  Source="Images/keypad_00.png"/>
     </Grid>
 </UserControl>

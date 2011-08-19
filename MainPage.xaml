@@ -42,98 +42,98 @@
             <controls:PivotItem Header="numpad" Name="first">
                 <Grid>
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top"
-                           Source="Resources/Images/rack.png"  Margin="0,70,0,0"/>
+                           Source="Images/rack.png"  Margin="0,70,0,0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,22,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_01.png" MyKey="KEY_1"/>
+                           ImageLocation="Images/keypad_01.png" MyKey="KEY_1"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,22,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_02.png" MyKey="KEY_2"/>
+                           ImageLocation="Images/keypad_02.png" MyKey="KEY_2"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,22,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_03.png" MyKey="KEY_3"/>
+                           ImageLocation="Images/keypad_03.png" MyKey="KEY_3"/>
 
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top"
-                           Source="Resources/Images/rack.png" Margin="0,220,0,0"/>
+                           Source="Images/rack.png" Margin="0,220,0,0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,172,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_04.png" MyKey="KEY_4"/>
+                           ImageLocation="Images/keypad_04.png" MyKey="KEY_4"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,172,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_05.png" MyKey="KEY_5"/>
+                           ImageLocation="Images/keypad_05.png" MyKey="KEY_5"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,172,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_06.png" MyKey="KEY_6"/>
+                           ImageLocation="Images/keypad_06.png" MyKey="KEY_6"/>
 
                     <Image HorizontalAlignment="Center" VerticalAlignment="Top"
-                           Source="Resources/Images/rack.png" Margin="0,370,0,0"/>
+                           Source="Images/rack.png" Margin="0,370,0,0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,317,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_07.png" MyKey="KEY_7"/>
+                           ImageLocation="Images/keypad_07.png" MyKey="KEY_7"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,317,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_08.png" MyKey="KEY_8"/>
+                           ImageLocation="Images/keypad_08.png" MyKey="KEY_8"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,317,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_09.png" MyKey="KEY_9"/>
+                           ImageLocation="Images/keypad_09.png" MyKey="KEY_9"/>
 
                     <Image HorizontalAlignment="Center" VerticalAlignment="Top"
-                           Source="Resources/Images/rack.png" Margin="0,520,0,0"/>
+                           Source="Images/rack.png" Margin="0,520,0,0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,470,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_minus.png" MyKey="KEY_11"/>
+                           ImageLocation="Images/keypad_minus.png" MyKey="KEY_11"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,470,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_00.png" MyKey="KEY_0"/>
+                           ImageLocation="Images/keypad_00.png" MyKey="KEY_0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,470,0,0" Width="90" Height="120"
-                           ImageLocation="Resources/Images/keypad_ch.png" MyKey="KEY_PRECH"/>
+                           ImageLocation="Images/keypad_ch.png" MyKey="KEY_PRECH"/>
                 </Grid>
             </controls:PivotItem>
 
             <controls:PivotItem Header="navigation">
                 <Grid>
                     <!-- menu controls -->
-                    <Image VerticalAlignment="Top" Margin="0,0,0,0" Source="Resources/Images/direction_bg.png" />
+                    <Image VerticalAlignment="Top" Margin="0,0,0,0" Source="Images/direction_bg.png" />
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Width="164" Height="108"
-                        ImageLocation="Resources/Images/direction_content.png" MyKey="KEY_CONTENTS"/>
+                        ImageLocation="Images/direction_content.png" MyKey="KEY_CONTENTS"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Center" Width="156" Height="108"
-                        ImageLocation="Resources/Images/direction_menu.png" MyKey="KEY_MENU"/>
+                        ImageLocation="Images/direction_menu.png" MyKey="KEY_MENU"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Right" Width="164" Height="108"
-                        ImageLocation="Resources/Images/direction_internet.png" MyKey="KEY_APP_LIST"/>
+                        ImageLocation="Images/direction_internet.png" MyKey="KEY_APP_LIST"/>
 
                     <!-- tools/info/return/exit -->
                     <Rectangle Fill="#66000000" RadiusX="10" RadiusY="10" Width="450" Height="120" Margin="3,122,0,0"
                                VerticalAlignment="Top" HorizontalAlignment="Left"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,122,0,0" Width="120" Height="120"
-                        ImageLocation="Resources/Images/direction_tools.png" MyKey="KEY_TOOLS"/>
+                        ImageLocation="Images/direction_tools.png" MyKey="KEY_TOOLS"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="118,122,0,0" Width="120" Height="120"
-                        ImageLocation="Resources/Images/direction_info.png" MyKey="KEY_INFO"/>
+                        ImageLocation="Images/direction_info.png" MyKey="KEY_INFO"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="232,122,0,0" Width="120" Height="120"
-                        ImageLocation="Resources/Images/direction_return.png" MyKey="KEY_RETURN"/>
+                        ImageLocation="Images/direction_return.png" MyKey="KEY_RETURN"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Left" Margin="344,122,0,0" Width="120" Height="120"
-                        ImageLocation="Resources/Images/direction_exit.png" MyKey="KEY_EXIT"/>
+                        ImageLocation="Images/direction_exit.png" MyKey="KEY_EXIT"/>
 
                     <!-- navigation controls -->
                     <Image HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,250,0,0" Width="449" Height="321"
-                           Source="Resources/Images/nav_bg.png"/>
+                           Source="Images/nav_bg.png"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,352,0,0" Width="160" Height="114"
-                        ImageLocation="Resources/Images/key_keyboard.png" MyKey="KEY_ENTER"/>
+                        ImageLocation="Images/key_keyboard.png" MyKey="KEY_ENTER"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,466,0,0" Width="160" Height="120"
-                        ImageLocation="Resources/Images/key_down.png" MyKey="KEY_DOWN"/>
+                        ImageLocation="Images/key_down.png" MyKey="KEY_DOWN"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="307,348,0,0" Width="154" Height="124"
-                        ImageLocation="Resources/Images/key_right.png" MyKey="KEY_RIGHT"/>
+                        ImageLocation="Images/key_right.png" MyKey="KEY_RIGHT"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-7,347,0,0" Width="154" Height="124"
-                        ImageLocation="Resources/Images/key_left.png" MyKey="KEY_LEFT"/>
+                        ImageLocation="Images/key_left.png" MyKey="KEY_LEFT"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,232,0,0" Width="160" Height="120"
-                        ImageLocation="Resources/Images/key_up.png" MyKey="KEY_UP"/>
+                        ImageLocation="Images/key_up.png" MyKey="KEY_UP"/>
 
                     <!-- misc controls -->
                     <local:TvKeyControl Margin="25,53,327,57" Width="103" Height="64"
-                        ImageLocation="Resources/Images/qwerty_btn.png" MyKey="KEY_INVALID" OnKeyPressed="OnQwertyButtonPressed"/>
+                        ImageLocation="Images/qwerty_btn.png" MyKey="KEY_INVALID" OnKeyPressed="OnQwertyButtonPressed"/>
                     <local:TvKeyControl Margin="25,487,327,57" Width="103" Height="64"
-                        ImageLocation="Resources/Images/source_btn.png" MyKey="KEY_SOURCE"/>
+                        ImageLocation="Images/source_btn.png" MyKey="KEY_SOURCE"/>
                     <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
-                        ImageLocation="Resources/Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"/>
+                        ImageLocation="Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"/>
 
                     <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,366,0,0" Width="84" Height="65" -->
-<!--                         ImageLocation="Resources/Images/nav_down.png" MyKey="KEY_DOWN"/> -->
+<!--                         ImageLocation="Images/nav_down.png" MyKey="KEY_DOWN"/> -->
 <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="271,308,0,0" Width="113" Height="57" -->
-<!--                         ImageLocation="Resources/Images/nav_right.png" MyKey="KEY_RIGHT"/> -->
+<!--                         ImageLocation="Images/nav_right.png" MyKey="KEY_RIGHT"/> -->
 <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="72,308,0,0" Width="113" Height="57" -->
-<!--                         ImageLocation="Resources/Images/nav_left.png" MyKey="KEY_LEFT"/> -->
+<!--                         ImageLocation="Images/nav_left.png" MyKey="KEY_LEFT"/> -->
 <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,243,0,0" Width="84" Height="65" -->
-<!--                         ImageLocation="Resources/Images/nav_up.png" MyKey="KEY_UP"/> -->
+<!--                         ImageLocation="Images/nav_up.png" MyKey="KEY_UP"/> -->
 <!--                     <local:TvKeyControl HorizontalAlignment="Left" Margin="173,300,0,0" VerticalAlignment="Top" Width="108" Height="75" -->
-<!--                         ImageLocation="Resources/Images/nav_center.png" MyKey="KEY_ENTER"/> -->
+<!--                         ImageLocation="Images/nav_center.png" MyKey="KEY_ENTER"/> -->
                 </Grid>
             </controls:PivotItem>
 
@@ -142,57 +142,57 @@
                     <!-- play/pause controls -->
                     <!-- row 1 -->
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,70,0,0"
-                            Source="Resources/Images/rack.png"/>
+                            Source="Images/rack.png"/>
                     <local:TvKeyControl Margin="27,10,305,487" Width="124" Height="110"
-                            ImageLocation="Resources/Images/playcontrol_rew.png" MyKey="KEY_WHEEL_LEFT"/>
+                            ImageLocation="Images/playcontrol_rew.png" MyKey="KEY_WHEEL_LEFT"/>
                     <local:TvKeyControl Margin="166,10,166,487" Width="124" Height="110"
-                            ImageLocation="Resources/Images/playcontrol_pause.png" MyKey="KEY_PAUSE"/>
+                            ImageLocation="Images/playcontrol_pause.png" MyKey="KEY_PAUSE"/>
                     <local:TvKeyControl Margin="303,10,29,487" Width="124" Height="110"
-                            ImageLocation="Resources/Images/playcontrol_ff.png" MyKey="KEY_WHEEL_RIGHT"/>
+                            ImageLocation="Images/playcontrol_ff.png" MyKey="KEY_WHEEL_RIGHT"/>
                     <!-- row 2 -->
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,190,0,0"
-                            Source="Resources/Images/rack.png"/>
+                            Source="Images/rack.png"/>
                     <local:TvKeyControl Margin="27,130,305,367" Height="110" Width="124"
-                            ImageLocation="Resources/Images/playcontrol_rec.png" MyKey="KEY_REC"/>
+                            ImageLocation="Images/playcontrol_rec.png" MyKey="KEY_REC"/>
                     <local:TvKeyControl Margin="166,130,166,367" Height="110" Width="124"
-                            ImageLocation="Resources/Images/playcontrol_play.png" MyKey="KEY_PLAY"/>
+                            ImageLocation="Images/playcontrol_play.png" MyKey="KEY_PLAY"/>
                     <local:TvKeyControl Margin="303,130,29,367" Height="110" Width="124"
-                            ImageLocation="Resources/Images/playcontrol_stop.png" MyKey="KEY_STOP"/>
+                            ImageLocation="Images/playcontrol_stop.png" MyKey="KEY_STOP"/>
 
                     <!-- volume controls -->
                     <Image Margin="74,251,282,130" Width="100" Height="226"
-                            Source="Resources/Images/volch_btn_bg.png"/>
+                            Source="Images/volch_btn_bg.png"/>
                     <local:TvKeyControl Margin="74,251,282,257" Width="100" Height="99"
-                            ImageLocation="Resources/Images/volum_up.png" MyKey="KEY_VOLUP"/>
+                            ImageLocation="Images/volum_up.png" MyKey="KEY_VOLUP"/>
                     <Image Margin="74,347,282,226" Width="100" Height="34"
-                            Source="Resources/Images/volum_icon.png"/>
+                            Source="Images/volum_icon.png"/>
                     <local:TvKeyControl Margin="74,378,282,130" Width="100" Height="99"
-                            ImageLocation="Resources/Images/volum_down.png" MyKey="KEY_VOLDOWN"/>
+                            ImageLocation="Images/volum_down.png" MyKey="KEY_VOLDOWN"/>
 
                     <local:TvKeyControl Margin="178,334,174,209" Width="103" Height="64"
-                            ImageLocation="Resources/Images/mute_btn.png" MyKey="KEY_MUTE"/>
+                            ImageLocation="Images/mute_btn.png" MyKey="KEY_MUTE"/>
                     
                     <!-- channel controls -->
                     <Image Margin="286,251,70,130" Width="100" Height="226"
-                            Source="Resources/Images/volch_btn_bg.png"/>
+                            Source="Images/volch_btn_bg.png"/>
                     <local:TvKeyControl Margin="286,251,70,257" Width="100" Height="99"
-                            ImageLocation="Resources/Images/ch_up.png" MyKey="KEY_CHUP"/>
+                            ImageLocation="Images/ch_up.png" MyKey="KEY_CHUP"/>
                     <Image Margin="286,347,70,226" Width="100" Height="34"
-                            Source="Resources/Images/ch_icon.png"/>
+                            Source="Images/ch_icon.png"/>
                     <local:TvKeyControl Margin="286,378,70,130"  Width="100" Height="99"
-                            ImageLocation="Resources/Images/ch_down.png" MyKey="KEY_CHDOWN"/>
+                            ImageLocation="Images/ch_down.png" MyKey="KEY_CHDOWN"/>
 
                     <!-- color controls -->
                     <Image HorizontalAlignment="Center" Margin="0,506,-7,20" Width="450" Height="81"
-                            Source="Resources/Images/colorkey_bg.png"/>
+                            Source="Images/colorkey_bg.png"/>
                     <local:TvKeyControl Margin="14,509,336,23" Width="106" Height="75"
-                            ImageLocation="Resources/Images/color_btn01.png" MyKey="KEY_RED"/>
+                            ImageLocation="Images/color_btn01.png" MyKey="KEY_RED"/>
                     <local:TvKeyControl Margin="123,509,227,23" Width="106" Height="75"
-                            ImageLocation="Resources/Images/color_btn02.png" MyKey="KEY_GREEN"/>
+                            ImageLocation="Images/color_btn02.png" MyKey="KEY_GREEN"/>
                     <local:TvKeyControl Margin="232,509,118,23" Width="106" Height="75"
-                            ImageLocation="Resources/Images/color_btn03.png" MyKey="KEY_YELLOW"/>
+                            ImageLocation="Images/color_btn03.png" MyKey="KEY_YELLOW"/>
                     <local:TvKeyControl Margin="342,509,8,23" Width="106" Height="75"
-                            ImageLocation="Resources/Images/color_btn04.png" MyKey="KEY_BLUE"/>
+                            ImageLocation="Images/color_btn04.png" MyKey="KEY_BLUE"/>
                 </Grid>
             </controls:PivotItem>
         </controls:Pivot>
