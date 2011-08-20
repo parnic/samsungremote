@@ -18,13 +18,13 @@
     shell:SystemTray.IsVisible="True" Unloaded="PhoneApplicationPage_Unloaded" BackKeyPress="PhoneApplicationPage_BackKeyPress">
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <controls:Pivot Title="Samsung Remote v{v}" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
+        <controls:Pivot Title="Unofficial Samsung Remote v{v}" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
             <controls:PivotItem Header="tv list">
                 <ListBox x:Name="TvListBox" Margin="0,0,-12,0" ItemsSource="{Binding TvItems}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Tap="TvListPanel_Tap">
-                                <Image Source="ApplicationIcon.png"/>
+                                <Image Source="TV.png" Width="62" Height="62" VerticalAlignment="Top"/>
                                 <StackPanel Margin="0,0,0,17" Width="432" Height="78">
                                     <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
                                     <StackPanel Orientation="Horizontal" Margin="12,-6,12,0">

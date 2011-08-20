@@ -233,6 +233,7 @@
     <Content Include="Images\qwerty_btn.png" />
     <Content Include="Images\qwerty_btn_focus.png" />
     <Content Include="SplashScreenImage.jpg" />
+    <Content Include="TV.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
