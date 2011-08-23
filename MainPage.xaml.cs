@@ -33,22 +33,6 @@ namespace SamsungRemoteWP7
             discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
             discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
             discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
-
-            if ((NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
-                || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                /*&& !System.Diagnostics.Debugger.IsAttached*/)
-            {
-                bEnabled = true;
-            }
-            else
-            {
-                MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
-                    "Can't search for TV", MessageBoxButton.OK);
-
-                SetProgressText("Remote disabled.");
-                ToggleProgressBar(true);
-                btnDemoMode.Visibility = Visibility.Visible;
-            }
         }
 
         public static string GetVersionNumber()
@@ -265,6 +249,22 @@ namespace SamsungRemoteWP7
             if (!App.ViewModel.IsDataLoaded)
             {
                 App.ViewModel.LoadData();
+            }
+
+            if ((NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
+                || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                /*&& !System.Diagnostics.Debugger.IsAttached*/)
+            {
+                bEnabled = true;
+            }
+            else
+            {
+                MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
+                    "Can't search for TV", MessageBoxButton.OK);
+
+                SetProgressText("Remote disabled.");
+                ToggleProgressBar(true);
+                btnDemoMode.Visibility = Visibility.Visible;
             }
 
             ToggleProgressBar(true);
