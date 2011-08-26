@@ -139,15 +139,19 @@ namespace SamsungRemoteWP7
 
         private void TvSearchRetry(object State)
         {
-            if (tvSearchSock != null)
+            try
             {
-                tvSearchSock.SendToAsync(GetSearchSocketEventArgs());
-                System.Diagnostics.Debug.WriteLine("pinging for tv's again...");
+                if (tvSearchSock != null)
+                {
+                    tvSearchSock.SendToAsync(GetSearchSocketEventArgs());
+                    System.Diagnostics.Debug.WriteLine("pinging for tv's again...");
+                }
+                if (tvSearchRetryTimer != null)
+                {
+                    tvSearchRetryTimer = new Timer(TvSearchRetry, null, TimeSpan.FromSeconds(tvSearchRetryTimeSeconds), TimeSpan.FromMilliseconds(-1));
+                }
             }
-            if (tvSearchRetryTimer != null)
-            {
-                tvSearchRetryTimer = new Timer(TvSearchRetry, null, TimeSpan.FromSeconds(tvSearchRetryTimeSeconds), TimeSpan.FromMilliseconds(-1));
-            }
+            catch (Exception) { }
         }
 
         private void TvSearchTimeout(object State)
