@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Phone.Controls;
-using System.IO;
 using System.Xml.Linq;
+using Microsoft.Phone.Controls;
 using Microsoft.Phone.Net.NetworkInformation;
-using System.Reflection;
 
 namespace SamsungRemoteWP7
 {
