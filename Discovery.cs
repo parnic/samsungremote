@@ -183,14 +183,21 @@ namespace SamsungRemoteWP7
                     e.SetBuffer(new byte[0x1000], 0, 0x1000);
                     e.RemoteEndPoint = listenEndpoint;
 
-                    if (tvSearchSock.ReceiveFromAsync(e))
+                    try
                     {
-                        if (StartedSearching != null)
+                        if (tvSearchSock.ReceiveFromAsync(e))
                         {
-                            StartedSearching();
+                            if (StartedSearching != null)
+                            {
+                                StartedSearching();
+                            }
+                        }
+                        else
+                        {
+                            StopSearching(SearchEndReason.Error);
                         }
                     }
-                    else
+                    catch (Exception)
                     {
                         StopSearching(SearchEndReason.Error);
                     }
