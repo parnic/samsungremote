@@ -17,8 +17,10 @@ namespace SamsungRemoteWP7
     {
         public static bool bEnabled { get; private set; }
 
-        private Discovery discoverer;
+        private static Discovery discoverer;
         private static TvConnection directConn;
+
+        private static bool bFirstLoad = true;
 
         public MainPage()
         {
@@ -29,10 +31,13 @@ namespace SamsungRemoteWP7
             DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
 
-            discoverer = new Discovery();
-            discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
-            discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
-            discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
+            if (discoverer == null)
+            {
+                discoverer = new Discovery();
+                discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
+                discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
+                discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
+            }
         }
 
         public static string GetVersionNumber()
@@ -102,7 +107,9 @@ namespace SamsungRemoteWP7
                     break;
 
                 case Discovery.SearchEndReason.Error:
+                    bEnabled = false;
                     SetProgressText("TV search failed.");
+                    ToggleProgressBar(true);
                     break;
 
                 default:
@@ -251,36 +258,33 @@ namespace SamsungRemoteWP7
                 App.ViewModel.LoadData();
             }
 
-            if ((NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
-                || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                /*&& !System.Diagnostics.Debugger.IsAttached*/)
+            if (bFirstLoad)
             {
-                bEnabled = true;
-            }
-            else
-            {
-                MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
-                    "Can't search for TV", MessageBoxButton.OK);
+                if ((NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
+                    || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                    /*&& !System.Diagnostics.Debugger.IsAttached*/)
+                {
+                    bEnabled = true;
+                }
+                else
+                {
+                    MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
+                        "Can't search for TV", MessageBoxButton.OK);
 
-                SetProgressText("Remote disabled.");
+                    SetProgressText("Remote disabled.");
+                    ToggleProgressBar(true);
+                    btnDemoMode.Visibility = Visibility.Visible;
+                }
+
                 ToggleProgressBar(true);
-                btnDemoMode.Visibility = Visibility.Visible;
+                discoverer.FindTvs();
             }
 
-            ToggleProgressBar(true);
-            discoverer.FindTvs();
+            bFirstLoad = false;
         }
 
         private void PhoneApplicationPage_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (discoverer != null)
-            {
-                discoverer.Cleanup();
-            }
-            if (directConn != null)
-            {
-                directConn.Cleanup();
-            }
         }
 
         private void ToggleProgressBar(bool? bEnableProgressBar = false)
@@ -317,7 +321,7 @@ namespace SamsungRemoteWP7
             }));
         }
 
-        private void TvListPanel_Tap(object sender, GestureEventArgs e)
+        private void TvListPanel_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
             MainPivot.SelectedIndex = 1;
 
@@ -449,6 +453,11 @@ namespace SamsungRemoteWP7
             MainPivot.SelectedIndex = 0;
         }
 
+        public static void NotifyAppFreshStart()
+        {
+            bFirstLoad = true;
+        }
+
         public static void NotifyAppDeactivated()
         {
             if (directConn != null)
@@ -530,5 +539,15 @@ namespace SamsungRemoteWP7
             SetProgressText("Connecting to TV at " + directConn.connectedEndpoint.Address.ToString() + "...");
         }
         #endregion
+
+        private void ShowAppinfo_Click(object sender, EventArgs e)
+        {
+            if (discoverer != null)
+            {
+                discoverer.StopSearching();
+            }
+
+            NavigationService.Navigate(new Uri("/About.xaml", UriKind.Relative));
+        }
     }
 }

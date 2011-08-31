@@ -1,0 +1,79 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="SamsungRemoteWP7.About"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
+    Style="{StaticResource TransitionPageStyle}"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock x:Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock x:Name="PageTitle" Text="about" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <ListBox HorizontalContentAlignment="Stretch">
+                <ListBoxItem HorizontalContentAlignment="Stretch">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center">App suggestions or problems?</TextBlock>
+                </ListBoxItem>
+                <ListBoxItem Margin="0,0,0,15" HorizontalContentAlignment="Stretch">
+                    <HyperlinkButton Content="Tap here to contact the author" Click="Contact_Click"/>
+                </ListBoxItem>
+
+                <ListBoxItem Margin="0,0,0,15" HorizontalContentAlignment="Stretch">
+                    <HyperlinkButton Content="Rate me on the marketplace!" Click="RateUs_Click"/>
+                </ListBoxItem>
+
+                <TextBlock TextWrapping="Wrap" Text="Not working for you? Here are some things to try:" Margin="0,0,0,15" FontWeight="SemiBold" Foreground="{StaticResource PhoneAccentBrush}"/>
+                <TextBlock TextWrapping="Wrap">Make sure your TV fits one of the following categories:</TextBlock>
+                <TextBlock TextWrapping="Wrap">* LED 6500 series or higher (model starts with 'U')</TextBlock>
+                <TextBlock TextWrapping="Wrap">* LCD 650 series or higher (model starts with 'L')</TextBlock>
+                <TextBlock TextWrapping="Wrap">* PDP 6500 series or higher (model starts with 'P')</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0">Make sure your TV is powered on and is not currently in the Smart Hub. If you have not registered the app with your TV before, the Smart Hub may prevent registration from working.</TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0">Verify that "Network Remote" is enabled in the TV's settings.</TextBlock>
+
+                <TextBlock TextWrapping="Wrap" Text="Other notes" Margin="0,15,0,15" FontWeight="SemiBold" Foreground="{StaticResource PhoneAccentBrush}"/>
+                <TextBlock TextWrapping="Wrap">* Some buttons may not do anything on your TV. For example: not all supported models have an "Internet @ TV" mode - some just have a Smart Hub which you can access by pressing the "Content" button.</TextBlock>
+                <TextBlock TextWrapping="Wrap">* Not all apps on the TV support QWERTY text input. The YouTube app, for example, requires the user to select letters using the on-screen keyboard. This is a limitation of the TV app, not the remote app.</TextBlock>
+
+                <TextBlock TextWrapping="Wrap" Text="Disclaimer" Margin="0,15,0,15" FontWeight="SemiBold" Foreground="{StaticResource PhoneAccentBrush}"/>
+                <TextBlock TextWrapping="Wrap">This app was not written by an employee of Samsung and is not an officially-licensed, -endorsed, or -approved Samsung product. All trademarks and copyrights are the property of their owners.</TextBlock>
+
+                <ListBoxItem Margin="0,15,0,0" HorizontalContentAlignment="Stretch">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource PhoneAccentBrush}">Thank you for using Unofficial Samsung Remote for Windows Phone 7!</TextBlock>
+                </ListBoxItem>
+            </ListBox>
+        </Grid>
+    </Grid>
+
+    <!--Sample code showing usage of ApplicationBar-->
+    <!--<phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
+                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>-->
+
+</phone:PhoneApplicationPage>

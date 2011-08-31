@@ -15,6 +15,7 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
     local:TiltEffect.IsTiltEnabled="True"
+    Style="{StaticResource TransitionPageStyle}"
     shell:SystemTray.IsVisible="True" Unloaded="PhoneApplicationPage_Unloaded" BackKeyPress="PhoneApplicationPage_BackKeyPress">
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -206,7 +207,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0.85" Name="TransparentOverlay" Visibility="Collapsed">
+        <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0.85" Name="TransparentOverlay" Visibility="Visible">
             <StackPanel VerticalAlignment="Center">
                 <ProgressBar
                     IsIndeterminate="true"
@@ -220,7 +221,8 @@
  
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="False" IsMenuEnabled="False">
-            <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="Refresh list" Click="RefreshTvList_Click"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="refresh list" Click="RefreshTvList_Click"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/info.png" Text="app info" Click="ShowAppinfo_Click"/>
 <!--             <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/> -->
 <!--             <shell:ApplicationBar.MenuItems> -->
 <!--                 <shell:ApplicationBarMenuItem Text="MenuItem 1"/> -->
