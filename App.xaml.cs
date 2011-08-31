@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 
 namespace SamsungRemoteWP7
 {
@@ -81,6 +75,7 @@ namespace SamsungRemoteWP7
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
             MainPage.NotifyAppFreshStart();
+            PhoneHome();
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -94,6 +89,7 @@ namespace SamsungRemoteWP7
             }
 
             MainPage.NotifyAppActivated();
+            PhoneHome(true);
         }
 
         // Code to execute when the application is deactivated (sent to background)
@@ -128,6 +124,66 @@ namespace SamsungRemoteWP7
                 // An unhandled exception has occurred; break into the debugger
                 System.Diagnostics.Debugger.Break();
             }
+        }
+
+        private void PhoneHome(bool bActivation = false)
+        {
+            try
+            {
+                string url = "http://samsungremotewp7.perniciousgames.com/checkin.php?user=" + PhoneInfoExtendedProperties.GetWindowsLiveAnonymousID();
+                if (bActivation)
+                {
+                    url += "&re=1";
+                }
+                url += "&v=" + MainPage.GetVersionNumber();
+
+                HttpWebRequest wr = (HttpWebRequest)WebRequest.Create(url);
+                wr.BeginGetResponse(asyncRequest =>
+                {
+                    try
+                    {
+                        HttpWebRequest wr2 = asyncRequest.AsyncState as HttpWebRequest;
+                        using (var response = wr2.EndGetResponse(asyncRequest))
+                        {
+                            try
+                            {
+                                string respMsg = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                                System.Diagnostics.Debug.WriteLine("received response from check-in server: " + respMsg);
+                                if (respMsg == "nv")
+                                {
+                                    RootFrame.Dispatcher.BeginInvoke(() =>
+                                    {
+                                        if (MessageBox.Show("A new version of this app is now available! Press 'Ok' to open up the marketplace and download it.",
+                                            "New version available", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                                        {
+                                            ShowMyMarketplacePage();
+                                        }
+                                    });
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                System.Diagnostics.Debug.WriteLine("unable to parse check-in response");
+                            }
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        System.Diagnostics.Debug.WriteLine("saying hi failed.");
+                    }
+                }, wr);
+            }
+            catch (System.Exception)
+            {
+                System.Diagnostics.Debug.WriteLine("asking to say hi failed.");
+            }
+        }
+
+        public static void ShowMyMarketplacePage()
+        {
+            MarketplaceDetailTask mktp = new MarketplaceDetailTask();
+            mktp.ContentType = MarketplaceContentType.Applications;
+            mktp.Show();
         }
 
         #region Phone application initialization
