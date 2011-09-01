@@ -176,7 +176,19 @@ namespace SamsungRemoteWP7
                         }
                     }
 
-                    tvSearchSock.ReceiveFromAsync(e);
+                    bool bKeptListening = false;
+                    try
+                    {
+                        bKeptListening = tvSearchSock.ReceiveFromAsync(e);
+                    }
+                    catch (Exception) { }
+                    finally
+                    {
+                        if (!bKeptListening)
+                        {
+                            StopSearching(SearchEndReason.Error);
+                        }
+                    }
                 }
                 else if (e.LastOperation == SocketAsyncOperation.SendTo)
                 {
