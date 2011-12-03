@@ -14,5 +14,6 @@
     
     <Grid x:Name="LayoutRoot">
         <Image Name="Img"  Source="Images/keypad_00.png"/>
+        <TextBlock Name="Contents"  HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

@@ -265,6 +265,7 @@ namespace SamsungRemoteWP7
         public BitmapImage NormalImage { get; private set; }
         public BitmapImage PressedImage { get; private set; }
         public string ImageLocation { get; set; }
+        public string Text { get; set; }
 
         public delegate void KeyPressedDelegate(object sender, EventArgs args);
         public event KeyPressedDelegate OnKeyPressed;
@@ -282,6 +283,15 @@ namespace SamsungRemoteWP7
                 PressedImage = new BitmapImage(new Uri(ImageLocation.Replace(System.IO.Path.GetExtension(ImageLocation), "_focus" + System.IO.Path.GetExtension(ImageLocation)), UriKind.Relative));
 
                 Img.Source = NormalImage;
+            }
+            else
+            {
+                Img.Source = null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Text))
+            {
+                Contents.Text = Text;
             }
         }
 

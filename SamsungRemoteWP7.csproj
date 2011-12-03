@@ -122,6 +122,8 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\3d_btn.png" />
+    <Resource Include="Images\3d_btn_focus.png" />
     <Content Include="Images\info.png" />
     <Content Include="Images\refresh.png" />
     <Resource Include="Images\ch_down.png" />

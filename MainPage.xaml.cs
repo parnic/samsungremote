@@ -312,6 +312,7 @@ namespace SamsungRemoteWP7
                     }
 
                     TransparentOverlay.Visibility = Visibility.Visible;
+                    TransparentOverlay.Opacity = 0.85;
                 }
                 else
                 {

@@ -122,6 +122,8 @@
                         ImageLocation="Images/qwerty_btn.png" MyKey="KEY_INVALID" OnKeyPressed="OnQwertyButtonPressed"/>
                     <local:TvKeyControl Margin="25,487,327,57" Width="103" Height="64"
                         ImageLocation="Images/source_btn.png" MyKey="KEY_SOURCE"/>
+                    <local:TvKeyControl Margin="329,53,29,59" Width="103" Height="64"
+                        ImageLocation="Images/3d_btn.png" MyKey="KEY_PANNEL_CHDOWN"/>
                     <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
                         ImageLocation="Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"/>
 
@@ -196,6 +198,52 @@
                             ImageLocation="Images/color_btn04.png" MyKey="KEY_BLUE"/>
                 </Grid>
             </controls:PivotItem>
+
+            <controls:PivotItem Header="misc">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ListBox Grid.Column="0">
+                        <ListBox.Items>
+                            <local:TvKeyControl Text="Toggle Aspect Ratio" MyKey="KEY_ASPECT" Height="45"/>
+                            <local:TvKeyControl Text="Energy Saving Mode" MyKey="KEY_ESAVING" Height="45"/>
+                            <local:TvKeyControl Text="Sleep" MyKey="KEY_SLEEP" Height="45"/>
+                            <local:TvKeyControl Text="PIP Toggle" MyKey="KEY_PIP_ONOFF" Height="45"/>
+                            <local:TvKeyControl Text="PIP Size" MyKey="KEY_PIP_SIZE" Height="45"/>
+                            <local:TvKeyControl Text="PIP Swap" MyKey="KEY_PIP_SWAP" Height="45"/>
+                            <local:TvKeyControl Text="PIP Channel Up" MyKey="KEY_PIP_CHUP" Height="45"/>
+                            <local:TvKeyControl Text="PIP Channel Down" MyKey="KEY_PIP_CHDOWN" Height="45"/>
+                            <local:TvKeyControl Text="RSS" MyKey="KEY_RSS" Height="45"/>
+                            <local:TvKeyControl Text="Game" MyKey="KEY_GAME" Height="45"/>
+                            <local:TvKeyControl Text="Guide" MyKey="KEY_GUIDE" Height="45"/>
+                            <local:TvKeyControl Text="Social" MyKey="KEY_TURBO" Height="45"/>
+                            <local:TvKeyControl Text="E-Manual" MyKey="KEY_TOPMENU" Height="45"/>
+                            <local:TvKeyControl Text="W_Link" MyKey="KEY_W_LINK" Height="45"/>
+                            <local:TvKeyControl Text="MTS" MyKey="KEY_MTS" Height="45"/>
+                        </ListBox.Items>
+                    </ListBox>
+
+                    <ListBox Grid.Column="1">
+                        <ListBox.Items>
+                            <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Text="Note: not all inputs work with all TVs" TextWrapping="Wrap"/>
+                            <local:TvKeyControl Text="Input HDMI" MyKey="KEY_HDMI" Height="45"/>
+                            <local:TvKeyControl Text="Input DVI" MyKey="KEY_DVI" Height="45"/>
+                            <local:TvKeyControl Text="Input Component 1" MyKey="KEY_COMPONENT1" Height="45"/>
+                            <local:TvKeyControl Text="Input Component 2" MyKey="KEY_COMPONENT2" Height="45"/>
+                            <local:TvKeyControl Text="Input SVideo 1" MyKey="KEY_SVIDEO1" Height="45"/>
+                            <local:TvKeyControl Text="Input SVideo 2" MyKey="KEY_SVIDEO2" Height="45"/>
+                            <local:TvKeyControl Text="Input SVideo 3" MyKey="KEY_SVIDEO3" Height="45"/>
+                            <local:TvKeyControl Text="Input AV 1" MyKey="KEY_AV1" Height="45"/>
+                            <local:TvKeyControl Text="Input AV 2" MyKey="KEY_AV2" Height="45"/>
+                            <local:TvKeyControl Text="Input AV 3" MyKey="KEY_AV3" Height="45"/>
+                            <local:TvKeyControl Text="TV" MyKey="KEY_TV" Height="45"/>
+                        </ListBox.Items>
+                    </ListBox>
+                </Grid>
+            </controls:PivotItem>
         </controls:Pivot>
 
         <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0.85" Name="TextInputOverlay" Visibility="Collapsed">
@@ -207,7 +255,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0.85" Name="TransparentOverlay" Visibility="Visible">
+        <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0" Name="TransparentOverlay" Visibility="Visible">
             <StackPanel VerticalAlignment="Center">
                 <ProgressBar
                     IsIndeterminate="true"
