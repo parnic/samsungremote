@@ -307,7 +307,7 @@ namespace SamsungRemoteWP7
 
         private void UserControl_Tap(object sender, GestureEventArgs e)
         {
-            VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
+            ConditionalConfirmationVibration();
             if (MyKey != EKey.KEY_INVALID)
             {
                 MainPage.SendKey(MyKey);
@@ -316,6 +316,14 @@ namespace SamsungRemoteWP7
             if (OnKeyPressed != null)
             {
                 OnKeyPressed(this, EventArgs.Empty);
+            }
+        }
+
+        public static void ConditionalConfirmationVibration()
+        {
+            if (SavedSettings.LoadedSettings.bShouldVibrateOnKeyPress)
+            {
+                VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
             }
         }
     }

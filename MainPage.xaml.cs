@@ -550,5 +550,15 @@ namespace SamsungRemoteWP7
 
             NavigationService.Navigate(new Uri("/About.xaml", UriKind.Relative));
         }
+
+        private void ShowSettings_Click(object sender, EventArgs e)
+        {
+            if (discoverer != null)
+            {
+                discoverer.StopSearching();
+            }
+
+            NavigationService.Navigate(new Uri("/UserSettingsPage.xaml", UriKind.Relative));
+        }
     }
 }

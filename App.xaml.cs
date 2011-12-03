@@ -74,6 +74,7 @@ namespace SamsungRemoteWP7
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            SavedSettings.Load();
             MainPage.NotifyAppFreshStart();
             PhoneHome();
         }
@@ -88,6 +89,8 @@ namespace SamsungRemoteWP7
                 App.ViewModel.LoadData();
             }
 
+            SavedSettings.Load();
+
             MainPage.NotifyAppActivated();
             PhoneHome(true);
         }
@@ -96,6 +99,7 @@ namespace SamsungRemoteWP7
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+            SavedSettings.LoadedSettings.Save();
             MainPage.NotifyAppDeactivated();
         }
 
@@ -103,7 +107,7 @@ namespace SamsungRemoteWP7
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-            // Ensure that required application state is persisted here.
+            SavedSettings.LoadedSettings.Save();
         }
 
         // Code to execute if a navigation fails

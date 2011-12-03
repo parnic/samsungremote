@@ -271,6 +271,7 @@
         <shell:ApplicationBar IsVisible="False" IsMenuEnabled="False">
             <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="refresh list" Click="RefreshTvList_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/info.png" Text="app info" Click="ShowAppinfo_Click"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/gear32.png" Text="settings" Click="ShowSettings_Click"/>
 <!--             <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/> -->
 <!--             <shell:ApplicationBar.MenuItems> -->
 <!--                 <shell:ApplicationBarMenuItem Text="MenuItem 1"/> -->

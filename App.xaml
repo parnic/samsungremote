@@ -9,6 +9,7 @@
 
     <!--Application Resources-->
     <Application.Resources>
+        <local:XamlHelper xmlns:local="clr-namespace:SamsungRemoteWP7" x:Key="XamlHelper" />
         <Style x:Key="CustomIndeterminateProgressBar" TargetType="ProgressBar">
             <Setter Property="Foreground" Value="{StaticResource PhoneAccentBrush}"/>
             <Setter Property="Background" Value="{StaticResource PhoneAccentBrush}"/>
