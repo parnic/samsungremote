@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Xml.Linq;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Net.NetworkInformation;
+using Microsoft.Advertising.Mobile;
 
 namespace SamsungRemoteWP7
 {
@@ -26,6 +27,9 @@ namespace SamsungRemoteWP7
         {
             InitializeComponent();
 
+            MSAdControl.ErrorOccurred += new EventHandler<Microsoft.Advertising.AdErrorEventArgs>(MSAdControl_ErrorOccurred);
+            MSAdControl.AdRefreshed += new EventHandler(MSAdControl_NewAd);
+
             MainPivot.Title = MainPivot.Title.ToString().Replace("{v}", GetVersionNumber());
 
             DataContext = App.ViewModel;
@@ -38,6 +42,24 @@ namespace SamsungRemoteWP7
                 discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
                 discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
             }
+        }
+
+        void MSAdControl_NewAd(object sender, EventArgs e)
+        {
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                AdDuplexAdControl.Visibility = Visibility.Collapsed;
+                MSAdControl.Visibility = Visibility.Visible;
+            });
+        }
+
+        void MSAdControl_ErrorOccurred(object sender, Microsoft.Advertising.AdErrorEventArgs e)
+        {
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                MSAdControl.Visibility = Visibility.Collapsed;
+                AdDuplexAdControl.Visibility = Visibility.Visible;
+            });
         }
 
         public static string GetVersionNumber()

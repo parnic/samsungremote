@@ -8,6 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:local="clr-namespace:SamsungRemoteWP7"
+    xmlns:ads="clr-namespace:Microsoft.Advertising.Mobile.UI;assembly=Microsoft.Advertising.Mobile.UI"
+    xmlns:AdDuplex="clr-namespace:AdDuplex;assembly=AdDuplex.AdControl.Silverlight"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
     d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -20,24 +22,49 @@
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <controls:Pivot Title="Unofficial Samsung Remote v{v}" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
-            <controls:PivotItem Header="tv list">
-                <ListBox x:Name="TvListBox" Margin="0,0,-12,0" ItemsSource="{Binding TvItems}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Tap="TvListPanel_Tap">
-                                <Image Source="TV.png" Width="62" Height="62" VerticalAlignment="Top"/>
-                                <StackPanel Margin="0,0,0,17" Width="432" Height="78">
-                                    <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,-6,12,0">
-                                        <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                        <TextBlock Text=":" Margin="3,-2,3,0"/>
-                                        <TextBlock Text="{Binding Port}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+            <controls:PivotItem Header="tv list" Width="480" Margin="0,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+                    <ListBox x:Name="TvListBox" Margin="0,0,-12,0" ItemsSource="{Binding TvItems}" Grid.Row="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Tap="TvListPanel_Tap">
+                                    <Image Source="TV.png" Width="62" Height="62" VerticalAlignment="Top"/>
+                                    <StackPanel Margin="0,0,0,17" Width="432" Height="78">
+                                        <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                        <StackPanel Orientation="Horizontal" Margin="12,-6,12,0">
+                                            <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                            <TextBlock Text=":" Margin="3,-2,3,0"/>
+                                            <TextBlock Text="{Binding Port}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <ads:AdControl x:Name="MSAdControl"
+                                   Grid.Row="1"
+                                   Height="80" Width="480"
+                                   ApplicationId="573f914d-ba9a-47f7-9867-69fab7266eab"
+                                   AdUnitId="79235"
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Left"
+                    />
+
+                    <AdDuplex:AdControl x:Name="AdDuplexAdControl"
+                                        Grid.Row="1"
+                                        Height="80" Width="480"
+                                        Visibility="Collapsed"
+                                        AppId="6095"
+                                        VerticalAlignment="Top"
+                                        HorizontalAlignment="Left"
+                    />
+                </Grid>
             </controls:PivotItem>
 
             <controls:PivotItem Header="numpad" Name="first">
@@ -89,7 +116,7 @@
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Center" Width="156" Height="108"
                         ImageLocation="Images/direction_menu.png" MyKey="KEY_MENU"/>
                     <local:TvKeyControl VerticalAlignment="Top" HorizontalAlignment="Right" Width="164" Height="108"
-                        ImageLocation="Images/direction_internet.png" MyKey="KEY_APP_LIST"/>
+                        ImageLocation="Images/direction_internet.png" MyKey="KEY_RSS"/>
 
                     <!-- tools/info/return/exit -->
                     <Rectangle Fill="#66000000" RadiusX="10" RadiusY="10" Width="450" Height="120" Margin="3,122,0,0"
@@ -199,7 +226,7 @@
                 </Grid>
             </controls:PivotItem>
 
-            <controls:PivotItem Header="misc">
+            <controls:PivotItem Header="misc" Margin="10,8,10,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -208,21 +235,24 @@
 
                     <ListBox Grid.Column="0">
                         <ListBox.Items>
-                            <local:TvKeyControl Text="Toggle Aspect Ratio" MyKey="KEY_ASPECT" Height="45"/>
-                            <local:TvKeyControl Text="Energy Saving Mode" MyKey="KEY_ESAVING" Height="45"/>
-                            <local:TvKeyControl Text="Sleep" MyKey="KEY_SLEEP" Height="45"/>
-                            <local:TvKeyControl Text="PIP Toggle" MyKey="KEY_PIP_ONOFF" Height="45"/>
-                            <local:TvKeyControl Text="PIP Size" MyKey="KEY_PIP_SIZE" Height="45"/>
-                            <local:TvKeyControl Text="PIP Swap" MyKey="KEY_PIP_SWAP" Height="45"/>
-                            <local:TvKeyControl Text="PIP Channel Up" MyKey="KEY_PIP_CHUP" Height="45"/>
-                            <local:TvKeyControl Text="PIP Channel Down" MyKey="KEY_PIP_CHDOWN" Height="45"/>
-                            <local:TvKeyControl Text="RSS" MyKey="KEY_RSS" Height="45"/>
-                            <local:TvKeyControl Text="Game" MyKey="KEY_GAME" Height="45"/>
-                            <local:TvKeyControl Text="Guide" MyKey="KEY_GUIDE" Height="45"/>
-                            <local:TvKeyControl Text="Social" MyKey="KEY_TURBO" Height="45"/>
-                            <local:TvKeyControl Text="E-Manual" MyKey="KEY_TOPMENU" Height="45"/>
-                            <local:TvKeyControl Text="W_Link" MyKey="KEY_W_LINK" Height="45"/>
-                            <local:TvKeyControl Text="MTS" MyKey="KEY_MTS" Height="45"/>
+                            <local:TvKeyControl Text="Toggle Aspect Ratio" MyKey="KEY_ASPECT" Height="40"/>
+                            <local:TvKeyControl Text="Energy Saving Mode" MyKey="KEY_ESAVING" Height="40"/>
+                            <local:TvKeyControl Text="Sleep" MyKey="KEY_SLEEP" Height="40"/>
+                            <local:TvKeyControl Text="PIP Toggle" MyKey="KEY_PIP_ONOFF" Height="40"/>
+                            <local:TvKeyControl Text="PIP Size" MyKey="KEY_PIP_SIZE" Height="40"/>
+                            <local:TvKeyControl Text="PIP Swap" MyKey="KEY_PIP_SWAP" Height="40"/>
+                            <local:TvKeyControl Text="PIP Channel Up" MyKey="KEY_PIP_CHUP" Height="40"/>
+                            <local:TvKeyControl Text="PIP Channel Down" MyKey="KEY_PIP_CHDOWN" Height="40"/>
+                            <local:TvKeyControl Text="Closed Captioning" MyKey="KEY_CAPTION" Height="40"/>
+                            <local:TvKeyControl Text="Game" MyKey="KEY_GAME" Height="40"/>
+                            <local:TvKeyControl Text="Guide" MyKey="KEY_GUIDE" Height="40"/>
+                            <local:TvKeyControl Text="Channel List" MyKey="KEY_CH_LIST" Height="40"/>
+                            <local:TvKeyControl Text="Social" MyKey="KEY_TURBO" Height="40"/>
+                            <local:TvKeyControl Text="Teletext Mix" MyKey="KEY_TTX_MIX" Height="40"/>
+                            <local:TvKeyControl Text="Teletext Subface" MyKey="KEY_TTX_SUBFACE" Height="40"/>
+                            <local:TvKeyControl Text="Multi-Track Sound" MyKey="KEY_MTS" Height="40"/>
+                            <local:TvKeyControl Text="E-Manual" MyKey="KEY_TOPMENU" Height="40"/>
+                            <local:TvKeyControl Text="W_Link" MyKey="KEY_W_LINK" Height="40"/>
                         </ListBox.Items>
                     </ListBox>
 
