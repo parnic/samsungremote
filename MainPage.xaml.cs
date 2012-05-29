@@ -27,8 +27,30 @@ namespace SamsungRemoteWP7
         {
             InitializeComponent();
 
-            MSAdControl.ErrorOccurred += new EventHandler<Microsoft.Advertising.AdErrorEventArgs>(MSAdControl_ErrorOccurred);
-            MSAdControl.AdRefreshed += new EventHandler(MSAdControl_NewAd);
+            if (!IsTrial())
+            {
+                MSAdControl.ErrorOccurred += new EventHandler<Microsoft.Advertising.AdErrorEventArgs>(MSAdControl_ErrorOccurred);
+                MSAdControl.AdRefreshed += new EventHandler(MSAdControl_NewAd);
+            }
+
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                MSAdControl.ApplicationId = "test_client";
+                MSAdControl.AdUnitId = "Image480_80";
+            }
+            else
+            {
+                if (!IsTrial())
+                {
+                    MSAdControl.Visibility = Visibility.Collapsed;
+                    AdDuplexAdControl.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    MSAdControl.ApplicationId = "573f914d-ba9a-47f7-9867-69fab7266eab";
+                    MSAdControl.AdUnitId = "79235";
+                }
+            }
 
             MainPivot.Title = MainPivot.Title.ToString().Replace("{v}", GetVersionNumber());
 
@@ -43,6 +65,16 @@ namespace SamsungRemoteWP7
                 discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
             }
         }
+
+        private static bool IsTrial()
+        {
+#if DEBUG
+            return true;
+#endif
+            var license = new Microsoft.Phone.Marketplace.LicenseInformation();
+            return license.IsTrial();
+        }
+
 
         void MSAdControl_NewAd(object sender, EventArgs e)
         {

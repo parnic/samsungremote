@@ -50,8 +50,6 @@
                     <ads:AdControl x:Name="MSAdControl"
                                    Grid.Row="1"
                                    Height="80" Width="480"
-                                   ApplicationId="573f914d-ba9a-47f7-9867-69fab7266eab"
-                                   AdUnitId="79235"
                                    VerticalAlignment="Top"
                                    HorizontalAlignment="Left"
                     />
