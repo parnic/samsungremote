@@ -27,11 +27,12 @@ namespace SamsungRemoteWP7
 
         private String searchTemplate =
             "M-SEARCH * HTTP/1.1\r\n" +
-            "HOST: {0}:{1}\r\n" +
+            "HOST: 239.255.255.250:1900\r\n" +
             "MAN: \"ssdp:discover\"\r\n" +
             "USER-AGENT: Windows/6.5 UPnP/1.1 Parnic's Remote\r\n" +
-            "ST: {2}\r\n" +
-            "MX: {3}\r\n" +
+            "ST: {0}\r\n" +
+            "MX: {1}\r\n" +
+            "CONTENT-LENGTH: 0\r\n" +
             "\r\n";
         private readonly byte[] tvSearchMessage;
 
@@ -62,10 +63,8 @@ namespace SamsungRemoteWP7
         {
             tvSearchMessage = Encoding.UTF8.GetBytes(
                 String.Format(searchTemplate,
-                multicastAddress.ToString(),
-                multicastPort.ToString(),
                 "urn:samsung.com:device:RemoteControlReceiver:1",
-                1));
+                4));
 
             multicastEndpoint = new IPEndPoint(multicastAddress, multicastPort);
             listenEndpoint = new IPEndPoint(IPAddress.Any, multicastPort);
