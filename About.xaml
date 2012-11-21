@@ -58,7 +58,7 @@
                 <TextBlock TextWrapping="Wrap">This app was not written by an employee of Samsung and is not an officially-licensed, -endorsed, or -approved Samsung product. All trademarks and copyrights are the property of their owners.</TextBlock>
 
                 <ListBoxItem Margin="0,15,0,0" HorizontalContentAlignment="Stretch">
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource PhoneAccentBrush}">Thank you for using Unofficial Samsung Remote for Windows Phone 7!</TextBlock>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource PhoneAccentBrush}">Thank you for using Unofficial Samsung Remote for Windows Phone!</TextBlock>
                 </ListBoxItem>
             </ListBox>
         </Grid>

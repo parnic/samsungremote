@@ -149,6 +149,8 @@ namespace SamsungRemoteWP7
                                 Registering();
                             }
 
+                            System.Diagnostics.Debug.WriteLine("[reg] sent msg");
+
                             e.SetBuffer(new byte[0x1000], 0, 0x1000);
                             TvDirectSock.ReceiveFromAsync(e);
                         }
@@ -161,6 +163,10 @@ namespace SamsungRemoteWP7
                             connectionState = TvConnectionState.Disconnected;
                         }
                     }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("[con] sent msg");
+                    }
                     break;
 
                 case SocketAsyncOperation.ReceiveFrom:
@@ -170,7 +176,7 @@ namespace SamsungRemoteWP7
                         {
                             for (int i = e.Offset; i < e.BytesTransferred; i++)
                             {
-                                System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
+                                //System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
                             }
 
                             string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
@@ -180,9 +186,10 @@ namespace SamsungRemoteWP7
                             string regApp = ReadString(sr);
                             char[] regResponse = ReadCharArray(sr);
 
-                            System.Diagnostics.Debug.WriteLine("tv returned: " + regApp);
+                            System.Diagnostics.Debug.WriteLine("[reg] tv returned: " + regApp);
 
                             bool bDisconnect = true;
+                            bool bUpdateConnectionState = true;
 
                             if (AreArraysEqual(regResponse, ALLOWED_BYTES))
                             {
@@ -213,13 +220,16 @@ namespace SamsungRemoteWP7
                                     RegistrationWaiting();
                                 }
                                 bDisconnect = false;
+                                bUpdateConnectionState = false;
                             }
                             else
                             {
-                                if (RegistrationDenied != null)
-                                {
-                                    RegistrationDenied();
-                                }
+//                                 if (RegistrationDenied != null)
+//                                 {
+//                                     RegistrationDenied();
+//                                 }
+                                bDisconnect = false;
+                                bUpdateConnectionState = false;
                             }
 
                             if (bDisconnect)
@@ -234,7 +244,10 @@ namespace SamsungRemoteWP7
                             else
                             {
                                 TvDirectSock.ReceiveFromAsync(e);
-                                connectionState = TvConnectionState.Connected;
+                                if (bUpdateConnectionState)
+                                {
+                                    connectionState = TvConnectionState.Connected;
+                                }
                             }
                         }
                         else
@@ -250,7 +263,7 @@ namespace SamsungRemoteWP7
                             {
                                 for (int i = e.Offset; i < e.BytesTransferred; i++)
                                 {
-                                    System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
+                                    //System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
                                 }
 
                                 string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
@@ -260,7 +273,7 @@ namespace SamsungRemoteWP7
                                 string inApp = ReadString(sr);
                                 char[] keyResponse = ReadCharArray(sr);
 
-                                System.Diagnostics.Debug.WriteLine("tv returned: " + inApp);
+                                System.Diagnostics.Debug.WriteLine("[con] tv returned: " + inApp);
                             }
                             try
                             {
@@ -340,7 +353,7 @@ namespace SamsungRemoteWP7
             string phoneId = PhoneInfoExtendedProperties.GetWindowsLiveAnonymousID();
             if (string.IsNullOrWhiteSpace(phoneId))
             {
-                phoneId = "Anonymous WP7 phone";
+                phoneId = "Anonymous Windows phone";
             }
             WriteBase64Text(sb, phoneId);
             WriteBase64Text(sb, Microsoft.Phone.Info.DeviceStatus.DeviceName);

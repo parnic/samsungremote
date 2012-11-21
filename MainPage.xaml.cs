@@ -563,12 +563,20 @@ namespace SamsungRemoteWP7
 
         void directConn_RegistrationTimedOut()
         {
-            SetProgressText("Remote connection timed out.");
+            //SetProgressText("Remote connection timed out.");
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                MessageBox.Show("Remote connection timed out.");
+            });
         }
 
         void directConn_RegistrationDenied()
         {
-            SetProgressText("Remote connection denied.");
+            //SetProgressText("Remote connection denied.");
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                MessageBox.Show("Remote connection denied.");
+            });
         }
 
         void directConn_RegistrationAccepted()
@@ -579,7 +587,11 @@ namespace SamsungRemoteWP7
 
         void directConn_RegistrationFailed()
         {
-            SetProgressText("Sending remote registration failed.");
+            //SetProgressText("Sending remote registration failed.");
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                MessageBox.Show("Sending remote registration failed.");
+            });
             ToggleProgressBar(false);
         }
 

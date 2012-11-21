@@ -167,7 +167,7 @@ namespace SamsungRemoteWP7
                     string response = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
                     System.Diagnostics.Debug.WriteLine("Received from {0}: {1}", e.RemoteEndPoint.ToString(), response);
 
-                    if (response.Contains("RemoteControlReceiver.xml"))
+                    if (response.Contains("urn:samsung.com:device:RemoteControlReceiver"))
                     {
                         if (TvFound != null)
                         {
