@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Devices;
+using System.Threading;
 
 namespace SamsungRemoteWP7
 {
@@ -266,9 +267,18 @@ namespace SamsungRemoteWP7
         public BitmapImage PressedImage { get; private set; }
         public string ImageLocation { get; set; }
         public string Text { get; set; }
+        public bool AllowRepeats { get; set; }
 
         public delegate void KeyPressedDelegate(object sender, EventArgs args);
         public event KeyPressedDelegate OnKeyPressed;
+
+        public delegate void KeyRepeatedDelegate(object sender, EventArgs args);
+        public event KeyRepeatedDelegate OnKeyRepeated;
+
+        private DateTime PressStartTime;
+        private DateTime LastRepeatTime;
+        private const int RepeatDelayMs = 500;
+        private const int RepeatRateMs = 350;
 
         public TvKeyControl()
         {
@@ -298,24 +308,65 @@ namespace SamsungRemoteWP7
         private void UserControl_ManipulationStarted(object sender, ManipulationStartedEventArgs e)
         {
             Img.Source = PressedImage;
+
+            if (AllowRepeats)
+            {
+                PressStartTime = DateTime.Now;
+                ThreadPool.QueueUserWorkItem(new WaitCallback(CheckKeyRepeat));
+            }
+        }
+
+        private void CheckKeyRepeat(object StateInfo)
+        {
+            if (AllowRepeats)
+            {
+                while (PressStartTime > DateTime.MinValue)
+                {
+                    if ((DateTime.Now - PressStartTime).TotalMilliseconds > RepeatDelayMs)
+                    {
+                        if (LastRepeatTime == DateTime.MinValue
+                            || (DateTime.Now - LastRepeatTime).TotalMilliseconds > RepeatRateMs)
+                        {
+                            LastRepeatTime = DateTime.Now;
+                            Dispatcher.BeginInvoke(() =>
+                            {
+                                ConditionalSendMyKey();
+
+                                if (OnKeyRepeated != null)
+                                {
+                                    OnKeyRepeated(this, EventArgs.Empty);
+                                }
+                            });
+                        }
+                    }
+
+                    Thread.Sleep(33);
+                }
+            }
         }
 
         private void UserControl_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
         {
             Img.Source = NormalImage;
+            PressStartTime = DateTime.MinValue;
         }
 
         private void UserControl_Tap(object sender, GestureEventArgs e)
+        {
+            ConditionalSendMyKey();
+
+            if (OnKeyPressed != null)
+            {
+                OnKeyPressed(this, EventArgs.Empty);
+            }
+        }
+
+        private void ConditionalSendMyKey()
         {
             ConditionalConfirmationVibration();
             if (MyKey != EKey.KEY_INVALID)
             {
                 MainPage.SendKey(MyKey);
-            }
-
-            if (OnKeyPressed != null)
-            {
-                OnKeyPressed(this, EventArgs.Empty);
             }
         }
 
@@ -324,6 +375,14 @@ namespace SamsungRemoteWP7
             if (SavedSettings.LoadedSettings.bShouldVibrateOnKeyPress)
             {
                 VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
+            }
+        }
+
+        private void UserControl_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
+        {
+            if (AllowRepeats)
+            {
+                PressStartTime = DateTime.MinValue;
             }
         }
     }

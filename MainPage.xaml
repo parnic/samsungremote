@@ -191,11 +191,11 @@
                     <Image Margin="74,251,282,130" Width="100" Height="226"
                             Source="Images/volch_btn_bg.png"/>
                     <local:TvKeyControl Margin="74,251,282,257" Width="100" Height="99"
-                            ImageLocation="Images/volum_up.png" MyKey="KEY_VOLUP"/>
+                            ImageLocation="Images/volum_up.png" MyKey="KEY_VOLUP" AllowRepeats="True"/>
                     <Image Margin="74,347,282,226" Width="100" Height="34"
                             Source="Images/volum_icon.png"/>
                     <local:TvKeyControl Margin="74,378,282,130" Width="100" Height="99"
-                            ImageLocation="Images/volum_down.png" MyKey="KEY_VOLDOWN"/>
+                            ImageLocation="Images/volum_down.png" MyKey="KEY_VOLDOWN" AllowRepeats="True"/>
 
                     <local:TvKeyControl Margin="178,334,174,209" Width="103" Height="64"
                             ImageLocation="Images/mute_btn.png" MyKey="KEY_MUTE"/>

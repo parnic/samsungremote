@@ -9,6 +9,7 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     d:DesignHeight="120" d:DesignWidth="90" Loaded="UserControl_Loaded"
     ManipulationStarted="UserControl_ManipulationStarted"
+    ManipulationDelta="UserControl_ManipulationDelta"
     ManipulationCompleted="UserControl_ManipulationCompleted"
     Tap="UserControl_Tap">
     
