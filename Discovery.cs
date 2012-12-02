@@ -167,7 +167,10 @@ namespace SamsungRemoteWP7
                     string response = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
                     System.Diagnostics.Debug.WriteLine("Received from {0}: {1}", e.RemoteEndPoint.ToString(), response);
 
-                    if (response.Contains("urn:samsung.com:device:RemoteControlReceiver"))
+                    if (response.Contains("urn:samsung.com:device:RemoteControlReceiver")
+                        || response.Contains("RemoteControlReceiver.xml")
+                        || response.Contains("PersonalMessageReceiver.xml")
+                        || response.Contains("SamsungMRDesc.xml"))
                     {
                         if (TvFound != null)
                         {
@@ -179,6 +182,11 @@ namespace SamsungRemoteWP7
                     try
                     {
                         bKeptListening = tvSearchSock.ReceiveFromAsync(e);
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        bKeptListening = true;
+                        StopSearching(SearchEndReason.Complete);
                     }
                     catch (Exception) { }
                     finally
@@ -207,6 +215,10 @@ namespace SamsungRemoteWP7
                         {
                             StopSearching(SearchEndReason.Error);
                         }
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        StopSearching(SearchEndReason.Complete);
                     }
                     catch (Exception)
                     {

@@ -147,7 +147,14 @@ namespace SamsungRemoteWP7
         {
             switch (reason)
             {
+                case Discovery.SearchEndReason.Error:
+                    bEnabled = false;
+                    SetProgressText("TV search failed.");
+                    ToggleProgressBar(true);
+                    break;
+
                 case Discovery.SearchEndReason.TimedOut:
+                default:
                     if (App.ViewModel.TvItems.Count == 0)
                     {
                         SetProgressText("Timed out searching for a TV.");
@@ -158,16 +165,10 @@ namespace SamsungRemoteWP7
                         bEnabled = false;
                         ToggleProgressBar(true);
                     }
-                    break;
-
-                case Discovery.SearchEndReason.Error:
-                    bEnabled = false;
-                    SetProgressText("TV search failed.");
-                    ToggleProgressBar(true);
-                    break;
-
-                default:
-                    ToggleProgressBar(false);
+                    else
+                    {
+                        ToggleProgressBar(false);
+                    }
                     break;
             }
         }

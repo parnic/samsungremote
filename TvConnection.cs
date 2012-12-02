@@ -193,6 +193,7 @@ namespace SamsungRemoteWP7
 
                             if (AreArraysEqual(regResponse, ALLOWED_BYTES))
                             {
+                                System.Diagnostics.Debug.WriteLine("ALLOWED");
                                 bDisconnect = false;
                                 if (RegistrationAccepted != null)
                                 {
@@ -201,6 +202,7 @@ namespace SamsungRemoteWP7
                             }
                             else if (AreArraysEqual(regResponse, DENIED_BYTES))
                             {
+                                System.Diagnostics.Debug.WriteLine("DENIED");
                                 if (RegistrationDenied != null)
                                 {
                                     RegistrationDenied();
@@ -208,6 +210,7 @@ namespace SamsungRemoteWP7
                             }
                             else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
                             {
+                                System.Diagnostics.Debug.WriteLine("TIMEOUT");
                                 if (RegistrationTimedOut != null)
                                 {
                                     RegistrationTimedOut();
@@ -215,6 +218,7 @@ namespace SamsungRemoteWP7
                             }
                             else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
                             {
+                                System.Diagnostics.Debug.WriteLine("AWAITING");
                                 if (RegistrationWaiting != null)
                                 {
                                     RegistrationWaiting();
@@ -228,12 +232,14 @@ namespace SamsungRemoteWP7
 //                                 {
 //                                     RegistrationDenied();
 //                                 }
+                                System.Diagnostics.Debug.WriteLine("UNKNOWN");
                                 bDisconnect = false;
                                 bUpdateConnectionState = false;
                             }
 
                             if (bDisconnect)
                             {
+                                System.Diagnostics.Debug.WriteLine("[reg] disconnecting (bdisconnect)");
                                 TvDirectSock.Close();
                                 if (Disconnected != null)
                                 {
@@ -252,6 +258,7 @@ namespace SamsungRemoteWP7
                         }
                         else
                         {
+                            System.Diagnostics.Debug.WriteLine("[reg] disconnecting (else)");
                             NotifyDisconnected();
                         }
                     }
