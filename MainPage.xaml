@@ -134,13 +134,13 @@
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,352,0,0" Width="160" Height="114"
                         ImageLocation="Images/key_keyboard.png" MyKey="KEY_ENTER"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,466,0,0" Width="160" Height="120"
-                        ImageLocation="Images/key_down.png" MyKey="KEY_DOWN"/>
+                        ImageLocation="Images/key_down.png" MyKey="KEY_DOWN" AllowRepeats="True"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="307,348,0,0" Width="154" Height="124"
-                        ImageLocation="Images/key_right.png" MyKey="KEY_RIGHT"/>
+                        ImageLocation="Images/key_right.png" MyKey="KEY_RIGHT" AllowRepeats="True"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-7,347,0,0" Width="154" Height="124"
-                        ImageLocation="Images/key_left.png" MyKey="KEY_LEFT"/>
+                        ImageLocation="Images/key_left.png" MyKey="KEY_LEFT" AllowRepeats="True"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,232,0,0" Width="160" Height="120"
-                        ImageLocation="Images/key_up.png" MyKey="KEY_UP"/>
+                        ImageLocation="Images/key_up.png" MyKey="KEY_UP" AllowRepeats="True"/>
 
                     <!-- misc controls -->
                     <local:TvKeyControl Margin="25,53,327,57" Width="103" Height="64"
