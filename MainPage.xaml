@@ -97,7 +97,7 @@
                     <Image HorizontalAlignment="Center" VerticalAlignment="Top"
                            Source="Images/rack.png" Margin="0,520,0,0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,470,0,0" Width="90" Height="120"
-                           ImageLocation="Images/keypad_minus.png" MyKey="KEY_11"/>
+                           ImageLocation="Images/keypad_minus.png" MyKey="KEY_PLUS100"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="190,470,0,0" Width="90" Height="120"
                            ImageLocation="Images/keypad_00.png" MyKey="KEY_0"/>
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,470,0,0" Width="90" Height="120"
