@@ -4,7 +4,7 @@
   <Languages xmlns="">
     <Language code="en-US" />
   </Languages>
-  <App xmlns="" ProductID="{4aa72131-5ba4-4ac5-8460-c9a69a26494f}" Title="Unofficial Samsung Remote" RuntimeType="Silverlight" Version="1.6.0.0" Genre="apps.normal" Author="Pernicious Games" Description="Control your Samsung TV with your phone over WiFi!" Publisher="Pernicious Games" PublisherID="{b7eae3c2-8a5a-4ff2-a387-5f03de851924}">
+  <App xmlns="" ProductID="{4aa72131-5ba4-4ac5-8460-c9a69a26494f}" Title="Unofficial Samsung Remote" RuntimeType="Silverlight" Version="1.6.0.0" Genre="apps.normal" Author="Pernicious Games" Description="Control your Samsung TV with your phone over WiFi!" Publisher="Pernicious Games" PublisherID="{87252C2A-6806-479C-B67B-65772F6A37D6}">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_IDENTITY_USER" />

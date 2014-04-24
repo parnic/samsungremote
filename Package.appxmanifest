@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+  <Identity Name="47805PerniciousGames.UnofficialSamsungRemote" Publisher="CN=87252C2A-6806-479C-B67B-65772F6A37D6" Version="1.7.0.0" />
+  <mp:PhoneIdentity PhoneProductId="4aa72131-5ba4-4ac5-8460-c9a69a26494f" PhonePublisherId="b7eae3c2-8a5a-4ff2-a387-5f03de851924" />
+  <Properties>
+    <DisplayName>Unofficial Samsung Remote</DisplayName>
+    <PublisherDisplayName>Pernicious Games</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.1</OSMinVersion>
+    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="x4aa72131y5ba4y4ac5y8460yc9a69a26494fx" Executable="AGHost.exe" EntryPoint="MainPage.xaml">
+      <m3:VisualElements DisplayName="Unofficial Samsung Remote" Square150x150Logo="Assets\SquareTile150x150.png" Square44x44Logo="Assets\Logo.png" Description="This is an unofficial app to allow you to control any modern Samsung TV's over WiFi with your Windows Phone. As long as your phone is on the same network as your TV, you can do anything a TV remote can do and more! Change channels, adjust the volume, navigate around the Smart Hub, and even fill out certain text fields with your phone's keyboard (note: only available where the TV supports this feature; note that the built-in YouTube app, among others, doesn't support this even with the original remote). Use the same app to connect to as many Samsung TV's as you have in your house and control them all!" ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
+        <m3:DefaultTile Square71x71Logo="Assets\SquareTile71x71.png">
+        </m3:DefaultTile>
+        <m3:SplashScreen Image="SplashScreenImage.jpg" />
+        <m3:ApplicationView MinWidth="width320" />
+        <!--Used in XAML Designer. DO NOT REMOVE-->
+      </m3:VisualElements>
+      <Extensions>
+        <Extension Category="windows.backgroundTasks" EntryPoint="AgHost.BackgroundTask">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
+          </BackgroundTasks>
+        </Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClientServer" />
+  </Capabilities>
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>AgHostSvcs.dll</Path>
+        <ActivatableClass ActivatableClassId="AgHost.BackgroundTask" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+  </Extensions>
+</Package>
