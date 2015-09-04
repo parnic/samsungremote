@@ -1,31 +1,37 @@
-﻿using System.Windows;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Tasks;
+﻿using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
-namespace SamsungRemoteWP7
+namespace UnofficialSamsungRemote
 {
-    public partial class About : PhoneApplicationPage
+    public sealed partial class About : Page
     {
         public About()
         {
             InitializeComponent();
 
-            ApplicationTitle.Text = ApplicationTitle.Text.Replace("{v}", MainPage.GetVersionNumber());
+            SystemNavigationManager.GetForCurrentView().BackRequested += (s, e) =>
+            {
+                if (Frame.CanGoBack)
+                {
+                    Frame.GoBack();
+                }
+            };
         }
 
         private void Contact_Click(object sender, RoutedEventArgs e)
         {
-            var emailTask = new EmailComposeTask();
+            /*var emailTask = new EmailComposeTask();
             emailTask.To = "samsungremotewp7@perniciousgames.com";
             emailTask.Subject = "Unofficial Samsung Remote support request";
             emailTask.Body = "My Unofficial Samsung Remote version: " + MainPage.GetVersionNumber() + System.Environment.NewLine + System.Environment.NewLine;
-            emailTask.Show();
+            emailTask.Show();*/
         }
 
         private void RateUs_Click(object sender, RoutedEventArgs e)
         {
-            MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
-            marketplaceReviewTask.Show();
+            /*MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
+            marketplaceReviewTask.Show();*/
         }
     }
 }

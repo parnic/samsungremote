@@ -3,8 +3,12 @@ using System.Net;
 using System.Threading;
 using System.Text;
 using System.Net.Sockets;
+using Windows.Networking.Sockets;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using System.IO;
 
-namespace SamsungRemoteWP7
+namespace UnofficialSamsungRemote
 {
     public class Discovery
     {
@@ -23,7 +27,8 @@ namespace SamsungRemoteWP7
             Error,
         }
 
-        private static IPAddress multicastAddress = IPAddress.Parse("239.255.255.250");
+        private readonly Windows.Networking.HostName multicastAddress = new Windows.Networking.HostName("239.255.255.250");//IPAddress.Parse("239.255.255.250");
+        protected const string multicastPort = "1900";
 
         private String searchTemplate =
             "M-SEARCH * HTTP/1.1\r\n" +
@@ -42,18 +47,14 @@ namespace SamsungRemoteWP7
         private Timer tvSearchRetryTimer;
         private Timer tvSearchTimeoutTimer;
 
-        protected readonly int multicastPort = 1900;
-        protected IPEndPoint multicastEndpoint;
-        protected IPEndPoint listenEndpoint;
-
-        protected Socket tvSearchSock;
+        private DatagramSocket tvSearchSocket;
 
         protected SearchState searchState;
 
         public delegate void StartedSearchingDelegate();
         public event StartedSearchingDelegate StartedSearching;
 
-        public delegate void TvFoundDelegate(EndPoint TvEndpoint, string TvResponse);
+        public delegate void TvFoundDelegate(Windows.Networking.HostName TvHost, UInt16 TvPort, string TvResponse);
         public event TvFoundDelegate TvFound;
 
         public delegate void SearchingEndedDelegate(SearchEndReason reason);
@@ -65,12 +66,9 @@ namespace SamsungRemoteWP7
                 String.Format(searchTemplate,
                 "urn:samsung.com:device:RemoteControlReceiver:1",
                 4));
-
-            multicastEndpoint = new IPEndPoint(multicastAddress, multicastPort);
-            listenEndpoint = new IPEndPoint(IPAddress.Any, multicastPort);
         }
 
-        public void FindTvs()
+        public async void FindTvs()
         {
             if (!MainPage.bEnabled)
             {
@@ -82,8 +80,12 @@ namespace SamsungRemoteWP7
                 StopSearching();
             }
 
-            tvSearchSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            tvSearchSock.SendToAsync(GetSearchSocketEventArgs());
+            tvSearchSocket = new DatagramSocket();
+            tvSearchSocket.MessageReceived += TvListenCompleted;
+            await tvSearchSocket.BindEndpointAsync(null, "");
+            tvSearchSocket.JoinMulticastGroup(multicastAddress);
+            StartedSearching();
+            SendSSDP();
 
             tvSearchRetryTimer = new Timer(TvSearchRetry, null, TimeSpan.FromSeconds(tvSearchRetryTimeSeconds), TimeSpan.FromMilliseconds(-1));
             tvSearchTimeoutTimer = new Timer(TvSearchTimeout, null, TimeSpan.FromSeconds(tvSearchTotalTimeSeconds), TimeSpan.FromMilliseconds(-1));
@@ -91,18 +93,31 @@ namespace SamsungRemoteWP7
             searchState = SearchState.Searching;
         }
 
+        private async void SendSSDP()
+        {
+            if (tvSearchSocket == null)
+            {
+                return;
+            }
+
+            using (var stream = await tvSearchSocket.GetOutputStreamAsync(multicastAddress, multicastPort.ToString()))
+            {
+                await stream.WriteAsync(tvSearchMessage.AsBuffer());
+            }
+        }
+
         public void Cleanup()
         {
             try
             {
-                tvSearchSock.Close();
+                tvSearchSocket.Dispose();
             }
             catch { }
         }
 
         public void StopSearching(SearchEndReason reason = SearchEndReason.Aborted)
         {
-            if (tvSearchSock != null)
+            if (tvSearchSocket != null)
             {
                 Cleanup();
             }
@@ -140,9 +155,9 @@ namespace SamsungRemoteWP7
         {
             try
             {
-                if (tvSearchSock != null)
+                if (tvSearchSocket != null)
                 {
-                    tvSearchSock.SendToAsync(GetSearchSocketEventArgs());
+                    SendSSDP();
                     System.Diagnostics.Debug.WriteLine("pinging for tv's again...");
                 }
                 if (tvSearchRetryTimer != null)
@@ -158,92 +173,21 @@ namespace SamsungRemoteWP7
             StopSearching(SearchEndReason.TimedOut);
         }
 
-        private void TvListenCompleted(object sender, SocketAsyncEventArgs e)
+        private void TvListenCompleted(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs e)
         {
-            if (e.SocketError == SocketError.Success)
+            var response = new StreamReader(e.GetDataStream().AsStreamForRead()).ReadToEnd();
+            System.Diagnostics.Debug.WriteLine("Received from {0}: {1}", e.RemoteAddress.ToString(), response);
+
+            if (response.Contains("urn:samsung.com:device:RemoteControlReceiver")
+                || response.Contains("RemoteControlReceiver.xml")
+                || response.Contains("PersonalMessageReceiver.xml")
+                || response.Contains("SamsungMRDesc.xml"))
             {
-                if (e.LastOperation == SocketAsyncOperation.ReceiveFrom)
+                if (TvFound != null)
                 {
-                    string response = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
-                    System.Diagnostics.Debug.WriteLine("Received from {0}: {1}", e.RemoteEndPoint.ToString(), response);
-
-                    if (response.Contains("urn:samsung.com:device:RemoteControlReceiver")
-                        || response.Contains("RemoteControlReceiver.xml")
-                        || response.Contains("PersonalMessageReceiver.xml")
-                        || response.Contains("SamsungMRDesc.xml"))
-                    {
-                        if (TvFound != null)
-                        {
-                            TvFound(e.RemoteEndPoint, response);
-                        }
-                    }
-
-                    bool bKeptListening = false;
-                    try
-                    {
-                        bKeptListening = tvSearchSock.ReceiveFromAsync(e);
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        bKeptListening = true;
-                        StopSearching(SearchEndReason.Complete);
-                    }
-                    catch (Exception) { }
-                    finally
-                    {
-                        if (!bKeptListening)
-                        {
-                            StopSearching(SearchEndReason.Error);
-                        }
-                    }
-                }
-                else if (e.LastOperation == SocketAsyncOperation.SendTo)
-                {
-                    e.SetBuffer(new byte[0x1000], 0, 0x1000);
-                    e.RemoteEndPoint = listenEndpoint;
-
-                    try
-                    {
-                        if (tvSearchSock.ReceiveFromAsync(e))
-                        {
-                            if (StartedSearching != null)
-                            {
-                                StartedSearching();
-                            }
-                        }
-                        else
-                        {
-                            StopSearching(SearchEndReason.Error);
-                        }
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        StopSearching(SearchEndReason.Complete);
-                    }
-                    catch (Exception)
-                    {
-                        StopSearching(SearchEndReason.Error);
-                    }
+                    TvFound(e.RemoteAddress, UInt16.Parse(e.RemotePort), response);
                 }
             }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("op: {0}, error: {1}", e.LastOperation, e.SocketError);
-                if (e.SocketError != SocketError.OperationAborted)
-                {
-                    StopSearching(SearchEndReason.Error);
-                    searchState = SearchState.NotSearching;
-                }
-            }
-        }
-
-        protected SocketAsyncEventArgs GetSearchSocketEventArgs()
-        {
-            var e = new SocketAsyncEventArgs();
-            e.Completed += new EventHandler<SocketAsyncEventArgs>(TvListenCompleted);
-            e.SetBuffer(tvSearchMessage, 0, tvSearchMessage.Length);
-            e.RemoteEndPoint = multicastEndpoint;
-            return e;
         }
     }
 }

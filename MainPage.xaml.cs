@@ -1,97 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Net.NetworkInformation;
-using Microsoft.Advertising.Mobile;
+using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
-namespace SamsungRemoteWP7
+namespace UnofficialSamsungRemote
 {
-    public partial class MainPage : PhoneApplicationPage
+    public sealed partial class MainPage : Page
     {
-        public static bool bEnabled { get; private set; }
-
-        private static Discovery discoverer;
+        private Discovery discoverer;
         private static TvConnection directConn;
-
-        private static bool bFirstLoad = true;
+        private bool bFirstLoad = true;
+        public static bool bEnabled { get; private set; }
 
         public MainPage()
         {
-            InitializeComponent();
-
-            if (!IsTrial())
-            {
-                MSAdControl.ErrorOccurred += new EventHandler<Microsoft.Advertising.AdErrorEventArgs>(MSAdControl_ErrorOccurred);
-                MSAdControl.AdRefreshed += new EventHandler(MSAdControl_NewAd);
-            }
-
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                MSAdControl.ApplicationId = "test_client";
-                MSAdControl.AdUnitId = "Image480_80";
-            }
-            else
-            {
-                if (!IsTrial())
-                {
-                    MSAdControl.Visibility = Visibility.Collapsed;
-                    AdDuplexAdControl.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    MSAdControl.ApplicationId = "573f914d-ba9a-47f7-9867-69fab7266eab";
-                    MSAdControl.AdUnitId = "79235";
-                }
-            }
-
-            MainPivot.Title = MainPivot.Title.ToString().Replace("{v}", GetVersionNumber());
+            this.InitializeComponent();
 
             DataContext = App.ViewModel;
-            this.Loaded += new RoutedEventHandler(MainPage_Loaded);
 
-            if (discoverer == null)
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+
+            SystemNavigationManager.GetForCurrentView().BackRequested += (s, e) =>
             {
-                discoverer = new Discovery();
-                discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
-                discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
-                discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
-            }
-        }
+                if (TextInputOverlay.Visibility == Visibility.Visible)
+                {
+                    TextInputOverlay.Visibility = Visibility.Collapsed;
+                    if (e != null)
+                    {
+                        e.Handled = true;
+                    }
+                    txtInput.Text = "";
+                    MainPivot.Focus(FocusState.Programmatic);
+                }
+                else if (discoverer.HandleBackButton())
+                {
+                    e.Handled = true;
+                }
+            };
 
-        private static bool IsTrial()
-        {
-#if DEBUG
-            return true;
-#endif
-            var license = new Microsoft.Phone.Marketplace.LicenseInformation();
-            return license.IsTrial();
-        }
+            NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
 
-
-        void MSAdControl_NewAd(object sender, EventArgs e)
-        {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                AdDuplexAdControl.Visibility = Visibility.Collapsed;
-                MSAdControl.Visibility = Visibility.Visible;
-            });
-        }
-
-        void MSAdControl_ErrorOccurred(object sender, Microsoft.Advertising.AdErrorEventArgs e)
-        {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                MSAdControl.Visibility = Visibility.Collapsed;
-                AdDuplexAdControl.Visibility = Visibility.Visible;
-            });
+            discoverer = new Discovery();
+            discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
+            discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
+            discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
         }
 
         public static string GetVersionNumber()
@@ -109,7 +69,7 @@ namespace SamsungRemoteWP7
         {
             try
             {
-                var asm = Assembly.GetExecutingAssembly();
+                var asm = typeof(MainPage).GetTypeInfo().Assembly;
                 var parts = asm.FullName.Split(',');
                 var version = parts[1].Split('=')[1].Split('.');
 
@@ -126,7 +86,7 @@ namespace SamsungRemoteWP7
             return false;
         }
 
-        public static void SendKey(TvKeyControl.EKey key)
+        public static void SendKey(EKey key)
         {
             if (directConn != null && bEnabled)
             {
@@ -143,7 +103,7 @@ namespace SamsungRemoteWP7
         }
 
         #region discovery callbacks and processing
-        void discoverer_SearchingEnded(Discovery.SearchEndReason reason)
+        async void discoverer_SearchingEnded(Discovery.SearchEndReason reason)
         {
             switch (reason)
             {
@@ -158,10 +118,10 @@ namespace SamsungRemoteWP7
                     if (App.ViewModel.TvItems.Count == 0)
                     {
                         SetProgressText("Timed out searching for a TV.");
-                        btnDemoMode.Dispatcher.BeginInvoke(new Action(delegate
+                        await btnDemoMode.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
                             btnDemoMode.Visibility = Visibility.Visible;
-                        }));
+                        });
                         bEnabled = false;
                         ToggleProgressBar(true);
                     }
@@ -173,13 +133,13 @@ namespace SamsungRemoteWP7
             }
         }
 
-        void discoverer_TvFound(EndPoint TvEndpoint, string TvResponse)
+        async void discoverer_TvFound(Windows.Networking.HostName TvHost, UInt16 TvPort, string TvResponse)
         {
             ToggleProgressBar(false);
             SetProgressText("Found TV.");
-            AddTvUnique(TvEndpoint);
+            await AddTvUnique(TvHost, TvPort);
 
-            GetTvNameFrom(TvEndpoint, TvResponse);
+            await GetTvNameFrom(TvHost, TvPort, TvResponse);
         }
 
         void discoverer_StartedSearching()
@@ -187,7 +147,7 @@ namespace SamsungRemoteWP7
             SetProgressText("Searching for TV...");
         }
 
-        private void GetTvNameFrom(EndPoint endPoint, string tvData)
+        private async Task<string> GetTvNameFrom(Windows.Networking.HostName TvHost, UInt16 TvPort, string tvData)
         {
             var tvDataLines = tvData.Split('\n');
             var TvKeyValuePairs = new Dictionary<string, string>();
@@ -195,7 +155,7 @@ namespace SamsungRemoteWP7
             foreach (var line in tvDataLines)
             {
                 string key = null, value = null;
-                for (int i=0; i<line.Length; i++)
+                for (int i = 0; i < line.Length; i++)
                 {
                     if (line[i] == ':')
                     {
@@ -213,75 +173,62 @@ namespace SamsungRemoteWP7
 
             if (TvKeyValuePairs.Count > 0)
             {
-                SetMetaDataForTv(endPoint, TvKeyValuePairs);
+                await SetMetaDataForTv(TvHost, TvKeyValuePairs);
 
                 if (TvKeyValuePairs.ContainsKey("location"))
                 {
-                    WebClient client = new WebClient();
-                    client.OpenReadCompleted += new OpenReadCompletedEventHandler(TvReceiverDataRequestComplete);
-                    client.OpenReadAsync(new Uri(TvKeyValuePairs["location"]), endPoint);
-                }
-            }
-        }
-
-        void TvReceiverDataRequestComplete(object sender, OpenReadCompletedEventArgs e)
-        {
-            if (e.Error == null && e.UserState is EndPoint)
-            {
-                try
-                {
-                    string resultData = new StreamReader(e.Result).ReadToEnd();
-                    var doc = XDocument.Parse(resultData);
+                    HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+                    var resp = System.Text.Encoding.UTF8.GetString(await client.GetByteArrayAsync(TvKeyValuePairs["location"]));
+                    var doc = XDocument.Parse(resp);
                     string tvName = doc.Descendants().Where(x => x.Name.LocalName == "friendlyName").First().Value;
-
-                    SetTvName(e.UserState as EndPoint, tvName);
+                    await SetTvName(TvHost, tvName);
                 }
-                catch(Exception) { }
             }
+
+            return null;
         }
         #endregion
 
         #region utilities
-        private void SetTvName(EndPoint endPoint, string tvName)
+        private async Task SetTvName(Windows.Networking.HostName TvHost, string TvName)
         {
-            TvListBox.Dispatcher.BeginInvoke(new Action(delegate
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                IPAddress addr = (endPoint as IPEndPoint).Address;
                 foreach (var i in App.ViewModel.TvItems)
                 {
-                    if (i.TvAddress == addr)
+                    if (i.TvAddress == TvHost.ToString())
                     {
-                        i.TvName = tvName;
+                        i.TvName = TvName;
                         break;
                     }
                 }
-            }));
+            });
         }
 
-        private void SetMetaDataForTv(EndPoint endPoint, Dictionary<string, string> TvKeyValuePairs)
+        private async Task SetMetaDataForTv(Windows.Networking.HostName TvHost, Dictionary<string, string> TvKeyValuePairs)
         {
-            TvListBox.Dispatcher.BeginInvoke(new Action(delegate
+            await TvListBox.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                IPAddress addr = (endPoint as IPEndPoint).Address;
                 foreach (var i in App.ViewModel.TvItems)
                 {
-                    if (i.TvAddress == addr)
+                    if (i.Equals(TvHost))
                     {
                         i.TvMetaData = TvKeyValuePairs;
                         break;
                     }
                 }
-            }));
+            });
         }
 
-        private void AddTvUnique(EndPoint endPoint, string inTvName = "")
+        async Task AddTvUnique(Windows.Networking.HostName TvHost, UInt16 TvPort)
         {
-            TvListBox.Dispatcher.BeginInvoke(new Action(delegate
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                IPAddress addr = (endPoint as IPEndPoint).Address;
                 foreach (var i in App.ViewModel.TvItems)
                 {
-                    if (i.TvAddress.ToString() == addr.ToString())
+                    if (i.Equals(TvHost))
                     {
                         return;
                     }
@@ -289,47 +236,59 @@ namespace SamsungRemoteWP7
 
                 App.ViewModel.TvItems.Add(new TvItemViewModel()
                 {
-                    Port = TvConnection.TvDirectPort,
-                    TvAddress = addr,
-                    TvName = string.IsNullOrWhiteSpace(inTvName) ? addr.ToString() : inTvName,
+                    Port = TvConnection.TvDirectPort.ToString(),
+                    TvAddress = TvHost.ToString(),
                 });
-            }));
+            });
         }
 
-        private void SetProgressText(string p)
+        async void SetProgressText(string text)
         {
-            progressText.Dispatcher.BeginInvoke(new Action(delegate
+            System.Diagnostics.Debug.WriteLine(text);
+            await progressText.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                progressText.Text = p;
-            }));
+                progressText.Text = text;
+            });
+        }
+
+        async Task DisplayOkBox(string message, string title = null)
+        {
+            if (CoreWindow.GetForCurrentThread() == null)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    await InternalDisplayOkBox(message, title);
+                });
+            }
+            else
+            {
+                await InternalDisplayOkBox(message, title);
+            }
+        }
+
+        async Task InternalDisplayOkBox(string message, string title = null)
+        {
+            MessageDialog msg = null;
+            if (title == null)
+            {
+                msg = new MessageDialog(message);
+            }
+            else
+            {
+                msg = new MessageDialog(message, title);
+            }
+
+            msg.Commands.Add(new UICommand("OK"));
+            await msg.ShowAsync();
         }
         #endregion
 
         #region button/app event handlers
-        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!App.ViewModel.IsDataLoaded)
-            {
-                App.ViewModel.LoadData();
-            }
-
             if (bFirstLoad)
             {
-                if ((NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
-                    || NetworkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                    /*&& !System.Diagnostics.Debugger.IsAttached*/)
-                {
-                    bEnabled = true;
-                }
-                else
-                {
-                    MessageBox.Show("You must be connected to a non-cell network in order to connect to a TV. Connect via Wi-Fi or wired through a USB cable and try again.",
-                        "Can't search for TV", MessageBoxButton.OK);
-
-                    SetProgressText("Remote disabled.");
-                    ToggleProgressBar(true);
-                    btnDemoMode.Visibility = Visibility.Visible;
-                }
+                bEnabled = true;
 
                 ToggleProgressBar(true);
                 discoverer.FindTvs();
@@ -338,11 +297,7 @@ namespace SamsungRemoteWP7
             bFirstLoad = false;
         }
 
-        private void PhoneApplicationPage_Unloaded(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void ToggleProgressBar(bool? bEnableProgressBar = false)
+        private async void ToggleProgressBar(bool? bEnableProgressBar = false)
         {
             if (!bEnableProgressBar.HasValue)
             {
@@ -350,7 +305,7 @@ namespace SamsungRemoteWP7
                 return;
             }
 
-            customIndeterminateProgressBar.Dispatcher.BeginInvoke(new Action(delegate
+            await customIndeterminateProgressBar.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 customIndeterminateProgressBar.IsIndeterminate = bEnableProgressBar.Value;
 
@@ -374,22 +329,18 @@ namespace SamsungRemoteWP7
                     customIndeterminateProgressBar.Visibility = Visibility.Collapsed;
                     TransparentOverlay.Visibility = Visibility.Collapsed;
                 }
-            }));
+            });
         }
 
-        private void TvListPanel_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        private void TvListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MainPivot.SelectedIndex = 1;
-
-            if (!bEnabled)
+            var tv = (TvListBox.SelectedItem as TvItemViewModel);
+            if (tv != null)
             {
-                return;
+                ConnectTo(new Windows.Networking.HostName(tv.TvAddress), ushort.Parse(tv.Port));
+                MainPivot.SelectedIndex = 1;
+                discoverer.StopSearching(Discovery.SearchEndReason.Complete);
             }
-
-            discoverer.StopSearching(Discovery.SearchEndReason.Complete);
-
-            TvItemViewModel selectedItem = (TvListBox.SelectedItem as TvItemViewModel);
-            ConnectTo(new IPEndPoint(selectedItem.TvAddress, selectedItem.Port));
         }
 
         private void MainPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -402,11 +353,11 @@ namespace SamsungRemoteWP7
 
             if (piv.SelectedIndex == 0)
             {
-                ApplicationBar.IsVisible = true;
+                BottomAppBar.Visibility = Visibility.Visible;
             }
             else
             {
-                ApplicationBar.IsVisible = false;
+                BottomAppBar.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -423,14 +374,14 @@ namespace SamsungRemoteWP7
             {
                 App.ViewModel.TvItems.Add(new TvItemViewModel()
                 {
-                    Port = TvConnection.TvDirectPort,
-                    TvAddress = IPAddress.Parse("192.168.100." + rand.Next(1, 255)),
+                    Port = TvConnection.TvDirectPort.ToString(),
+                    TvAddress = "192.168.100." + rand.Next(1, 255),
                     TvName = "Example TV " + i
                 });
             }
         }
 
-        private void RefreshTvList_Click(object sender, EventArgs e)
+        private void RefreshTvList_Click(object sender, RoutedEventArgs e)
         {
             App.ViewModel.TvItems.Clear();
             bEnabled = true;
@@ -440,64 +391,34 @@ namespace SamsungRemoteWP7
             ToggleProgressBar(true);
         }
 
-        private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (TextInputOverlay.Visibility == Visibility.Visible)
-            {
-                TextInputOverlay.Visibility = Visibility.Collapsed;
-                if (e != null)
-                {
-                    e.Cancel = true;
-                }
-                txtInput.Text = "";
-                MainPivot.Focus();
-            }
-            else if (discoverer.HandleBackButton())
-            {
-                e.Cancel = true;
-            }
-        }
-
-        // can't detect if keyboard is open, so this is the next best thing
-        private DateTime inputShown;
         private void OnQwertyButtonPressed(object sender, EventArgs args)
         {
-            txtInput.Focus();
+            txtInput.Focus(FocusState.Programmatic);
             TextInputOverlay.Visibility = Visibility.Visible;
         }
 
-        private void txtInput_KeyUp(object sender, KeyEventArgs e)
+        private void txtInput_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
-            if (e.Key == Key.Enter || e.PlatformKeyCode == 10)
-            {
-                if (txtInput.Text.Length > 0)
-                {
-                    SendText(txtInput.Text);
-                }
-                PhoneApplicationPage_BackKeyPress(null, EventArgs.Empty as System.ComponentModel.CancelEventArgs);
-            }
+
         }
 
         private void txtInput_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (TextInputOverlay.Visibility == Visibility.Visible && (DateTime.Now - inputShown).TotalMilliseconds > 250)
-            {
-                PhoneApplicationPage_BackKeyPress(null, EventArgs.Empty as System.ComponentModel.CancelEventArgs);
-            }
+
         }
 
         private void txtInput_GotFocus(object sender, RoutedEventArgs e)
         {
-            inputShown = DateTime.Now;
+
         }
 
         private void OnPowerButtonPressed(object sender, EventArgs args)
         {
-            if (directConn != null && directConn.connectedEndpoint != null)
+            if (directConn != null && directConn.ConnectedHostName != null)
             {
                 for (int i = App.ViewModel.TvItems.Count - 1; i >= 0; i--)
                 {
-                    if (App.ViewModel.TvItems[i].TvAddress.ToString() == directConn.connectedEndpoint.Address.ToString())
+                    if (App.ViewModel.TvItems[i].TvAddress == directConn.ConnectedHostName.ToString())
                     {
                         App.ViewModel.TvItems.RemoveAt(i);
                     }
@@ -508,33 +429,12 @@ namespace SamsungRemoteWP7
 
             MainPivot.SelectedIndex = 0;
         }
-
-        public static void NotifyAppFreshStart()
-        {
-            bFirstLoad = true;
-        }
-
-        public static void NotifyAppDeactivated()
-        {
-            if (directConn != null)
-            {
-                directConn.NotifyAppDeactivated();
-            }
-        }
-
-        public static void NotifyAppActivated()
-        {
-            if (directConn != null)
-            {
-                directConn.NotifyAppActivated();
-            }
-        }
         #endregion
 
         #region direct connection handling/callbacks
-        private void ConnectTo(IPEndPoint selectedEndpoint)
+        private void ConnectTo(Windows.Networking.HostName host, UInt16 port)
         {
-            directConn = new TvConnection(selectedEndpoint);
+            directConn = new TvConnection(host, port);
             directConn.Connecting += new TvConnection.ConnectingDelegate(directConn_Connecting);
             directConn.Connected += new TvConnection.ConnectedDelegate(directConn_Connected);
             directConn.Disconnected += new TvConnection.DisconnectedDelegate(directConn_Disconnected);
@@ -550,6 +450,7 @@ namespace SamsungRemoteWP7
         void directConn_Disconnected()
         {
             ToggleProgressBar(false);
+            SetProgressText("Disconnected from TV.");
         }
 
         void directConn_Connected()
@@ -564,20 +465,12 @@ namespace SamsungRemoteWP7
 
         void directConn_RegistrationTimedOut()
         {
-            //SetProgressText("Remote connection timed out.");
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                MessageBox.Show("Remote connection timed out.");
-            });
+            SetProgressText("Remote connection timed out.");
         }
 
         void directConn_RegistrationDenied()
         {
-            //SetProgressText("Remote connection denied.");
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                MessageBox.Show("Remote connection denied.");
-            });
+            SetProgressText("Remote connection denied.");
         }
 
         void directConn_RegistrationAccepted()
@@ -588,11 +481,7 @@ namespace SamsungRemoteWP7
 
         void directConn_RegistrationFailed()
         {
-            //SetProgressText("Sending remote registration failed.");
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                MessageBox.Show("Sending remote registration failed.");
-            });
+            SetProgressText("Sending remote registration failed.");
             ToggleProgressBar(false);
         }
 
@@ -604,28 +493,28 @@ namespace SamsungRemoteWP7
         void directConn_Connecting()
         {
             ToggleProgressBar(true);
-            SetProgressText("Connecting to TV at " + directConn.connectedEndpoint.Address.ToString() + "...");
+            SetProgressText("Connecting to TV at " + directConn.ConnectedHostName.ToString() + "...");
         }
         #endregion
 
-        private void ShowAppinfo_Click(object sender, EventArgs e)
+        private void ShowAppinfo_Click(object sender, RoutedEventArgs e)
         {
             if (discoverer != null)
             {
                 discoverer.StopSearching();
             }
 
-            NavigationService.Navigate(new Uri("/About.xaml", UriKind.Relative));
+            Frame.Navigate(typeof(About));
         }
 
-        private void ShowSettings_Click(object sender, EventArgs e)
+        private void ShowSettings_Click(object sender, RoutedEventArgs e)
         {
             if (discoverer != null)
             {
                 discoverer.StopSearching();
             }
 
-            NavigationService.Navigate(new Uri("/UserSettingsPage.xaml", UriKind.Relative));
+            Frame.Navigate(typeof(UserSettings));
         }
     }
 }

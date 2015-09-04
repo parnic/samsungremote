@@ -1,71 +1,49 @@
-﻿<phone:PhoneApplicationPage 
-    x:Class="SamsungRemoteWP7.MainPage"
+﻿<Page
+    x:Class="UnofficialSamsungRemote.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:local="using:UnofficialSamsungRemote"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:local="clr-namespace:SamsungRemoteWP7"
-    xmlns:ads="clr-namespace:Microsoft.Advertising.Mobile.UI;assembly=Microsoft.Advertising.Mobile.UI"
-    xmlns:AdDuplex="clr-namespace:AdDuplex;assembly=AdDuplex.AdControl.Silverlight"
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
-    FontFamily="{StaticResource PhoneFontFamilyNormal}"
-    FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait"  Orientation="Portrait"
-    local:TiltEffect.IsTiltEnabled="True"
-    Style="{StaticResource TransitionPageStyle}"
-    shell:SystemTray.IsVisible="True" Unloaded="PhoneApplicationPage_Unloaded" BackKeyPress="PhoneApplicationPage_BackKeyPress">
+    mc:Ignorable="d"
+    d:DesignWidth="480"
+    d:DesignHeight="768"
+    MaxHeight="768"
+    MaxWidth="480"
+    MinWidth="480"
+    MinHeight="768"
+    Loaded="Page_Loaded">
 
-    <Grid x:Name="LayoutRoot" Background="Transparent">
-        <controls:Pivot Title="Unofficial Samsung Remote v{v}" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
-            <controls:PivotItem Header="tv list" Width="480" Margin="0,0,0,0">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot Title="Unofficial Samsung remote" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
+            <PivotItem Header="tv list">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <ListBox x:Name="TvListBox" Margin="0,0,-12,0" ItemsSource="{Binding TvItems}" Grid.Row="0">
+                    <ListBox x:Name="TvListBox" Margin="0,0,0,0" ItemsSource="{Binding TvItems}" Grid.Row="0" SelectionChanged="TvListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Tap="TvListPanel_Tap">
+                                <StackPanel Orientation="Horizontal">
                                     <Image Source="TV.png" Width="62" Height="62" VerticalAlignment="Top"/>
-                                    <StackPanel Margin="0,0,0,17" Width="432" Height="78">
-                                        <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                    <StackPanel Width="432" Height="78">
+                                        <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
                                         <StackPanel Orientation="Horizontal" Margin="12,-6,12,0">
-                                            <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                            <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap" Margin="0,0,0,0"/>
                                             <TextBlock Text=":" Margin="3,-2,3,0"/>
-                                            <TextBlock Text="{Binding Port}" TextWrapping="NoWrap" Margin="0,0,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                            <TextBlock Text="{Binding Port}" TextWrapping="NoWrap" Margin="0,0,0,0"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-
-                    <ads:AdControl x:Name="MSAdControl"
-                                   Grid.Row="1"
-                                   Height="80" Width="480"
-                                   VerticalAlignment="Top"
-                                   HorizontalAlignment="Left"
-                    />
-
-                    <AdDuplex:AdControl x:Name="AdDuplexAdControl"
-                                        Grid.Row="1"
-                                        Height="80" Width="480"
-                                        Visibility="Collapsed"
-                                        AppId="6095"
-                                        VerticalAlignment="Top"
-                                        HorizontalAlignment="Left"
-                    />
                 </Grid>
-            </controls:PivotItem>
-
-            <controls:PivotItem Header="numpad" Name="first">
+            </PivotItem>
+            <PivotItem Header="numpad">
                 <Grid>
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top"
                            Source="Images/rack.png"  Margin="0,70,0,0"/>
@@ -103,9 +81,8 @@
                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,470,0,0" Width="90" Height="120"
                            ImageLocation="Images/keypad_ch.png" MyKey="KEY_PRECH"/>
                 </Grid>
-            </controls:PivotItem>
-
-            <controls:PivotItem Header="navigation">
+            </PivotItem>
+            <PivotItem Header="navigation">
                 <Grid>
                     <!-- menu controls -->
                     <Image VerticalAlignment="Top" Margin="0,0,0,0" Source="Images/direction_bg.png" />
@@ -151,21 +128,9 @@
                         ImageLocation="Images/3d_btn.png" MyKey="KEY_PANNEL_CHDOWN"/>
                     <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
                         ImageLocation="Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"/>
-
-                    <!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,366,0,0" Width="84" Height="65" -->
-<!--                         ImageLocation="Images/nav_down.png" MyKey="KEY_DOWN"/> -->
-<!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="271,308,0,0" Width="113" Height="57" -->
-<!--                         ImageLocation="Images/nav_right.png" MyKey="KEY_RIGHT"/> -->
-<!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="72,308,0,0" Width="113" Height="57" -->
-<!--                         ImageLocation="Images/nav_left.png" MyKey="KEY_LEFT"/> -->
-<!--                     <local:TvKeyControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="184,243,0,0" Width="84" Height="65" -->
-<!--                         ImageLocation="Images/nav_up.png" MyKey="KEY_UP"/> -->
-<!--                     <local:TvKeyControl HorizontalAlignment="Left" Margin="173,300,0,0" VerticalAlignment="Top" Width="108" Height="75" -->
-<!--                         ImageLocation="Images/nav_center.png" MyKey="KEY_ENTER"/> -->
                 </Grid>
-            </controls:PivotItem>
-
-            <controls:PivotItem Header="control">
+            </PivotItem>
+            <PivotItem Header="control">
                 <Grid>
                     <!-- play/pause controls -->
                     <!-- row 1 -->
@@ -199,7 +164,7 @@
 
                     <local:TvKeyControl Margin="178,334,174,209" Width="103" Height="64"
                             ImageLocation="Images/mute_btn.png" MyKey="KEY_MUTE"/>
-                    
+
                     <!-- channel controls -->
                     <Image Margin="286,251,70,130" Width="100" Height="226"
                             Source="Images/volch_btn_bg.png"/>
@@ -222,9 +187,8 @@
                     <local:TvKeyControl Margin="342,509,8,23" Width="106" Height="75"
                             ImageLocation="Images/color_btn04.png" MyKey="KEY_BLUE"/>
                 </Grid>
-            </controls:PivotItem>
-
-            <controls:PivotItem Header="misc" Margin="10,8,10,0">
+            </PivotItem>
+            <PivotItem Header="misc">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -256,7 +220,7 @@
 
                     <ListBox Grid.Column="1">
                         <ListBox.Items>
-                            <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Text="Note: not all inputs work with all TVs" TextWrapping="Wrap"/>
+                            <TextBlock Foreground="{ThemeResource SystemAccentColor}" Text="Note: not all inputs work with all TVs" TextWrapping="Wrap"/>
                             <local:TvKeyControl Text="Input HDMI" MyKey="KEY_HDMI" Height="45"/>
                             <local:TvKeyControl Text="Input DVI" MyKey="KEY_DVI" Height="45"/>
                             <local:TvKeyControl Text="Input Component 1" MyKey="KEY_COMPONENT1" Height="45"/>
@@ -271,10 +235,9 @@
                         </ListBox.Items>
                     </ListBox>
                 </Grid>
-            </controls:PivotItem>
-        </controls:Pivot>
-
-        <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0.85" Name="TextInputOverlay" Visibility="Collapsed">
+            </PivotItem>
+        </Pivot>
+        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}" Opacity="0.85" Name="TextInputOverlay" Visibility="Collapsed">
             <StackPanel Margin="0,0,0,150" VerticalAlignment="Center">
                 <TextBlock Text="Press Enter to submit the entered text," TextAlignment="Center"/>
                 <TextBlock Text="press back to cancel." TextAlignment="Center"/>
@@ -283,29 +246,19 @@
             </StackPanel>
         </Grid>
 
-        <Grid Background="{StaticResource PhoneBackgroundBrush}" Opacity="0" Name="TransparentOverlay" Visibility="Visible">
+        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}" Opacity="0.85" Name="TransparentOverlay" Visibility="Visible">
             <StackPanel VerticalAlignment="Center">
-                <ProgressBar
-                    IsIndeterminate="true"
-                    x:Name="customIndeterminateProgressBar"
-                    Style="{StaticResource CustomIndeterminateProgressBar}"/>
+                <ProgressBar IsIndeterminate="true" Name="customIndeterminateProgressBar"/>
                 <TextBlock Text="Loading..." Margin="30,0,30,0" FontSize="28" Name="progressText" TextWrapping="Wrap" TextAlignment="Center"/>
-                <Button Content="Demo mode" Width="350" Click="btnDemoMode_Click" Name="btnDemoMode" Visibility="Collapsed"/>
+                <Button Content="Demo mode" Width="350" HorizontalAlignment="Center" Click="btnDemoMode_Click" Name="btnDemoMode" Visibility="Collapsed"/>
             </StackPanel>
         </Grid>
     </Grid>
- 
-    <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="False" IsMenuEnabled="False">
-            <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="refresh list" Click="RefreshTvList_Click"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/info.png" Text="app info" Click="ShowAppinfo_Click"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/gear32.png" Text="settings" Click="ShowSettings_Click"/>
-<!--             <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/> -->
-<!--             <shell:ApplicationBar.MenuItems> -->
-<!--                 <shell:ApplicationBarMenuItem Text="MenuItem 1"/> -->
-<!--                 <shell:ApplicationBarMenuItem Text="MenuItem 2"/> -->
-<!--             </shell:ApplicationBar.MenuItems> -->
-        </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>
-
-</phone:PhoneApplicationPage>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Label="refresh" Icon="Refresh" Click="RefreshTvList_Click"/>
+            <AppBarButton Label="info" Icon="Help" Click="ShowAppinfo_Click"/>
+            <AppBarButton Label="settings" Icon="Setting" Click="ShowSettings_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>

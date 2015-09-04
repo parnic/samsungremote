@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="UnofficialSamsungRemote.UserSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UnofficialSamsungRemote"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignWidth="480"
+    d:DesignHeight="768"
+    MaxHeight="768"
+    MaxWidth="480"
+    MinWidth="480"
+    MinHeight="768">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock x:Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}"/>
+            <TextBlock x:Name="PageTitle" Text="settings" Margin="9,-7,0,0" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" VerticalAlignment="Top">
+            <CheckBox Content="Vibrate on key presses"/><!-- IsChecked="{Binding LoadedSettings.bShouldVibrateOnKeyPress, Source={StaticResource XamlHelper}, Mode=TwoWay}"/>-->
+        </Grid>
+    </Grid>
+</Page>

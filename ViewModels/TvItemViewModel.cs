@@ -2,17 +2,18 @@
 using System.Net;
 using System.ComponentModel;
 using System.Collections.Generic;
+using Windows.Networking;
 
-namespace SamsungRemoteWP7
+namespace UnofficialSamsungRemote
 {
-    public class TvItemViewModel : INotifyPropertyChanged
+    public class TvItemViewModel : INotifyPropertyChanged, IEquatable<TvItemViewModel>, IEquatable<HostName>
     {
-        private IPAddress tvAddress;
+        private string tvAddress;
         /// <summary>
         /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
         /// </summary>
         /// <returns></returns>
-        public IPAddress TvAddress
+        public string TvAddress
         {
             get
             {
@@ -23,17 +24,17 @@ namespace SamsungRemoteWP7
                 if (value != tvAddress)
                 {
                     tvAddress = value;
-                    NotifyPropertyChanged("TvAddress");
+                    NotifyPropertyChanged(nameof(TvAddress));
                 }
             }
         }
 
-        private int port;
+        private string port;
         /// <summary>
         /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
         /// </summary>
         /// <returns></returns>
-        public int Port
+        public string Port
         {
             get
             {
@@ -44,7 +45,7 @@ namespace SamsungRemoteWP7
                 if (value != port)
                 {
                     port = value;
-                    NotifyPropertyChanged("Port");
+                    NotifyPropertyChanged(nameof(Port));
                 }
             }
         }
@@ -65,7 +66,7 @@ namespace SamsungRemoteWP7
                 if (value != tvName)
                 {
                     tvName = value;
-                    NotifyPropertyChanged("TvName");
+                    NotifyPropertyChanged(nameof(TvName));
                 }
             }
         }
@@ -80,6 +81,18 @@ namespace SamsungRemoteWP7
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public bool Equals(TvItemViewModel other)
+        {
+            return TvAddress.Equals(other.TvAddress)
+                && Port.Equals(other.Port)
+                && TvName.Equals(other.TvName);
+        }
+
+        public bool Equals(HostName other)
+        {
+            return other.ToString().Equals(TvAddress);
         }
     }
 }

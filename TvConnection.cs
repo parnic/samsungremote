@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Net;
+using System.Collections;
 using System.Net.Sockets;
 using System.Text;
-using System.IO;
+using Windows.Foundation;
+using Windows.Storage.Streams;
 
-namespace SamsungRemoteWP7
+namespace UnofficialSamsungRemote
 {
     public class TvConnection
     {
@@ -18,21 +19,23 @@ namespace SamsungRemoteWP7
         }
 
         public const int TvDirectPort = 55000;
+        private const int MaxBytesToRead = 16384;
 
-        protected Socket TvDirectSock = null;
+        protected Windows.Networking.Sockets.StreamSocket TvDirectSocket = null;
 
-        protected readonly char[] ALLOWED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x01, (char)0x00 };
-        protected readonly char[] DENIED_BYTES = new char[] { (char)0x64, (char)0x00, (char)0x00, (char)0x00 };
-        protected readonly char[] TIMEOUT_BYTES = new char[] { (char)0x65, (char)0x00 };
+        protected readonly byte[] ALLOWED_BYTES = new byte[] { 0x64, 0x00, 0x01, 0x00 };
+        protected readonly byte[] DENIED_BYTES = new byte[] { 0x64, 0x00, 0x00, 0x00 };
+        protected readonly byte[] TIMEOUT_BYTES = new byte[] { 0x65, 0x00 };
         // this seems to sometimes end with 0200 and sometimes 0100...who knows if there are other endings too, but i have no idea if each message means something different or not
-        protected readonly char[] AWAITING_APPROVAL_PREFIX = new char[] { (char)0xa, (char)0x00 };//, (char)0x02, (char)0x00, (char)0x00, (char)0x00 };
+        protected readonly byte[] AWAITING_APPROVAL_PREFIX = new byte[] { 0xa, 0x00 };//, 0x02, 0x00, 0x00, 0x00 };
 
         protected readonly int AWAITING_APPROVAL_TOTAL = 6;
 
         protected const string appName = "wp7.app.perniciousgames";
 
-        protected TvConnectionState connectionState;
-        public IPEndPoint connectedEndpoint { get; protected set; }
+        protected TvConnectionState ConnectionState;
+        public Windows.Networking.HostName ConnectedHostName { get; protected set; }
+        public UInt16 ConnectedPort { get; protected set; }
 
         public delegate void ConnectingDelegate();
         public event ConnectingDelegate Connecting;
@@ -65,21 +68,146 @@ namespace SamsungRemoteWP7
 
         public bool bSentPowerOff;
 
-        public TvConnection(IPEndPoint endpoint)
+        private DataWriter Writer;
+        private DataReader Reader;
+
+        public TvConnection(Windows.Networking.HostName host, UInt16 port)
         {
-            connectedEndpoint = endpoint;
+            ConnectedHostName = host;
+            ConnectedPort = port;
+        }
+
+        private void newConnected(IAsyncAction info, AsyncStatus status)
+        {
+            if (status == AsyncStatus.Completed)
+            {
+                ConnectionState = TvConnectionState.AwaitingAuthorization;
+                Reader = new DataReader(TvDirectSocket.InputStream);
+                Writer = new DataWriter(TvDirectSocket.OutputStream);
+
+                if (Connected != null)
+                {
+                    Connected();
+                }
+
+                var reg = GetRegistration();
+                SendBytes(reg, newRegistrationSent);
+            }
+            else
+            {
+                NotifyDisconnected();
+            }
+        }
+
+        private void SendBytes(byte[] reg, AsyncOperationCompletedHandler<uint> completed)
+        {
+            Writer.WriteBytes(reg);
+            Writer.StoreAsync().Completed += completed;
+        }
+
+        private async void newRegistrationSent(IAsyncOperation<uint> info, AsyncStatus status)
+        {
+            if (status == AsyncStatus.Completed)
+            {
+                if (Registering != null)
+                {
+                    Registering();
+                }
+
+                Reader.InputStreamOptions = InputStreamOptions.Partial;
+                await Reader.LoadAsync(MaxBytesToRead);
+                ReadResponseHeader(Reader);
+                var regResponse = GetBytes(Reader);
+                HandleRegistrationResponse(regResponse);
+            }
+            else
+            {
+                if (RegistrationFailed != null)
+                {
+                    RegistrationFailed();
+                }
+
+                ConnectionState = TvConnectionState.Disconnected;
+            }
+        }
+
+        private void HandleRegistrationResponse(byte[] regResponse)
+        {
+            bool bDisconnect = true;
+            bool bUpdateConnectionState = true;
+
+            if (AreArraysEqual(regResponse, ALLOWED_BYTES))
+            {
+                System.Diagnostics.Debug.WriteLine("ALLOWED");
+                bDisconnect = false;
+                if (RegistrationAccepted != null)
+                {
+                    RegistrationAccepted();
+                }
+            }
+            else if (AreArraysEqual(regResponse, DENIED_BYTES))
+            {
+                System.Diagnostics.Debug.WriteLine("DENIED");
+                if (RegistrationDenied != null)
+                {
+                    RegistrationDenied();
+                }
+            }
+            else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
+            {
+                System.Diagnostics.Debug.WriteLine("TIMEOUT");
+                if (RegistrationTimedOut != null)
+                {
+                    RegistrationTimedOut();
+                }
+            }
+            else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
+            {
+                System.Diagnostics.Debug.WriteLine("AWAITING");
+                if (RegistrationWaiting != null)
+                {
+                    RegistrationWaiting();
+                }
+                bDisconnect = false;
+                bUpdateConnectionState = false;
+            }
+            else
+            {
+                //if (RegistrationDenied != null)
+                //{
+                //    RegistrationDenied();
+                //}
+                System.Diagnostics.Debug.WriteLine("UNKNOWN");
+                bDisconnect = false;
+                bUpdateConnectionState = false;
+            }
+
+            if (bDisconnect)
+            {
+                System.Diagnostics.Debug.WriteLine("[reg] disconnecting (bdisconnect)");
+                Cleanup();
+                NotifyDisconnected();
+            }
+            else
+            {
+                if (bUpdateConnectionState)
+                {
+                    ConnectionState = TvConnectionState.Connected;
+                }
+            }
+        }
+
+        private void ReadResponseHeader(DataReader reader)
+        {
+            reader.ReadByte();
+            /*var appName = */GetString(reader);
         }
 
         public void Connect()
         {
-            SocketAsyncEventArgs socketEventArg = new SocketAsyncEventArgs();
-            socketEventArg.RemoteEndPoint = connectedEndpoint;
-            socketEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(RegistrationComplete);
-
-            TvDirectSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            TvDirectSock.ConnectAsync(socketEventArg);
-
-            connectionState = TvConnectionState.Connecting;
+            TvDirectSocket = new Windows.Networking.Sockets.StreamSocket();
+            TvDirectSocket.ConnectAsync(ConnectedHostName, ConnectedPort.ToString()).Completed += newConnected;
+            ConnectionState = TvConnectionState.Connecting;
 
             if (Connecting != null)
             {
@@ -87,16 +215,45 @@ namespace SamsungRemoteWP7
             }
         }
 
+        private byte GetLengthHeader(DataReader reader)
+        {
+            var length = reader.ReadByte();
+            var delimiter = reader.ReadByte();
+            if (delimiter != 0)
+            {
+                throw new Exception("Unexpected input " + delimiter);
+            }
+            return length;
+        }
+
+        private string GetString(DataReader reader)
+        {
+            return reader.ReadString(GetLengthHeader(reader));
+        }
+
+        private byte[] GetBytes(DataReader reader)
+        {
+            var ret = new byte[GetLengthHeader(reader)];
+            reader.ReadBytes(ret);
+            return ret;
+        }
+
         public void Cleanup()
         {
             try
             {
-                TvDirectSock.Close();
+                Writer.DetachStream();
+                Reader.DetachStream();
+                Writer.Dispose();
+                Reader.Dispose();
+
+                TvDirectSocket.Dispose();
+                TvDirectSocket = null;
             }
             catch { }
         }
 
-        public void SendKey(TvKeyControl.EKey key)
+        public void SendKey(EKey key)
         {
 // 		    if (logger != null) logger.v(TAG, "Sending key " + key.getValue() + "...");
 // 		    checkConnection();
@@ -116,7 +273,7 @@ namespace SamsungRemoteWP7
 
         public void NotifyAppDeactivated()
         {
-            if (TvDirectSock != null && TvDirectSock.Connected)
+            if (TvDirectSocket != null)
             {
                 bReconnectAfterUnlock = true;
             }
@@ -135,220 +292,14 @@ namespace SamsungRemoteWP7
             }
         }
 
-        private void RegistrationComplete(object sender, SocketAsyncEventArgs e)
-        {
-            switch (e.LastOperation)
-            {
-                case SocketAsyncOperation.SendTo:
-                    if (connectionState == TvConnectionState.AwaitingAuthorization)
-                    {
-                        if (e.SocketError == SocketError.Success)
-                        {
-                            if (Registering != null)
-                            {
-                                Registering();
-                            }
-
-                            System.Diagnostics.Debug.WriteLine("[reg] sent msg");
-
-                            e.SetBuffer(new byte[0x1000], 0, 0x1000);
-                            TvDirectSock.ReceiveFromAsync(e);
-                        }
-                        else
-                        {
-                            if (RegistrationFailed != null)
-                            {
-                                RegistrationFailed();
-                            }
-                            connectionState = TvConnectionState.Disconnected;
-                        }
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine("[con] sent msg");
-                    }
-                    break;
-
-                case SocketAsyncOperation.ReceiveFrom:
-                    if (connectionState == TvConnectionState.AwaitingAuthorization)
-                    {
-                        if (e.SocketError == SocketError.Success)
-                        {
-                            for (int i = e.Offset; i < e.BytesTransferred; i++)
-                            {
-                                //System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
-                            }
-
-                            string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
-
-                            StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
-                            sr.Read();
-                            string regApp = ReadString(sr);
-                            char[] regResponse = ReadCharArray(sr);
-
-                            System.Diagnostics.Debug.WriteLine("[reg] tv returned: " + regApp);
-
-                            bool bDisconnect = true;
-                            bool bUpdateConnectionState = true;
-
-                            if (AreArraysEqual(regResponse, ALLOWED_BYTES))
-                            {
-                                System.Diagnostics.Debug.WriteLine("ALLOWED");
-                                bDisconnect = false;
-                                if (RegistrationAccepted != null)
-                                {
-                                    RegistrationAccepted();
-                                }
-                            }
-                            else if (AreArraysEqual(regResponse, DENIED_BYTES))
-                            {
-                                System.Diagnostics.Debug.WriteLine("DENIED");
-                                if (RegistrationDenied != null)
-                                {
-                                    RegistrationDenied();
-                                }
-                            }
-                            else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
-                            {
-                                System.Diagnostics.Debug.WriteLine("TIMEOUT");
-                                if (RegistrationTimedOut != null)
-                                {
-                                    RegistrationTimedOut();
-                                }
-                            }
-                            else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
-                            {
-                                System.Diagnostics.Debug.WriteLine("AWAITING");
-                                if (RegistrationWaiting != null)
-                                {
-                                    RegistrationWaiting();
-                                }
-                                bDisconnect = false;
-                                bUpdateConnectionState = false;
-                            }
-                            else
-                            {
-//                                 if (RegistrationDenied != null)
-//                                 {
-//                                     RegistrationDenied();
-//                                 }
-                                System.Diagnostics.Debug.WriteLine("UNKNOWN");
-                                bDisconnect = false;
-                                bUpdateConnectionState = false;
-                            }
-
-                            if (bDisconnect)
-                            {
-                                System.Diagnostics.Debug.WriteLine("[reg] disconnecting (bdisconnect)");
-                                TvDirectSock.Close();
-                                if (Disconnected != null)
-                                {
-                                    Disconnected();
-                                }
-                                NotifyDisconnected();
-                            }
-                            else
-                            {
-                                TvDirectSock.ReceiveFromAsync(e);
-                                if (bUpdateConnectionState)
-                                {
-                                    connectionState = TvConnectionState.Connected;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine("[reg] disconnecting (else)");
-                            NotifyDisconnected();
-                        }
-                    }
-                    else if (connectionState == TvConnectionState.Connected)
-                    {
-                        if (e.SocketError == SocketError.Success)
-                        {
-                            if (e.BytesTransferred > 0)
-                            {
-                                for (int i = e.Offset; i < e.BytesTransferred; i++)
-                                {
-                                    //System.Diagnostics.Debug.WriteLine("0x{0:x}", e.Buffer[i]);
-                                }
-
-                                string responseStr = Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
-
-                                StreamReader sr = new System.IO.StreamReader(new MemoryStream(e.Buffer, e.Offset, e.BytesTransferred));
-                                sr.Read();
-                                string inApp = ReadString(sr);
-                                char[] keyResponse = ReadCharArray(sr);
-
-                                System.Diagnostics.Debug.WriteLine("[con] tv returned: " + inApp);
-                            }
-                            try
-                            {
-                                TvDirectSock.ReceiveFromAsync(e);
-                            }
-                            catch (System.Exception)
-                            {
-                                NotifyDisconnected();
-                            }
-                        }
-                        else
-                        {
-                            NotifyDisconnected();
-                        }
-                    }
-                    break;
-
-                case SocketAsyncOperation.Connect:
-                    if (connectionState == TvConnectionState.Connecting)
-                    {
-                        if (e.SocketError == SocketError.Success)
-                        {
-                            SendRegistrationTo(e);
-
-                            connectionState = TvConnectionState.AwaitingAuthorization;
-                            if (Connected != null)
-                            {
-                                Connected();
-                            }
-                        }
-                        else
-                        {
-                            NotifyDisconnected();
-                        }
-                    }
-                    break;
-            }
-        }
-
-        private void SendRegistrationTo(SocketAsyncEventArgs e)
+        private byte[] GetRegistration()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append((char)0x0);
             WriteText(sb, appName);
             WriteText(sb, GetRegistrationPayload("0.0.0.0"));
 
-            byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(sb.ToString());
-            e.SetBuffer(TvRegistrationMessage, 0, TvRegistrationMessage.Length);
-            TvDirectSock.SendToAsync(e);
-        }
-
-        private string ReadString(StreamReader sr)
-        {
-            char[] buffer = ReadCharArray(sr);
-            return new string(buffer);
-        }
-
-        private char[] ReadCharArray(StreamReader sr)
-        {
-            int length = sr.Read();
-            int delimiter = sr.Read();
-            if (delimiter != 0)
-            {
-                throw new Exception("Unexpected input " + delimiter);
-            }
-            char[] buffer = new char[length];
-            sr.Read(buffer, 0, length);
-            return buffer;
+            return Encoding.UTF8.GetBytes(sb.ToString());
         }
 
         private String GetRegistrationPayload(String ip)
@@ -357,13 +308,13 @@ namespace SamsungRemoteWP7
             sb.Append((char)0x64);
             sb.Append((char)0x00);
             WriteBase64Text(sb, ip);
-            string phoneId = PhoneInfoExtendedProperties.GetWindowsLiveAnonymousID();
+            string phoneId = null;//PhoneInfoExtendedProperties.GetWindowsLiveAnonymousID();
             if (string.IsNullOrWhiteSpace(phoneId))
             {
                 phoneId = "Anonymous Windows phone";
             }
             WriteBase64Text(sb, phoneId);
-            WriteBase64Text(sb, Microsoft.Phone.Info.DeviceStatus.DeviceName);
+            //WriteBase64Text(sb, Microsoft.Phone.Info.DeviceStatus.DeviceName);
             return sb.ToString();
         }
 
@@ -378,9 +329,9 @@ namespace SamsungRemoteWP7
             return WriteText(writer, s);
         }
 
-        private void InternalSendKey(TvKeyControl.EKey key)
+        private void InternalSendKey(EKey key)
         {
-            if (TvDirectSock == null || !TvDirectSock.Connected)
+            if (TvDirectSocket == null)
             {
                 return;
             }
@@ -390,14 +341,29 @@ namespace SamsungRemoteWP7
             WriteText(writer, appName);
             WriteText(writer, GetKeyPayload(key));
 
-            byte[] TvRegistrationMessage = Encoding.UTF8.GetBytes(writer.ToString());
-            SocketAsyncEventArgs e = new SocketAsyncEventArgs();
-            e.RemoteEndPoint = TvDirectSock.RemoteEndPoint;
-            e.SetBuffer(TvRegistrationMessage, 0, TvRegistrationMessage.Length);
-            TvDirectSock.SendToAsync(e);
+            SendBytes(Encoding.UTF8.GetBytes(writer.ToString()), SendKeyResponse);
         }
 
-        private String GetKeyPayload(TvKeyControl.EKey key)
+        private async void SendKeyResponse(IAsyncOperation<UInt32> info, AsyncStatus status)
+        {
+            if (status == AsyncStatus.Completed)
+            {
+                using (var reader = new DataReader(TvDirectSocket.InputStream))
+                {
+                    reader.InputStreamOptions = InputStreamOptions.Partial;
+                    await reader.LoadAsync(MaxBytesToRead);
+                    ReadResponseHeader(reader);
+                    /*var regResponse = */GetBytes(reader);
+                }
+            }
+            else
+            {
+                Cleanup();
+                NotifyDisconnected();
+            }
+        }
+
+        private String GetKeyPayload(EKey key)
         {
             StringBuilder writer = new StringBuilder();
             writer.Append((char)0x00);
@@ -409,7 +375,7 @@ namespace SamsungRemoteWP7
 
         private void InternalSendText(String text)
         {
-            if (TvDirectSock == null || !TvDirectSock.Connected)
+            if (TvDirectSocket == null)
             {
                 return;
             }
@@ -419,25 +385,43 @@ namespace SamsungRemoteWP7
 		    WriteText(writer, appName);
 		    WriteText(writer, GetTextPayload(text));
 
-            byte[] keyMessage = Encoding.UTF8.GetBytes(writer.ToString());
-            SocketAsyncEventArgs e = new SocketAsyncEventArgs();
-            e.RemoteEndPoint = TvDirectSock.RemoteEndPoint;
-            e.SetBuffer(keyMessage, 0, keyMessage.Length);
-            TvDirectSock.SendToAsync(e);
-	    }
+            SendBytes(Encoding.UTF8.GetBytes(writer.ToString()), SendTextResponse);
+        }
 
-	    public void SendText(String text)
+        private async void SendTextResponse(IAsyncOperation<UInt32> info, AsyncStatus status)
+        {
+            if (status == AsyncStatus.Completed)
+            {
+                using (var reader = new DataReader(TvDirectSocket.InputStream))
+                {
+                    reader.InputStreamOptions = InputStreamOptions.Partial;
+                    await reader.LoadAsync(MaxBytesToRead);
+                    ReadResponseHeader(reader);
+                    /*var regResponse = */GetBytes(reader);
+                }
+            }
+            else
+            {
+                Cleanup();
+                NotifyDisconnected();
+            }
+        }
+
+        public void SendText(String text)
         {
 // 		    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\"...");
 // 		        checkConnection();
-		    try {
-			    InternalSendText(text);
-		    } catch (SocketException /*e*/) {
+            try
+            {
+                InternalSendText(text);
+            }
+            catch (SocketException /*e*/)
+            {
 // 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
 // 			    initialize();
 // 			    if (logger != null) logger.v(TAG, "Sending text \"" + text + "\" again...");
 // 			    internalSendText(text);
-		    }
+            }
 		    //if (logger != null) logger.v(TAG, "Successfully sent text \"" + text + "\"");
 	    }
 
@@ -452,32 +436,19 @@ namespace SamsungRemoteWP7
 
         protected void NotifyDisconnected()
         {
-            connectionState = TvConnectionState.Disconnected;
+            ConnectionState = TvConnectionState.Disconnected;
             if (Disconnected != null)
             {
                 Disconnected();
             }
         }
 
-        protected bool AreArraysEqual(char[] arr1, char[] arr2)
+        protected bool AreArraysEqual(byte[] arr1, byte[] arr2)
         {
-            if (arr1.Length != arr2.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < arr1.Length; i++)
-            {
-                if (arr1[i] != arr2[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return StructuralComparisons.StructuralEqualityComparer.Equals(arr1, arr2);
         }
 
-        protected bool ArrayStartsWith(char[] prefixArray, char[] fullArray, int fullArrayLength)
+        protected bool ArrayStartsWith(byte[] prefixArray, byte[] fullArray, int fullArrayLength)
         {
             if (fullArray.Length != fullArrayLength)
             {

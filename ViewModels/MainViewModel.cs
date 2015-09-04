@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 
 
-namespace SamsungRemoteWP7
+namespace UnofficialSamsungRemote
 {
     public class MainViewModel : INotifyPropertyChanged
     {

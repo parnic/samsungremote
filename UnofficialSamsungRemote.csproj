@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{7C60DEAF-052C-40B1-8E90-4A52EFBE3847}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnofficialSamsungRemote</RootNamespace>
+    <AssemblyName>UnofficialSamsungRemote</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>UnofficialSamsungRemote_TemporaryKey.pfx</PackageCertificateKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="About.xaml.cs">
+      <DependentUpon>About.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Discovery.cs" />
+    <Compile Include="EKey.cs" />
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TvConnection.cs" />
+    <Compile Include="TvKeyControl.xaml.cs">
+      <DependentUpon>TvKeyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserSettings.xaml.cs">
+      <DependentUpon>UserSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\TvItemViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="UnofficialSamsungRemote_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\3d_btn.png" />
+    <Content Include="Images\3d_btn_focus.png" />
+    <Content Include="Images\btn_blank.png" />
+    <Content Include="Images\btn_focus_blank.png" />
+    <Content Include="Images\ch_down.png" />
+    <Content Include="Images\ch_down_focus.png" />
+    <Content Include="Images\ch_icon.png" />
+    <Content Include="Images\ch_up.png" />
+    <Content Include="Images\ch_up_focus.png" />
+    <Content Include="Images\colorkey_bg.png" />
+    <Content Include="Images\color_btn01.png" />
+    <Content Include="Images\color_btn01_focus.png" />
+    <Content Include="Images\color_btn02.png" />
+    <Content Include="Images\color_btn02_focus.png" />
+    <Content Include="Images\color_btn03.png" />
+    <Content Include="Images\color_btn03_focus.png" />
+    <Content Include="Images\color_btn04.png" />
+    <Content Include="Images\color_btn04_focus.png" />
+    <Content Include="Images\direction_bg.png" />
+    <Content Include="Images\direction_content.png" />
+    <Content Include="Images\direction_content_focus.png" />
+    <Content Include="Images\direction_exit.png" />
+    <Content Include="Images\direction_exit_focus.png" />
+    <Content Include="Images\direction_info.png" />
+    <Content Include="Images\direction_info_focus.png" />
+    <Content Include="Images\direction_internet.png" />
+    <Content Include="Images\direction_internet_focus.png" />
+    <Content Include="Images\direction_menu.png" />
+    <Content Include="Images\direction_menu_focus.png" />
+    <Content Include="Images\direction_return.png" />
+    <Content Include="Images\direction_return_focus.png" />
+    <Content Include="Images\direction_tools.png" />
+    <Content Include="Images\direction_tools_focus.png" />
+    <Content Include="Images\gear32.png" />
+    <Content Include="Images\info.png" />
+    <Content Include="Images\key4_keyboard_focus.png" />
+    <Content Include="Images\keypad_00.png" />
+    <Content Include="Images\keypad_00_focus.png" />
+    <Content Include="Images\keypad_01.png" />
+    <Content Include="Images\keypad_01_focus.png" />
+    <Content Include="Images\keypad_02.png" />
+    <Content Include="Images\keypad_02_focus.png" />
+    <Content Include="Images\keypad_03.png" />
+    <Content Include="Images\keypad_03_focus.png" />
+    <Content Include="Images\keypad_04.png" />
+    <Content Include="Images\keypad_04_focus.png" />
+    <Content Include="Images\keypad_05.png" />
+    <Content Include="Images\keypad_05_focus.png" />
+    <Content Include="Images\keypad_06.png" />
+    <Content Include="Images\keypad_06_focus.png" />
+    <Content Include="Images\keypad_07.png" />
+    <Content Include="Images\keypad_07_focus.png" />
+    <Content Include="Images\keypad_08.png" />
+    <Content Include="Images\keypad_08_focus.png" />
+    <Content Include="Images\keypad_09.png" />
+    <Content Include="Images\keypad_09_focus.png" />
+    <Content Include="Images\keypad_ch.png" />
+    <Content Include="Images\keypad_ch_focus.png" />
+    <Content Include="Images\keypad_enter.png" />
+    <Content Include="Images\keypad_enter_focus.png" />
+    <Content Include="Images\keypad_minus.png" />
+    <Content Include="Images\keypad_minus_focus.png" />
+    <Content Include="Images\key_down.png" />
+    <Content Include="Images\key_down_focus.png" />
+    <Content Include="Images\key_keyboard.png" />
+    <Content Include="Images\key_keyboard_focus.png" />
+    <Content Include="Images\key_left.png" />
+    <Content Include="Images\key_left_focus.png" />
+    <Content Include="Images\key_right.png" />
+    <Content Include="Images\key_right_focus.png" />
+    <Content Include="Images\key_up.png" />
+    <Content Include="Images\key_up_focus.png" />
+    <Content Include="Images\mute_btn.png" />
+    <Content Include="Images\mute_btn_focus.png" />
+    <Content Include="Images\nav_bg.png" />
+    <Content Include="Images\nav_power.png" />
+    <Content Include="Images\nav_power_focus.png" />
+    <Content Include="Images\playcontrol_ff.png" />
+    <Content Include="Images\playcontrol_ff_focus.png" />
+    <Content Include="Images\playcontrol_pause.png" />
+    <Content Include="Images\playcontrol_pause_focus.png" />
+    <Content Include="Images\playcontrol_play.png" />
+    <Content Include="Images\playcontrol_play_focus.png" />
+    <Content Include="Images\playcontrol_rec.png" />
+    <Content Include="Images\playcontrol_rec_focus.png" />
+    <Content Include="Images\playcontrol_rew.png" />
+    <Content Include="Images\playcontrol_rew_focus.png" />
+    <Content Include="Images\playcontrol_stop.png" />
+    <Content Include="Images\playcontrol_stop_focus.png" />
+    <Content Include="Images\power_btn.png" />
+    <Content Include="Images\power_btn_focus.png" />
+    <Content Include="Images\qwerty_bt01_down.png" />
+    <Content Include="Images\qwerty_bt01_down_focus.png" />
+    <Content Include="Images\qwerty_bt01_menu.png" />
+    <Content Include="Images\qwerty_bt01_menu_focus.png" />
+    <Content Include="Images\qwerty_bt01_up.png" />
+    <Content Include="Images\qwerty_bt01_up_focus.png" />
+    <Content Include="Images\qwerty_bt02_down.png" />
+    <Content Include="Images\qwerty_bt02_down_focus.png" />
+    <Content Include="Images\qwerty_bt02_menu.png" />
+    <Content Include="Images\qwerty_bt02_menu_focus.png" />
+    <Content Include="Images\qwerty_bt02_up.png" />
+    <Content Include="Images\qwerty_bt02_up_focus.png" />
+    <Content Include="Images\qwerty_btn.png" />
+    <Content Include="Images\qwerty_btn_focus.png" />
+    <Content Include="Images\rack.png" />
+    <Content Include="Images\refresh.png" />
+    <Content Include="Images\remoter_toolbar_connection.png" />
+    <Content Include="Images\remoter_toolbar_connection_focus.png" />
+    <Content Include="Images\remoter_toolbar_navigation.png" />
+    <Content Include="Images\remoter_toolbar_navigation_focus.png" />
+    <Content Include="Images\remoter_toolbar_poweroff.png" />
+    <Content Include="Images\remoter_toolbar_poweroff_focus.png" />
+    <Content Include="Images\remoter_toolbar_qwerty.png" />
+    <Content Include="Images\remoter_toolbar_qwerty_focus.png" />
+    <Content Include="Images\source_btn.png" />
+    <Content Include="Images\source_btn_focus.png" />
+    <Content Include="Images\tab_4key.png" />
+    <Content Include="Images\tab_4key_focus.png" />
+    <Content Include="Images\tab_keyboard.png" />
+    <Content Include="Images\tab_keyboard_focus.png" />
+    <Content Include="Images\volch_btn_bg.png" />
+    <Content Include="Images\volum_down.png" />
+    <Content Include="Images\volum_down_focus.png" />
+    <Content Include="Images\volum_icon.png" />
+    <Content Include="Images\volum_up.png" />
+    <Content Include="Images\volum_up_focus.png" />
+    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="About.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SampleData\MainViewModelSampleData.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TvKeyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
