@@ -332,8 +332,14 @@ namespace UnofficialSamsungRemote
             });
         }
 
-        private void TvListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TvListBox_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            if (!bEnabled)
+            {
+                MainPivot.SelectedIndex = 1;
+                return;
+            }
+
             var tv = (TvListBox.SelectedItem as TvItemViewModel);
             if (tv != null)
             {
@@ -463,14 +469,16 @@ namespace UnofficialSamsungRemote
             SetProgressText("Waiting for user authorization...");
         }
 
-        void directConn_RegistrationTimedOut()
+        async void directConn_RegistrationTimedOut()
         {
             SetProgressText("Remote connection timed out.");
+            await DisplayOkBox("Remote connection timed out.");
         }
 
-        void directConn_RegistrationDenied()
+        async void directConn_RegistrationDenied()
         {
             SetProgressText("Remote connection denied.");
+            await DisplayOkBox("Remote connection denied.");
         }
 
         void directConn_RegistrationAccepted()
@@ -479,10 +487,11 @@ namespace UnofficialSamsungRemote
             ToggleProgressBar(false);
         }
 
-        void directConn_RegistrationFailed()
+        async void directConn_RegistrationFailed()
         {
             SetProgressText("Sending remote registration failed.");
             ToggleProgressBar(false);
+            await DisplayOkBox("Sending remote registration failed.");
         }
 
         void directConn_Registering()

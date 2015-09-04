@@ -24,7 +24,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <ListBox x:Name="TvListBox" Margin="0,0,0,0" ItemsSource="{Binding TvItems}" Grid.Row="0" SelectionChanged="TvListBox_SelectionChanged">
+                    <ListBox x:Name="TvListBox" Margin="0,0,0,0" ItemsSource="{Binding TvItems}" Grid.Row="0" Tapped="TvListBox_Tapped">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
