@@ -246,7 +246,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}" Opacity="0.85" Name="TransparentOverlay" Visibility="Visible">
+        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}" Opacity="0" Name="TransparentOverlay" Visibility="Visible">
             <StackPanel VerticalAlignment="Center">
                 <ProgressBar IsIndeterminate="true" Name="customIndeterminateProgressBar"/>
                 <TextBlock Text="Loading..." Margin="30,0,30,0" FontSize="28" Name="progressText" TextWrapping="Wrap" TextAlignment="Center"/>
