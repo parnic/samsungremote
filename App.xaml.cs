@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -62,9 +63,14 @@ namespace UnofficialSamsungRemote
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated
+                    || e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser
+                    || e.PreviousExecutionState == ApplicationExecutionState.NotRunning)
                 {
-                    //TODO: Load state from previously suspended application
+                    var settings = ApplicationData.Current.RoamingSettings.Values;
+                    Settings.LoadedSettings.bShouldVibrateOnKeyPress = settings.ContainsKey(nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)) ? (bool)settings[nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)] : true;
+
+                    Settings.LoadedSettings.OnLoaded();
                 }
 
                 // Place the frame in the current Window
@@ -102,8 +108,21 @@ namespace UnofficialSamsungRemote
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+
             deferral.Complete();
+        }
+
+        public static void SaveSetting(string settingName, object settingValue)
+        {
+            var settings = ApplicationData.Current.RoamingSettings.Values;
+            if (!settings.ContainsKey(settingName))
+            {
+                settings.Add(settingName, settingValue);
+            }
+            else
+            {
+                settings[settingName] = settingValue;
+            }
         }
     }
 }

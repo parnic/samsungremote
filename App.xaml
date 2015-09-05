@@ -5,4 +5,8 @@
     xmlns:local="using:UnofficialSamsungRemote"
     RequestedTheme="Light">
 
+    <Application.Resources>
+        <local:XamlHelper xmlns:local="using:UnofficialSamsungRemote" x:Key="XamlHelper" />
+    </Application.Resources>
+
 </Application>

@@ -104,7 +104,7 @@ namespace UnofficialSamsungRemote
 
         public static void ConditionalConfirmationVibration()
         {
-            //if (SavedSettings.LoadedSettings.bShouldVibrateOnKeyPress)
+            if (Settings.LoadedSettings.bShouldVibrateOnKeyPress)
             {
                 //VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
             }
