@@ -19,6 +19,7 @@ namespace UnofficialSamsungRemote
                 if (Frame.CanGoBack)
                 {
                     Frame.GoBack();
+                    e.Handled = true;
                 }
             };
         }
