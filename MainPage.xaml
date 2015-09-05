@@ -120,13 +120,13 @@
                         ImageLocation="Images/key_up.png" MyKey="KEY_UP" AllowRepeats="True"/>
 
                     <!-- misc controls -->
-                    <local:TvKeyControl Margin="25,53,327,57" Width="103" Height="64"
+                    <local:TvKeyControl Margin="26,278,327,331" Width="103" Height="64"
                         ImageLocation="Images/qwerty_btn.png" MyKey="KEY_INVALID" OnKeyPressed="OnQwertyButtonPressed"/>
-                    <local:TvKeyControl Margin="25,487,327,57" Width="103" Height="64"
+                    <local:TvKeyControl Margin="26,485,327,124" Width="103" Height="64"
                         ImageLocation="Images/source_btn.png" MyKey="KEY_SOURCE"/>
-                    <local:TvKeyControl Margin="329,53,29,59" Width="103" Height="64"
+                    <local:TvKeyControl Margin="329,278,24,331" Width="103" Height="64"
                         ImageLocation="Images/3d_btn.png" MyKey="KEY_PANNEL_CHDOWN"/>
-                    <local:TvKeyControl Margin="329,490,29,59" Width="98" Height="58"
+                    <local:TvKeyControl Margin="329,488,24,127" Width="98" Height="58"
                         ImageLocation="Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"/>
                 </Grid>
             </PivotItem>
@@ -136,20 +136,20 @@
                     <!-- row 1 -->
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,70,0,0"
                             Source="Images/rack.png"/>
-                    <local:TvKeyControl Margin="27,10,305,487" Width="124" Height="110"
+                    <local:TvKeyControl Margin="27,16,305,547" Width="124" Height="110"
                             ImageLocation="Images/playcontrol_rew.png" MyKey="KEY_WHEEL_LEFT"/>
-                    <local:TvKeyControl Margin="166,10,166,487" Width="124" Height="110"
+                    <local:TvKeyControl Margin="166,16,166,547" Width="124" Height="110"
                             ImageLocation="Images/playcontrol_pause.png" MyKey="KEY_PAUSE"/>
-                    <local:TvKeyControl Margin="303,10,29,487" Width="124" Height="110"
+                    <local:TvKeyControl Margin="303,16,29,547" Width="124" Height="110"
                             ImageLocation="Images/playcontrol_ff.png" MyKey="KEY_WHEEL_RIGHT"/>
                     <!-- row 2 -->
                     <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,190,0,0"
                             Source="Images/rack.png"/>
-                    <local:TvKeyControl Margin="27,130,305,367" Height="110" Width="124"
+                    <local:TvKeyControl Margin="27,136,305,427" Height="110" Width="124"
                             ImageLocation="Images/playcontrol_rec.png" MyKey="KEY_REC"/>
-                    <local:TvKeyControl Margin="166,130,166,367" Height="110" Width="124"
+                    <local:TvKeyControl Margin="166,136,166,427" Height="110" Width="124"
                             ImageLocation="Images/playcontrol_play.png" MyKey="KEY_PLAY"/>
-                    <local:TvKeyControl Margin="303,130,29,367" Height="110" Width="124"
+                    <local:TvKeyControl Margin="303,136,29,427" Height="110" Width="124"
                             ImageLocation="Images/playcontrol_stop.png" MyKey="KEY_STOP"/>
 
                     <!-- volume controls -->
