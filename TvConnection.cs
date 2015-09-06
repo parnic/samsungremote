@@ -308,7 +308,7 @@ namespace UnofficialSamsungRemote
             sb.Append((char)0x64);
             sb.Append((char)0x00);
             WriteBase64Text(sb, ip);
-            string phoneId = null;//PhoneInfoExtendedProperties.GetWindowsLiveAnonymousID();
+            string phoneId = Utilities.GetAnonymousId();
             if (string.IsNullOrWhiteSpace(phoneId))
             {
                 phoneId = "Anonymous Windows phone";
