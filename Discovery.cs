@@ -100,10 +100,14 @@ namespace UnofficialSamsungRemote
                 return;
             }
 
-            using (var stream = await tvSearchSocket.GetOutputStreamAsync(multicastAddress, multicastPort.ToString()))
+            try
             {
-                await stream.WriteAsync(tvSearchMessage.AsBuffer());
+                using (var stream = await tvSearchSocket.GetOutputStreamAsync(multicastAddress, multicastPort.ToString()))
+                {
+                    await stream.WriteAsync(tvSearchMessage.AsBuffer());
+                }
             }
+            catch { }
         }
 
         public void Cleanup()
