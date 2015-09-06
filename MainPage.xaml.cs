@@ -435,6 +435,27 @@ namespace UnofficialSamsungRemote
 
             MainPivot.SelectedIndex = 0;
         }
+
+        public static void NotifyAppFreshStart()
+        {
+            //bFirstLoad = true;
+        }
+
+        public static void NotifyAppDeactivated()
+        {
+            if (directConn != null)
+            {
+                directConn.NotifyAppDeactivated();
+            }
+        }
+
+        public static void NotifyAppActivated()
+        {
+            if (directConn != null)
+            {
+                directConn.NotifyAppActivated();
+            }
+        }
         #endregion
 
         #region direct connection handling/callbacks

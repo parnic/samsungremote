@@ -21,7 +21,9 @@ namespace UnofficialSamsungRemote
             {
                 // Delay creation of the view model until necessary
                 if (viewModel == null)
+                {
                     viewModel = new MainViewModel();
+                }
 
                 return viewModel;
             }
@@ -35,6 +37,22 @@ namespace UnofficialSamsungRemote
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            this.Resuming += App_Resuming;
+            this.UnhandledException += App_UnhandledException;
+        }
+
+        private void App_Resuming(object sender, object e)
+        {
+            MainPage.NotifyAppActivated();
+        }
+
+        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                // An unhandled exception has occurred; break into the debugger
+                System.Diagnostics.Debugger.Break();
+            }
         }
 
         /// <summary>
@@ -63,18 +81,24 @@ namespace UnofficialSamsungRemote
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated
-                    || e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser
-                    || e.PreviousExecutionState == ApplicationExecutionState.NotRunning)
-                {
-                    var settings = ApplicationData.Current.RoamingSettings.Values;
-                    Settings.LoadedSettings.bShouldVibrateOnKeyPress = settings.ContainsKey(nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)) ? (bool)settings[nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)] : true;
-
-                    Settings.LoadedSettings.OnLoaded();
-                }
-
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
+            }
+
+            if (e.PreviousExecutionState == ApplicationExecutionState.Terminated
+                    || e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser
+                    || e.PreviousExecutionState == ApplicationExecutionState.NotRunning)
+            {
+                var settings = ApplicationData.Current.RoamingSettings.Values;
+                Settings.LoadedSettings.bShouldVibrateOnKeyPress = settings.ContainsKey(nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)) ? (bool)settings[nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)] : true;
+
+                Settings.LoadedSettings.OnLoaded();
+
+                MainPage.NotifyAppFreshStart();
+            }
+            else
+            {
+                MainPage.NotifyAppActivated();
             }
 
             if (rootFrame.Content == null)
@@ -108,6 +132,8 @@ namespace UnofficialSamsungRemote
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            MainPage.NotifyAppDeactivated();
 
             deferral.Complete();
         }
