@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
@@ -43,6 +45,7 @@ namespace UnofficialSamsungRemote
 
         private void App_Resuming(object sender, object e)
         {
+            PhoneHome(true);
             MainPage.NotifyAppActivated();
         }
 
@@ -94,10 +97,12 @@ namespace UnofficialSamsungRemote
 
                 Settings.LoadedSettings.OnLoaded();
 
+                PhoneHome();
                 MainPage.NotifyAppFreshStart();
             }
             else
             {
+                PhoneHome(true);
                 MainPage.NotifyAppActivated();
             }
 
@@ -110,6 +115,59 @@ namespace UnofficialSamsungRemote
             }
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private void PhoneHome(bool bWarmStart = true)
+        {
+            try
+            {
+                string url = "http://samsungremotewp7.perniciousgames.com/checkin.php?user=" + Utilities.GetAnonymousId();
+                if (bWarmStart)
+                {
+                    url += "&re=1";
+                }
+                url += "&v=" + MainPage.GetVersionNumber();
+
+                HttpWebRequest wr = (HttpWebRequest)WebRequest.Create(url);
+                wr.BeginGetResponse(async asyncRequest =>
+                {
+                    try
+                    {
+                        HttpWebRequest wr2 = asyncRequest.AsyncState as HttpWebRequest;
+                        using (var response = wr2.EndGetResponse(asyncRequest))
+                        {
+                            try
+                            {
+                                string respMsg = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                                System.Diagnostics.Debug.WriteLine("received response from check-in server: " + respMsg);
+                                if (respMsg == "nv")
+                                {
+                                    await (Window.Current.Content as Frame).Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                    {
+                                        //if (MessageBox.Show("A new version of this app is now available! Press 'Ok' to open up the marketplace and download it.",
+                                        //    "New version available", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                                        //{
+                                        //    ShowMyMarketplacePage();
+                                        //}
+                                    });
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                System.Diagnostics.Debug.WriteLine("unable to parse check-in response");
+                            }
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        System.Diagnostics.Debug.WriteLine("saying hi failed.");
+                    }
+                }, wr);
+            }
+            catch (System.Exception)
+            {
+                System.Diagnostics.Debug.WriteLine("asking to say hi failed.");
+            }
         }
 
         /// <summary>
