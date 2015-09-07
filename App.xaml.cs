@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
@@ -15,6 +16,8 @@ namespace UnofficialSamsungRemote
     /// </summary>
     sealed partial class App : Application
     {
+        public const string AppId = "eee32829-f405-40b4-93d1-568bbda1664d";
+
         private static MainViewModel viewModel = null;
 
         public static MainViewModel ViewModel
@@ -168,6 +171,18 @@ namespace UnofficialSamsungRemote
             {
                 System.Diagnostics.Debug.WriteLine("asking to say hi failed.");
             }
+        }
+
+        public static async Task ShowMyMarketplacePage()
+        {
+            var uri = new Uri(string.Format("ms-windows-store:navigate?appid={0}", AppId));
+            await Windows.System.Launcher.LaunchUriAsync(uri);
+        }
+
+        public static async Task ShowMyReviewPage()
+        {
+            var uri = new Uri(string.Format("ms-windows-store:reviewapp?appid={0}", AppId));
+            await Windows.System.Launcher.LaunchUriAsync(uri);
         }
 
         /// <summary>

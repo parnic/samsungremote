@@ -29,10 +29,9 @@ namespace UnofficialSamsungRemote
             emailTask.Show();*/
         }
 
-        private void RateUs_Click(object sender, RoutedEventArgs e)
+        private async void RateUs_Click(object sender, RoutedEventArgs e)
         {
-            /*MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
-            marketplaceReviewTask.Show();*/
+            await App.ShowMyReviewPage();
         }
     }
 }
