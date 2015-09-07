@@ -18,6 +18,7 @@ namespace UnofficialSamsungRemote
         private Discovery discoverer;
         private static TvConnection directConn;
         private bool bFirstLoad = true;
+        private DateTime inputShown;
         public static bool bEnabled { get; private set; }
 
         public MainPage()
@@ -28,23 +29,7 @@ namespace UnofficialSamsungRemote
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
-            SystemNavigationManager.GetForCurrentView().BackRequested += (s, e) =>
-            {
-                if (TextInputOverlay.Visibility == Visibility.Visible)
-                {
-                    TextInputOverlay.Visibility = Visibility.Collapsed;
-                    if (e != null)
-                    {
-                        e.Handled = true;
-                    }
-                    txtInput.Text = "";
-                    MainPivot.Focus(FocusState.Programmatic);
-                }
-                else if (discoverer.HandleBackButton())
-                {
-                    e.Handled = true;
-                }
-            };
+            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
 
             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
 
@@ -52,6 +37,27 @@ namespace UnofficialSamsungRemote
             discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
             discoverer.SearchingEnded += new Discovery.SearchingEndedDelegate(discoverer_SearchingEnded);
             discoverer.TvFound += new Discovery.TvFoundDelegate(discoverer_TvFound);
+        }
+
+        private void OnBackRequested(object sender = null, BackRequestedEventArgs e = null)
+        {
+            if (TextInputOverlay.Visibility == Visibility.Visible)
+            {
+                TextInputOverlay.Visibility = Visibility.Collapsed;
+                if (e != null)
+                {
+                    e.Handled = true;
+                }
+                txtInput.Text = "";
+                MainPivot.Focus(FocusState.Programmatic);
+            }
+            else if (discoverer.HandleBackButton())
+            {
+                if (e != null)
+                {
+                    e.Handled = true;
+                }
+            }
         }
 
         public static string GetVersionNumber()
@@ -405,17 +411,27 @@ namespace UnofficialSamsungRemote
 
         private void txtInput_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
-
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if (txtInput.Text.Length > 0)
+                {
+                    SendText(txtInput.Text);
+                }
+                OnBackRequested();
+            }
         }
 
         private void txtInput_LostFocus(object sender, RoutedEventArgs e)
         {
-
+            if (TextInputOverlay.Visibility == Visibility.Visible && (DateTime.Now - inputShown).TotalMilliseconds > 250)
+            {
+                OnBackRequested();
+            }
         }
 
         private void txtInput_GotFocus(object sender, RoutedEventArgs e)
         {
-
+            inputShown = DateTime.Now;
         }
 
         private void OnPowerButtonPressed(object sender, EventArgs args)
