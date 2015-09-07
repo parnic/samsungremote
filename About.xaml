@@ -12,48 +12,46 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock x:Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}"/>
-            <TextBlock x:Name="PageTitle" Text="about" Margin="9,-7,0,0" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
+        <StackPanel Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}"/>
+            <TextBlock Name="PageTitle" Text="about" Margin="9,-7,0,0" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
         </StackPanel>
 
-        <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <ListBox HorizontalContentAlignment="Stretch">
-                <ListBoxItem HorizontalContentAlignment="Stretch">
+        <Grid Name="ContentPanel" Grid.Row="1">
+            <ScrollViewer>
+                <StackPanel>
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center">App suggestions or problems?</TextBlock>
-                </ListBoxItem>
-                <ListBoxItem Margin="0,0,0,15" HorizontalContentAlignment="Stretch">
-                    <HyperlinkButton Content="Tap here to contact the author" Click="Contact_Click"/>
-                </ListBoxItem>
+                    <HyperlinkButton Content="Contact the author" Click="Contact_Click" Margin="0,10,10,5"/>
 
-                <ListBoxItem Margin="0,0,0,15" HorizontalContentAlignment="Stretch">
-                    <HyperlinkButton Content="Rate me on the marketplace!" Click="RateUs_Click"/>
-                </ListBoxItem>
+                    <HyperlinkButton Content="Rate me on the marketplace!" Click="RateUs_Click" Margin="0,5,10,15"/>
 
-                <TextBlock TextWrapping="Wrap" Text="Not working for you? Here are some things to try:" Margin="0,0,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
-                <TextBlock TextWrapping="Wrap">Make sure your TV fits one of the following categories:</TextBlock>
-                <TextBlock TextWrapping="Wrap">* LED 6500 series or higher (model starts with 'U')</TextBlock>
-                <TextBlock TextWrapping="Wrap">* LCD 650 series or higher (model starts with 'L')</TextBlock>
-                <TextBlock TextWrapping="Wrap">* PDP 6500 series or higher (model starts with 'P')</TextBlock>
-                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0">Make sure your TV is powered on and is not currently in the Smart Hub. If you have not registered the app with your TV before, the Smart Hub may prevent registration from working.</TextBlock>
-                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0">Verify that "Network Remote" is enabled in the TV's settings.</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="Not working for you? Here are some things to try:" Margin="0,0,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <StackPanel Margin="15,0,0,0">
+                        <TextBlock TextWrapping="Wrap">Make sure your TV fits one of the following categories:</TextBlock>
+                        <TextBlock TextWrapping="Wrap">* LED 6500 series or higher (model starts with 'U')</TextBlock>
+                        <TextBlock TextWrapping="Wrap">* LCD 650 series or higher (model starts with 'L')</TextBlock>
+                        <TextBlock TextWrapping="Wrap">* PDP 6500 series or higher (model starts with 'P')</TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,15,0,0">Make sure your TV is powered on and is not currently in the Smart Hub. If you have not registered the app with your TV before, the Smart Hub may prevent registration from working.</TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,15,0,0">Verify that "Network Remote" is enabled in the TV's settings.</TextBlock>
+                    </StackPanel>
 
-                <TextBlock TextWrapping="Wrap" Text="Other notes" Margin="0,15,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
-                <TextBlock TextWrapping="Wrap">* Some buttons may not do anything on your TV. For example: not all supported models have an "Internet @ TV" mode - some just have a Smart Hub which you can access by pressing the "Content" button.</TextBlock>
-                <TextBlock TextWrapping="Wrap">* Not all apps on the TV support QWERTY text input. The YouTube app, for example, requires the user to select letters using the on-screen keyboard. This is a limitation of the TV app, not the remote app.</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="Other notes" Margin="0,15,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <StackPanel Margin="15,0,0,0">
+                        <TextBlock TextWrapping="Wrap">* Some buttons may not do anything on your TV. For example: not all supported models have an "Internet @ TV" mode - some just have a Smart Hub which you can access by pressing the "Content" button.</TextBlock>
+                        <TextBlock TextWrapping="Wrap">* Not all apps on the TV support QWERTY text input. The YouTube app, for example, requires the user to select letters using the on-screen keyboard. This is a limitation of the TV app, not the remote app.</TextBlock>
+                    </StackPanel>
 
-                <TextBlock TextWrapping="Wrap" Text="Disclaimer" Margin="0,15,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
-                <TextBlock TextWrapping="Wrap">This app was not written by an employee of Samsung and is not an officially-licensed, -endorsed, or -approved Samsung product. All trademarks and copyrights are the property of their owners.</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="Disclaimer" Margin="0,15,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <StackPanel Margin="15,0,0,0">
+                        <TextBlock TextWrapping="Wrap">This app was not written by an employee of Samsung and is not an officially-licensed, -endorsed, or -approved Samsung product. All trademarks and copyrights are the property of their owners.</TextBlock>
+                    </StackPanel>
 
-                <ListBoxItem Margin="0,15,0,0" HorizontalContentAlignment="Stretch">
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}">Thank you for using Unofficial Samsung Remote for Windows Phone!</TextBlock>
-                </ListBoxItem>
-            </ListBox>
+                    <TextBlock TextWrapping="Wrap" Margin="0,20,0,0" TextAlignment="Center" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}">Thank you for using Unofficial Samsung Remote!</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Page>
