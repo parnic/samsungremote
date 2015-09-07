@@ -7,10 +7,12 @@
     FontFamily="{ThemeResource PhoneFontFamilyNormal}"
     FontSize="{ThemeResource ContentControlFontSize}"
     Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-    d:DesignHeight="120" d:DesignWidth="90" Loaded="UserControl_Loaded"
+    d:DesignHeight="120" d:DesignWidth="90"
+    Loaded="UserControl_Loaded"
     Tapped="UserControl_Tap"
     PointerPressed="UserControl_PointerPressed"
-    PointerReleased="UserControl_PointerReleased">
+    PointerReleased="UserControl_PointerReleased"
+    PointerExited="UserControl_PointerReleased">
 
     <Grid Name="LayoutRoot">
         <Image Name="Img" Source="Images/keypad_00.png"/>
