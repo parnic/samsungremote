@@ -22,13 +22,11 @@ namespace UnofficialSamsungRemote
             };
         }
 
-        private void Contact_Click(object sender, RoutedEventArgs e)
+        private async void Contact_Click(object sender, RoutedEventArgs e)
         {
-            /*var emailTask = new EmailComposeTask();
-            emailTask.To = "samsungremotewp7@perniciousgames.com";
-            emailTask.Subject = "Unofficial Samsung Remote support request";
-            emailTask.Body = "My Unofficial Samsung Remote version: " + MainPage.GetVersionNumber() + System.Environment.NewLine + System.Environment.NewLine;
-            emailTask.Show();*/
+            await App.ShowComposeEmail("samsungremote@perniciousgames.com",
+                "Unofficial Samsung Remote support request",
+                "My Unofficial Samsung Remote version: " + MainPage.GetVersionNumber() + System.Environment.NewLine + System.Environment.NewLine);
         }
 
         private async void RateUs_Click(object sender, RoutedEventArgs e)
