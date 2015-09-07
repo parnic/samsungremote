@@ -21,6 +21,8 @@ namespace UnofficialSamsungRemote
         private DateTime inputShown;
         public static bool bEnabled { get; private set; }
 
+        private const int IanaInterfaceType_Ethernet = 6;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -292,17 +294,47 @@ namespace UnofficialSamsungRemote
         #endregion
 
         #region button/app event handlers
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (bFirstLoad)
             {
-                bEnabled = true;
-
-                ToggleProgressBar(true);
-                discoverer.FindTvs();
+                await ConditionalFindDevices();
             }
 
             bFirstLoad = false;
+        }
+
+        private async Task ConditionalFindDevices()
+        {
+            btnDemoMode.Visibility = Visibility.Collapsed;
+
+            bool bConnectedToNonCellNetwork = false;
+            var profiles = Windows.Networking.Connectivity.NetworkInformation.GetConnectionProfiles();
+            foreach (var profile in profiles)
+            {
+                if (profile != null
+                    && (profile.IsWlanConnectionProfile || profile.NetworkAdapter.IanaInterfaceType == IanaInterfaceType_Ethernet))
+                {
+                    bConnectedToNonCellNetwork = true;
+                    break;
+                }
+            }
+
+            ToggleProgressBar(true);
+
+            if (bConnectedToNonCellNetwork)
+            {
+                bEnabled = true;
+                discoverer.FindTvs();
+            }
+            else
+            {
+                SetProgressText("Remote disabled.");
+                btnDemoMode.Visibility = Visibility.Visible;
+                TransparentOverlay.Visibility = Visibility.Visible;
+
+                await DisplayOkBox("You must be connected to a non-cell network in order to connect to a TV. Connect to the same network as your device and try again.");
+            }
         }
 
         private async void ToggleProgressBar(bool? bEnableProgressBar = false)
@@ -395,14 +427,10 @@ namespace UnofficialSamsungRemote
             }
         }
 
-        private void RefreshTvList_Click(object sender, RoutedEventArgs e)
+        private async void RefreshTvList_Click(object sender, RoutedEventArgs e)
         {
             App.ViewModel.TvItems.Clear();
-            bEnabled = true;
-
-            btnDemoMode.Visibility = Visibility.Collapsed;
-            discoverer.FindTvs();
-            ToggleProgressBar(true);
+            await ConditionalFindDevices();
         }
 
         private void OnQwertyButtonPressed(object sender, EventArgs args)
