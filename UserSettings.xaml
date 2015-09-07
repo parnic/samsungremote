@@ -7,16 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="480"
-    d:DesignHeight="768"
-    MaxHeight="768"
-    MaxWidth="480"
-    MinWidth="480"
-    MinHeight="768">
+    d:DesignHeight="768">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!--TitlePanel contains the name of the application and page title-->
@@ -27,7 +24,9 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" VerticalAlignment="Top">
-            <CheckBox Content="Vibrate on key presses" IsChecked="{Binding LoadedSettings.bShouldVibrateOnKeyPress, Source={StaticResource XamlHelper}, Mode=TwoWay}"/>
+            <CheckBox Content="* Vibrate on key presses" IsChecked="{Binding LoadedSettings.bShouldVibrateOnKeyPress, Source={StaticResource XamlHelper}, Mode=TwoWay}"/>
         </Grid>
+        
+        <TextBlock Grid.Row="2" Text="* May not be available on all devices"/>
     </Grid>
 </Page>

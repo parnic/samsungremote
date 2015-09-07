@@ -7,11 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="480"
-    d:DesignHeight="768"
-    MaxHeight="768"
-    MaxWidth="480"
-    MinWidth="480"
-    MinHeight="768">
+    d:DesignHeight="768">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
