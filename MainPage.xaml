@@ -20,7 +20,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <ListBox x:Name="TvListBox" ItemsSource="{Binding TvItems}" Tapped="TvListBox_Tapped">
+                    <ListBox Name="TvListBox" ItemsSource="{Binding TvItems}" Tapped="TvListBox_Tapped">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
