@@ -185,6 +185,16 @@ namespace UnofficialSamsungRemote
             await Windows.System.Launcher.LaunchUriAsync(uri);
         }
 
+        public static async Task ShowComposeEmail(string to, string subject, string body)
+        {
+            var msg = new Windows.ApplicationModel.Email.EmailMessage();
+            msg.To.Add(new Windows.ApplicationModel.Email.EmailRecipient(to));
+            msg.Subject = subject;
+            msg.Body = body;
+
+            await Windows.ApplicationModel.Email.EmailManager.ShowComposeNewEmailAsync(msg);
+        }
+
         /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>
