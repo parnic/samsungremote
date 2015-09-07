@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pernicious Games")]
 [assembly: AssemblyProduct("Unofficial Samsung Remote")]
-[assembly: AssemblyCopyright("Copyright © Pernicious Games 2011")]
+[assembly: AssemblyCopyright("Copyright © Pernicious Games 2011-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="535b9cf0-c250-4e44-a6c6-122a540237e4" Publisher="CN=Chris" Version="1.0.0.0" />
+  <Identity Name="535b9cf0-c250-4e44-a6c6-122a540237e4" Publisher="CN=&quot;Pernicious Games, LLC&quot;" Version="1.8.0.0" />
   <mp:PhoneIdentity PhoneProductId="535b9cf0-c250-4e44-a6c6-122a540237e4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Unofficial Samsung Remote</DisplayName>
@@ -21,7 +21,9 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="portrait" />
+          <uap:Rotation Preference="landscape" />
           <uap:Rotation Preference="portraitFlipped" />
+          <uap:Rotation Preference="landscapeFlipped" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
