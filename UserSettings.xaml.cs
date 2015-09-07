@@ -14,6 +14,8 @@ namespace UnofficialSamsungRemote
         {
             this.InitializeComponent();
 
+            ApplicationTitle.Text = ApplicationTitle.Text.Replace("{v}", MainPage.GetVersionNumber());
+
             SystemNavigationManager.GetForCurrentView().BackRequested += (s, e) =>
             {
                 if (Frame.CanGoBack)

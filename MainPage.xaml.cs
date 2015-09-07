@@ -25,6 +25,8 @@ namespace UnofficialSamsungRemote
         {
             this.InitializeComponent();
 
+            MainPivot.Title = (MainPivot.Title as string).Replace("{v}", MainPage.GetVersionNumber());
+
             DataContext = App.ViewModel;
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
