@@ -246,6 +246,7 @@
     <Content Include="Images\tab_4key_focus.png" />
     <Content Include="Images\tab_keyboard.png" />
     <Content Include="Images\tab_keyboard_focus.png" />
+    <Content Include="Images\TV.png" />
     <Content Include="Images\volch_btn_bg.png" />
     <Content Include="Images\volum_down.png" />
     <Content Include="Images\volum_down_focus.png" />

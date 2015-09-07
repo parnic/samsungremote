@@ -27,14 +27,14 @@
                     <ListBox x:Name="TvListBox" Margin="0,0,0,0" ItemsSource="{Binding TvItems}" Grid.Row="0" Tapped="TvListBox_Tapped">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="TV.png" Width="62" Height="62" VerticalAlignment="Top"/>
-                                    <StackPanel Width="432" Height="78">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <Image Source="Images/TV.png" Width="62" Height="62" VerticalAlignment="Top" Margin="0,-3,0,0"/>
+                                    <StackPanel HorizontalAlignment="Stretch">
                                         <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
-                                        <StackPanel Orientation="Horizontal" Margin="12,-6,12,0">
-                                            <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap" Margin="0,0,0,0"/>
-                                            <TextBlock Text=":" Margin="3,-2,3,0"/>
-                                            <TextBlock Text="{Binding Port}" TextWrapping="NoWrap" Margin="0,0,0,0"/>
+                                        <StackPanel Orientation="Horizontal" Margin="12,-3,12,0">
+                                            <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap"/>
+                                            <TextBlock Text=":" Margin="3,0,3,0"/>
+                                            <TextBlock Text="{Binding Port}" TextWrapping="NoWrap"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
