@@ -41,6 +41,7 @@ namespace UnofficialSamsungRemote
                 NormalImage = new BitmapImage(new Uri("ms-appx:///" + ImageLocation, UriKind.Absolute));
                 PressedImage = new BitmapImage(new Uri("ms-appx:///" + ImageLocation.Replace(System.IO.Path.GetExtension(ImageLocation), "_focus" + System.IO.Path.GetExtension(ImageLocation)), UriKind.Absolute));
 
+                Img.Source = PressedImage; // so that the image is cached and doesn't flicker the first time we click it
                 Img.Source = NormalImage;
             }
             else
