@@ -264,7 +264,7 @@ namespace UnofficialSamsungRemote
             });
         }
 
-        async Task DisplayOkBox(string message, string title = null)
+        public async Task DisplayOkBox(string message, string title = null)
         {
             if (CoreWindow.GetForCurrentThread() == null)
             {
@@ -279,7 +279,7 @@ namespace UnofficialSamsungRemote
             }
         }
 
-        async Task InternalDisplayOkBox(string message, string title = null)
+        private async Task InternalDisplayOkBox(string message, string title = null)
         {
             MessageDialog msg = null;
             if (title == null)
