@@ -22,12 +22,9 @@ namespace UnofficialSamsungRemote
         public static bool bEnabled { get; private set; }
 
         private const int IanaInterfaceType_Ethernet = 6;
-        private static MainPage MainWindow;
 
         public MainPage()
         {
-            MainWindow = this;
-
             this.InitializeComponent();
 
             MainPivot.Title = (MainPivot.Title as string).Replace("{v}", MainPage.GetVersionNumber());
@@ -264,11 +261,11 @@ namespace UnofficialSamsungRemote
             });
         }
 
-        public async Task DisplayOkBox(string message, string title = null)
+        public static async Task DisplayOkBox(string message, string title = null)
         {
             if (CoreWindow.GetForCurrentThread() == null)
             {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
                     await InternalDisplayOkBox(message, title);
                 });
@@ -279,7 +276,7 @@ namespace UnofficialSamsungRemote
             }
         }
 
-        private async Task InternalDisplayOkBox(string message, string title = null)
+        private static async Task InternalDisplayOkBox(string message, string title = null)
         {
             MessageDialog msg = null;
             if (title == null)
@@ -299,18 +296,18 @@ namespace UnofficialSamsungRemote
         {
             if (CoreWindow.GetForCurrentThread() == null)
             {
-                await MainWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    await MainWindow.InternalDisplayYesNoBox(message, title, YesHandler, NoHandler);
+                    await InternalDisplayYesNoBox(message, title, YesHandler, NoHandler);
                 });
             }
             else
             {
-                await MainWindow.InternalDisplayYesNoBox(message, title, YesHandler, NoHandler);
+                await InternalDisplayYesNoBox(message, title, YesHandler, NoHandler);
             }
         }
 
-        private async Task InternalDisplayYesNoBox(string message, string title = null, UICommandInvokedHandler YesHandler = null, UICommandInvokedHandler NoHandler = null)
+        private static async Task InternalDisplayYesNoBox(string message, string title = null, UICommandInvokedHandler YesHandler = null, UICommandInvokedHandler NoHandler = null)
         {
             MessageDialog msg = null;
             if (title == null)
