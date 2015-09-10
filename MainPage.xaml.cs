@@ -22,9 +22,12 @@ namespace UnofficialSamsungRemote
         public static bool bEnabled { get; private set; }
 
         private const int IanaInterfaceType_Ethernet = 6;
+        private static MainPage MainWindow;
 
         public MainPage()
         {
+            MainWindow = this;
+
             this.InitializeComponent();
 
             MainPivot.Title = (MainPivot.Title as string).Replace("{v}", MainPage.GetVersionNumber());
@@ -289,6 +292,38 @@ namespace UnofficialSamsungRemote
             }
 
             msg.Commands.Add(new UICommand("OK"));
+            await msg.ShowAsync();
+        }
+
+        public static async Task DisplayYesNoBox(string message, string title = null, UICommandInvokedHandler YesHandler = null, UICommandInvokedHandler NoHandler = null)
+        {
+            if (CoreWindow.GetForCurrentThread() == null)
+            {
+                await MainWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    await MainWindow.InternalDisplayYesNoBox(message, title, YesHandler, NoHandler);
+                });
+            }
+            else
+            {
+                await MainWindow.InternalDisplayYesNoBox(message, title, YesHandler, NoHandler);
+            }
+        }
+
+        private async Task InternalDisplayYesNoBox(string message, string title = null, UICommandInvokedHandler YesHandler = null, UICommandInvokedHandler NoHandler = null)
+        {
+            MessageDialog msg = null;
+            if (title == null)
+            {
+                msg = new MessageDialog(message);
+            }
+            else
+            {
+                msg = new MessageDialog(message, title);
+            }
+
+            msg.Commands.Add(new UICommand("Yes", YesHandler));
+            msg.Commands.Add(new UICommand("No", NoHandler));
             await msg.ShowAsync();
         }
         #endregion
