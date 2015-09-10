@@ -145,13 +145,10 @@ namespace UnofficialSamsungRemote
                                 System.Diagnostics.Debug.WriteLine("received response from check-in server: " + respMsg);
                                 if (respMsg == "nv")
                                 {
-                                    await (Window.Current.Content as Frame).Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                    await (Window.Current.Content as Frame).Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                                     {
-                                        //if (MessageBox.Show("A new version of this app is now available! Press 'Ok' to open up the marketplace and download it.",
-                                        //    "New version available", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                                        //{
-                                        //    ShowMyMarketplacePage();
-                                        //}
+                                        await MainPage.DisplayYesNoBox("A new version of this app is now available! Do you want to download it?",
+                                            null, async (cmd) => { await ShowMyMarketplacePage(); });
                                     });
                                 }
                             }
