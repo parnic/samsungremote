@@ -230,5 +230,21 @@ namespace UnofficialSamsungRemote
                 settings[settingName] = settingValue;
             }
         }
+
+        internal static void OnCheckMouseBack(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e, System.Action action)
+        {
+            if (sender is UIElement)
+            {
+                var ptr = e.GetCurrentPoint(sender as UIElement);
+                if (ptr.Properties.IsXButton1Pressed)
+                {
+                    if (action != null)
+                    {
+                        action();
+                    }
+                    e.Handled = true;
+                }
+            }
+        }
     }
 }

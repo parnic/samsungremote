@@ -9,7 +9,9 @@
     mc:Ignorable="d"
     d:DesignWidth="480"
     d:DesignHeight="768"
-    Loaded="Page_Loaded">
+    Loaded="Page_Loaded"
+    KeyUp="Page_KeyUp"
+    PointerPressed="Page_PointerPressed">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot Title="Unofficial Samsung remote" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">

@@ -16,14 +16,33 @@ namespace UnofficialSamsungRemote
 
             ApplicationTitle.Text = ApplicationTitle.Text.Replace("{v}", MainPage.GetVersionNumber());
 
-            SystemNavigationManager.GetForCurrentView().BackRequested += (s, e) =>
+            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+        }
+
+        private void OnBackRequested(object sender = null, BackRequestedEventArgs e = null)
+        {
+            if (Frame.CanGoBack)
             {
-                if (Frame.CanGoBack)
+                Frame.GoBack();
+                if (e != null)
                 {
-                    Frame.GoBack();
                     e.Handled = true;
                 }
-            };
+            }
+        }
+
+        private void Page_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Escape)
+            {
+                OnBackRequested();
+                e.Handled = true;
+            }
+        }
+
+        private void Page_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            App.OnCheckMouseBack(sender, e, () => { OnBackRequested(); });
         }
     }
 }
