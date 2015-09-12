@@ -27,6 +27,6 @@
             <CheckBox Content="* Vibrate on key presses" IsChecked="{Binding LoadedSettings.bShouldVibrateOnKeyPress, Source={StaticResource XamlHelper}, Mode=TwoWay}"/>
         </Grid>
         
-        <TextBlock Grid.Row="2" Text="* May not be available on all devices"/>
+        <TextBlock Grid.Row="2" Text="* May not be available on all devices" Margin="12,12,12,12"/>
     </Grid>
 </Page>
