@@ -415,9 +415,9 @@ namespace UnofficialSamsungRemote
             var tv = (TvListBox.SelectedItem as TvItemViewModel);
             if (tv != null)
             {
-                ConnectTo(new Windows.Networking.HostName(tv.TvAddress), ushort.Parse(tv.Port));
                 MainPivot.SelectedIndex = 1;
                 discoverer.StopSearching(Discovery.SearchEndReason.Complete);
+                ConnectTo(new Windows.Networking.HostName(tv.TvAddress), ushort.Parse(tv.Port));
             }
         }
 
