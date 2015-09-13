@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage.Streams;
 
@@ -114,11 +115,7 @@ namespace UnofficialSamsungRemote
                     Registering();
                 }
 
-                Reader.InputStreamOptions = InputStreamOptions.Partial;
-                await Reader.LoadAsync(MaxBytesToRead);
-                ReadResponseHeader(Reader);
-                var regResponse = GetBytes(Reader);
-                HandleRegistrationResponse(regResponse);
+                await ListenForRegistrationResponse();
             }
             else
             {
@@ -131,7 +128,16 @@ namespace UnofficialSamsungRemote
             }
         }
 
-        private void HandleRegistrationResponse(byte[] regResponse)
+        private async Task ListenForRegistrationResponse()
+        {
+            Reader.InputStreamOptions = InputStreamOptions.Partial;
+            await Reader.LoadAsync(MaxBytesToRead);
+            ReadResponseHeader(Reader);
+            var regResponse = GetBytes(Reader);
+            HandleRegistrationResponse(regResponse);
+        }
+
+        private async void HandleRegistrationResponse(byte[] regResponse)
         {
             bool bDisconnect = true;
             bool bUpdateConnectionState = true;
@@ -193,6 +199,10 @@ namespace UnofficialSamsungRemote
                 if (bUpdateConnectionState)
                 {
                     ConnectionState = TvConnectionState.Connected;
+                }
+                else
+                {
+                    await ListenForRegistrationResponse();
                 }
             }
         }
