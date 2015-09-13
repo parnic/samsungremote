@@ -24,7 +24,7 @@
 
         <Grid Name="ContentPanel" Grid.Row="1">
             <ScrollViewer>
-                <StackPanel>
+                <StackPanel Margin="12,0,12,12">
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center">App suggestions or problems?</TextBlock>
                     <HyperlinkButton Content="Contact the author" Click="Contact_Click" Margin="0,10,10,5"/>
 
