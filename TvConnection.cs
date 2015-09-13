@@ -271,7 +271,7 @@ namespace UnofficialSamsungRemote
             {
                 InternalSendKey(key);
             }
-            catch (SocketException)
+            catch
             {
 // 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
 // 			    initialize();
@@ -356,17 +356,26 @@ namespace UnofficialSamsungRemote
 
         private async void SendKeyResponse(IAsyncOperation<UInt32> info, AsyncStatus status)
         {
-            if (status == AsyncStatus.Completed)
+            try
             {
-                using (var reader = new DataReader(TvDirectSocket.InputStream))
+                if (status == AsyncStatus.Completed)
                 {
-                    reader.InputStreamOptions = InputStreamOptions.Partial;
-                    await reader.LoadAsync(MaxBytesToRead);
-                    ReadResponseHeader(reader);
-                    /*var regResponse = */GetBytes(reader);
+                    using (var reader = new DataReader(TvDirectSocket.InputStream))
+                    {
+                        reader.InputStreamOptions = InputStreamOptions.Partial;
+                        await reader.LoadAsync(MaxBytesToRead);
+                        ReadResponseHeader(reader);
+                        /*var regResponse = */
+                        GetBytes(reader);
+                    }
                 }
             }
-            else
+            catch
+            {
+                status = AsyncStatus.Error;
+            }
+
+            if (status != AsyncStatus.Completed)
             {
                 Cleanup();
                 NotifyDisconnected();
@@ -425,7 +434,7 @@ namespace UnofficialSamsungRemote
             {
                 InternalSendText(text);
             }
-            catch (SocketException /*e*/)
+            catch
             {
 // 			    if (logger != null) logger.v(TAG, "Could not send key because the server closed the connection. Reconnecting...");
 // 			    initialize();
