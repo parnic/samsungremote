@@ -154,13 +154,13 @@ namespace UnofficialSamsungRemote
 
         async void discoverer_StartedSearching()
         {
+            ToggleProgressBar(true);
             SetProgressText("Searching for TV...");
             bEnabled = true;
             await btnDemoMode.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 btnDemoMode.Visibility = Visibility.Collapsed;
             });
-            ToggleProgressBar(true);
         }
 
         private async Task<string> GetTvNameFrom(Windows.Networking.HostName TvHost, UInt16 TvPort, string tvData)
