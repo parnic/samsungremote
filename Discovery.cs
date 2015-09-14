@@ -70,11 +70,6 @@ namespace UnofficialSamsungRemote
 
         public async void FindTvs()
         {
-            if (!MainPage.bEnabled)
-            {
-                return;
-            }
-
             if (searchState == SearchState.Searching)
             {
                 StopSearching();

@@ -127,12 +127,12 @@ namespace UnofficialSamsungRemote
                 default:
                     if (App.ViewModel.TvItems.Count == 0)
                     {
+                        bEnabled = false;
                         SetProgressText("Timed out searching for a TV.");
                         await btnDemoMode.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
                             btnDemoMode.Visibility = Visibility.Visible;
                         });
-                        bEnabled = false;
                         ToggleProgressBar(true);
                     }
                     else
@@ -152,9 +152,15 @@ namespace UnofficialSamsungRemote
             await GetTvNameFrom(TvHost, TvPort, TvResponse);
         }
 
-        void discoverer_StartedSearching()
+        async void discoverer_StartedSearching()
         {
             SetProgressText("Searching for TV...");
+            bEnabled = true;
+            await btnDemoMode.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                btnDemoMode.Visibility = Visibility.Collapsed;
+            });
+            ToggleProgressBar(true);
         }
 
         private async Task<string> GetTvNameFrom(Windows.Networking.HostName TvHost, UInt16 TvPort, string tvData)
@@ -338,8 +344,6 @@ namespace UnofficialSamsungRemote
 
         private async Task ConditionalFindDevices()
         {
-            btnDemoMode.Visibility = Visibility.Collapsed;
-
             bool bConnectedToNonCellNetwork = false;
             var profiles = Windows.Networking.Connectivity.NetworkInformation.GetConnectionProfiles();
             foreach (var profile in profiles)
