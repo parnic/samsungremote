@@ -556,10 +556,18 @@ namespace UnofficialSamsungRemote
             directConn.Connect();
         }
 
-        void directConn_Disconnected()
+        async void directConn_Disconnected()
         {
             ToggleProgressBar(false);
             SetProgressText("Disconnected from TV.");
+            if (directConn != null && !directConn.bSentPowerOff)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    OnPowerButtonPressed(null, null);
+                });
+                await DisplayOkBox("Lost connection to device.");
+            }
         }
 
         void directConn_Connected()
