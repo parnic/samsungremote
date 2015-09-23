@@ -22,6 +22,7 @@ namespace UnofficialSamsungRemote
         public static bool bEnabled { get; private set; }
 
         private const int IanaInterfaceType_Ethernet = 6;
+        private const int IanaInterfaceType_WiFi = 71;
 
         public MainPage()
         {
@@ -349,7 +350,7 @@ namespace UnofficialSamsungRemote
             foreach (var profile in profiles)
             {
                 if (profile != null
-                    && (profile.IsWlanConnectionProfile || profile.NetworkAdapter.IanaInterfaceType == IanaInterfaceType_Ethernet))
+                    && (profile.IsWlanConnectionProfile || profile.NetworkAdapter.IanaInterfaceType == IanaInterfaceType_Ethernet || profile.NetworkAdapter.IanaInterfaceType == IanaInterfaceType_WiFi))
                 {
                     bConnectedToNonCellNetwork = true;
                     break;
