@@ -107,7 +107,7 @@ namespace UnofficialSamsungRemote
         {
             if (Settings.LoadedSettings.bShouldVibrateOnKeyPress)
             {
-                //VibrateController.Default.Start(TimeSpan.FromMilliseconds(50));
+                Utilities.VibrateDevice(TimeSpan.FromMilliseconds(50));
             }
         }
 
