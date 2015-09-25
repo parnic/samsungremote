@@ -648,7 +648,7 @@ namespace UnofficialSamsungRemote
             App.OnCheckMouseBack(sender, e, () => { OnBackRequested(); });
         }
 
-        private void NavMenuList_ItemInvoked(object sender, ListViewItem listViewItem)
+        private async void NavMenuList_ItemInvoked(object sender, ListViewItem listViewItem)
         {
             var navListSender = sender as NavMenuListView;
             var item = navListSender.ItemFromContainer(listViewItem) as NavMenuItem;
@@ -657,6 +657,8 @@ namespace UnofficialSamsungRemote
             {
                 if (!item.OnInvoked(frame, sender))
                 {
+                    // ugly, but immediately updating the navlist status was not working, so...
+                    await Task.Delay(50);
                     SelectNavEntryMatching(frame.CurrentSourcePageType);
                 }
             }
