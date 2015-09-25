@@ -65,7 +65,6 @@
             <SplitView.Pane>
                 <Grid>
                 <local:NavMenuListView x:Name="NavMenuListControls"
-                                       TabIndex="3"
                                        Margin="0,48,0,0"
                                        ContainerContentChanging="NavMenuItemContainerContentChanging"
                                        ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
@@ -74,7 +73,6 @@
                                        ItemsSource="{x:Bind navlist}"/>
 
                     <local:NavMenuListView x:Name="NavMenuList"
-                                          TabIndex="3"
                                           VerticalAlignment="Bottom"
                                           ContainerContentChanging="NavMenuItemContainerContentChanging"
                                           ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
