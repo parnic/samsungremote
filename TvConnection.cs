@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage.Streams;
 
 namespace UnofficialSamsungRemote
@@ -318,13 +319,13 @@ namespace UnofficialSamsungRemote
             sb.Append((char)0x64);
             sb.Append((char)0x00);
             WriteBase64Text(sb, ip);
-            string phoneId = Utilities.GetAnonymousId();
-            if (string.IsNullOrWhiteSpace(phoneId))
+
+            WriteBase64Text(sb, "Windows device");
+            var name = new EasClientDeviceInformation().FriendlyName;
+            if (!string.IsNullOrEmpty(name))
             {
-                phoneId = "Anonymous Windows phone";
+                WriteBase64Text(sb, name);
             }
-            WriteBase64Text(sb, phoneId);
-            //WriteBase64Text(sb, Microsoft.Phone.Info.DeviceStatus.DeviceName);
             return sb.ToString();
         }
 
