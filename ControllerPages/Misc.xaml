@@ -8,51 +8,49 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
-            <ListBox>
-                <ListBox.Items>
-                    <local:TvKeyControl Text="Toggle Aspect Ratio" MyKey="KEY_ASPECT"/>
-                    <local:TvKeyControl Text="Energy Saving Mode" MyKey="KEY_ESAVING"/>
-                    <local:TvKeyControl Text="Sleep" MyKey="KEY_SLEEP"/>
-                    <local:TvKeyControl Text="PIP Toggle" MyKey="KEY_PIP_ONOFF"/>
-                    <local:TvKeyControl Text="PIP Size" MyKey="KEY_PIP_SIZE"/>
-                    <local:TvKeyControl Text="PIP Swap" MyKey="KEY_PIP_SWAP"/>
-                    <local:TvKeyControl Text="PIP Channel Up" MyKey="KEY_PIP_CHUP"/>
-                    <local:TvKeyControl Text="PIP Channel Down" MyKey="KEY_PIP_CHDOWN"/>
-                    <local:TvKeyControl Text="Closed Captioning" MyKey="KEY_CAPTION"/>
-                    <local:TvKeyControl Text="Game" MyKey="KEY_GAME"/>
-                    <local:TvKeyControl Text="Guide" MyKey="KEY_GUIDE"/>
-                    <local:TvKeyControl Text="Channel List" MyKey="KEY_CH_LIST"/>
-                    <local:TvKeyControl Text="Social" MyKey="KEY_TURBO"/>
-                    <local:TvKeyControl Text="Teletext Mix" MyKey="KEY_TTX_MIX"/>
-                    <local:TvKeyControl Text="Teletext Subface" MyKey="KEY_TTX_SUBFACE"/>
-                    <local:TvKeyControl Text="Multi-Track Sound" MyKey="KEY_MTS"/>
-                    <local:TvKeyControl Text="E-Manual" MyKey="KEY_TOPMENU"/>
-                    <local:TvKeyControl Text="W_Link" MyKey="KEY_W_LINK"/>
-                </ListBox.Items>
-            </ListBox>
+        <ListBox>
+            <ListBox.Items>
+                <local:TvKeyControl Text="Toggle Aspect Ratio" MyKey="KEY_ASPECT"/>
+                <local:TvKeyControl Text="Energy Saving Mode" MyKey="KEY_ESAVING"/>
+                <local:TvKeyControl Text="Sleep" MyKey="KEY_SLEEP"/>
+                <local:TvKeyControl Text="PIP Toggle" MyKey="KEY_PIP_ONOFF"/>
+                <local:TvKeyControl Text="PIP Size" MyKey="KEY_PIP_SIZE"/>
+                <local:TvKeyControl Text="PIP Swap" MyKey="KEY_PIP_SWAP"/>
+                <local:TvKeyControl Text="PIP Channel Up" MyKey="KEY_PIP_CHUP"/>
+                <local:TvKeyControl Text="PIP Channel Down" MyKey="KEY_PIP_CHDOWN"/>
+                <local:TvKeyControl Text="Closed Captioning" MyKey="KEY_CAPTION"/>
+                <local:TvKeyControl Text="Game" MyKey="KEY_GAME"/>
+                <local:TvKeyControl Text="Guide" MyKey="KEY_GUIDE"/>
+                <local:TvKeyControl Text="Channel List" MyKey="KEY_CH_LIST"/>
+                <local:TvKeyControl Text="Social" MyKey="KEY_TURBO"/>
+                <local:TvKeyControl Text="Teletext Mix" MyKey="KEY_TTX_MIX"/>
+                <local:TvKeyControl Text="Teletext Subface" MyKey="KEY_TTX_SUBFACE"/>
+                <local:TvKeyControl Text="Multi-Track Sound" MyKey="KEY_MTS"/>
+                <local:TvKeyControl Text="E-Manual" MyKey="KEY_TOPMENU"/>
+                <local:TvKeyControl Text="W_Link" MyKey="KEY_W_LINK"/>
+            </ListBox.Items>
+        </ListBox>
 
-            <ListBox Grid.Column="1">
-                <ListBox.Items>
-                    <TextBlock Foreground="{ThemeResource SystemAccentColor}" Text="Note: not all inputs work with all TVs" TextWrapping="Wrap"/>
-                    <local:TvKeyControl Text="Input HDMI" MyKey="KEY_HDMI"/>
-                    <local:TvKeyControl Text="Input DVI" MyKey="KEY_DVI"/>
-                    <local:TvKeyControl Text="Input Component 1" MyKey="KEY_COMPONENT1"/>
-                    <local:TvKeyControl Text="Input Component 2" MyKey="KEY_COMPONENT2"/>
-                    <local:TvKeyControl Text="Input SVideo 1" MyKey="KEY_SVIDEO1"/>
-                    <local:TvKeyControl Text="Input SVideo 2" MyKey="KEY_SVIDEO2"/>
-                    <local:TvKeyControl Text="Input SVideo 3" MyKey="KEY_SVIDEO3"/>
-                    <local:TvKeyControl Text="Input AV 1" MyKey="KEY_AV1"/>
-                    <local:TvKeyControl Text="Input AV 2" MyKey="KEY_AV2"/>
-                    <local:TvKeyControl Text="Input AV 3" MyKey="KEY_AV3"/>
-                    <local:TvKeyControl Text="TV" MyKey="KEY_TV"/>
-                </ListBox.Items>
-            </ListBox>
-        </Grid>
+        <ListBox Grid.Column="1">
+            <ListBox.Items>
+                <TextBlock Foreground="{ThemeResource SystemAccentColor}" Text="Note: not all inputs work with all TVs" TextWrapping="Wrap"/>
+                <local:TvKeyControl Text="Input HDMI" MyKey="KEY_HDMI"/>
+                <local:TvKeyControl Text="Input DVI" MyKey="KEY_DVI"/>
+                <local:TvKeyControl Text="Input Component 1" MyKey="KEY_COMPONENT1"/>
+                <local:TvKeyControl Text="Input Component 2" MyKey="KEY_COMPONENT2"/>
+                <local:TvKeyControl Text="Input SVideo 1" MyKey="KEY_SVIDEO1"/>
+                <local:TvKeyControl Text="Input SVideo 2" MyKey="KEY_SVIDEO2"/>
+                <local:TvKeyControl Text="Input SVideo 3" MyKey="KEY_SVIDEO3"/>
+                <local:TvKeyControl Text="Input AV 1" MyKey="KEY_AV1"/>
+                <local:TvKeyControl Text="Input AV 2" MyKey="KEY_AV2"/>
+                <local:TvKeyControl Text="Input AV 3" MyKey="KEY_AV3"/>
+                <local:TvKeyControl Text="TV" MyKey="KEY_TV"/>
+            </ListBox.Items>
+        </ListBox>
     </Grid>
 </Page>
