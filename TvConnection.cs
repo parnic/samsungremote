@@ -79,6 +79,14 @@ namespace UnofficialSamsungRemote
             ConnectedPort = port;
         }
 
+        public bool IsConnected
+        {
+            get
+            {
+                return TvDirectSocket != null && !bSentPowerOff && ConnectedHostName != null;
+            }
+        }
+
         private void newConnected(IAsyncAction info, AsyncStatus status)
         {
             if (status == AsyncStatus.Completed)
