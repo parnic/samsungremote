@@ -110,6 +110,7 @@ namespace UnofficialSamsungRemote
                 if (frame.CanGoBack)
                 {
                     frame.GoBack();
+                    e.Handled = true;
                 }
             }
         }
