@@ -11,312 +11,104 @@
     d:DesignHeight="768"
     Loaded="Page_Loaded"
     KeyUp="Page_KeyUp"
-    PointerPressed="Page_PointerPressed">
+    MinHeight="432"
+    PointerPressed="Page_PointerPressed"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot Title="Unofficial Samsung remote" Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
-            <PivotItem Header="tv list">
+    <Page.Resources>
+        <Style x:Key="NavMenuItemContainerStyle" TargetType="ListViewItem">
+            <Setter Property="MinWidth" Value="{StaticResource SplitViewCompactPaneThemeLength}"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <DataTemplate x:Key="NavMenuItemTemplate" x:DataType="local:NavMenuItem">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <!-- Showing a ToolTip and the Label is redundant.  We put the ToolTip on the icon.
+                     It appears when the user hovers over the icon, but not the label which provides
+                     value when the SplitView is 'Compact' while reducing the likelihood of showing
+                     redundant information when the label is shown.-->
+                <FontIcon x:Name="Glyph" FontSize="16" Glyph="{x:Bind SymbolAsChar}" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Label}"/>
+                <TextBlock x:Name="Text" Grid.Column="1" Text="{x:Bind Label}" />
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.DisplayMode" Value="CompactInline"/>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="True"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.DisplayMode" Value="CompactOverlay"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <SplitView DisplayMode="CompactOverlay"  Name="RootSplitView" CompactPaneLength="48" OpenPaneLength="200">
+            <SplitView.Pane>
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <local:NavMenuListView x:Name="NavMenuListControls"
+                                       TabIndex="3"
+                                       Margin="0,48,0,0"
+                                       ContainerContentChanging="NavMenuItemContainerContentChanging"
+                                       ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
+                                       ItemTemplate="{StaticResource NavMenuItemTemplate}"
+                                       ItemInvoked="NavMenuList_ItemInvoked"
+                                       ItemsSource="{x:Bind navlist}"/>
 
-                    <ListBox Name="TvListBox" ItemsSource="{Binding TvItems}" Tapped="TvListBox_Tapped">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                    <Image Source="Images/TV.png" Width="62" Height="62" VerticalAlignment="Top" Margin="0,-3,0,0"/>
-                                    <StackPanel HorizontalAlignment="Stretch">
-                                        <TextBlock Text="{Binding TvName}" TextWrapping="NoWrap" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
-                                        <StackPanel Orientation="Horizontal" Margin="12,-3,12,0">
-                                            <TextBlock Text="{Binding TvAddress}" TextWrapping="NoWrap"/>
-                                            <TextBlock Text=":" Margin="3,0,3,0"/>
-                                            <TextBlock Text="{Binding Port}" TextWrapping="NoWrap"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                    <local:NavMenuListView x:Name="NavMenuList"
+                                          TabIndex="3"
+                                          VerticalAlignment="Bottom"
+                                          ContainerContentChanging="NavMenuItemContainerContentChanging"
+                                          ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
+                                          ItemTemplate="{StaticResource NavMenuItemTemplate}"
+                                          ItemInvoked="NavMenuList_ItemInvoked">
+                        <local:NavMenuListView.Items>
+                            <local:NavMenuItem Symbol="Refresh" Label="refresh" Selected="RefreshTvList_Click"/>
+                            <local:NavMenuItem Symbol="Help" Label="about" DestPage="{x:Bind AboutPageType}"/>
+                            <local:NavMenuItem Symbol="Setting" Label="settings" DestPage="{x:Bind SettingsPageType}"/>
+                        </local:NavMenuListView.Items>
+                    </local:NavMenuListView>
                 </Grid>
-            </PivotItem>
-            <PivotItem Header="numpad">
-                <Viewbox Stretch="Uniform" VerticalAlignment="top">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3"
-                           Source="Images/rack.png" Margin="0,30,0,0"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_01.png" MyKey="KEY_1" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90"
-                           ImageLocation="Images/keypad_02.png" MyKey="KEY_2" Grid.Column="1" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_03.png" MyKey="KEY_3" Grid.Column="2" Margin="0,0,0,15"/>
-
-                        <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Row="1"
-                           Source="Images/rack.png" Margin="0,30,0,0"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_04.png" MyKey="KEY_4" Grid.Row="1" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_05.png" MyKey="KEY_5" Grid.Row="1" Grid.Column="1" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_06.png" MyKey="KEY_6" Grid.Row="1" Grid.Column="2" Margin="0,0,0,15"/>
-
-                        <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Row="2"
-                           Source="Images/rack.png" Margin="0,30,0,0"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_07.png" MyKey="KEY_7" Grid.Row="2" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_08.png" MyKey="KEY_8" Grid.Row="2" Grid.Column="1" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_09.png" MyKey="KEY_9" Grid.Row="2" Grid.Column="2" Margin="0,0,0,15"/>
-
-                        <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Row="3"
-                           Source="Images/rack.png" Margin="0,30,0,0"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_minus.png" MyKey="KEY_PLUS100" Grid.Row="3" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_00.png" MyKey="KEY_0" Grid.Row="3" Grid.Column="1" Margin="0,0,0,15"/>
-                        <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
-                           ImageLocation="Images/keypad_ch.png" MyKey="KEY_PRECH" Grid.Row="3" Grid.Column="2" Margin="0,0,0,15"/>
-                    </Grid>
-                </Viewbox>
-            </PivotItem>
-            <PivotItem Header="navigation">
-                <Viewbox Stretch="Uniform" VerticalAlignment="top">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- menu controls -->
-                            <Image Source="Images/direction_bg.png" Grid.ColumnSpan="4" HorizontalAlignment="Stretch"/>
-                            <local:TvKeyControl ImageLocation="Images/direction_content.png" MyKey="KEY_CONTENTS"
-                                                Margin="0,0,5,0"/>
-                            <local:TvKeyControl Grid.Column="2" ImageLocation="Images/direction_internet.png" MyKey="KEY_RSS"
-                                                Margin="5,0,0,0"/>
-                            <local:TvKeyControl Grid.Column="1" ImageLocation="Images/direction_menu.png" MyKey="KEY_MENU"
-                                                Height="140" Width="155" Margin="-25,0,-25,0"/>
-                        </Grid>
-
-                        <Grid Grid.Row="1" Margin="0,15,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- tools/info/return/exit -->
-                            <Rectangle Fill="#66000000" RadiusX="10" RadiusY="10" Grid.ColumnSpan="4"/>
-                            <local:TvKeyControl ImageLocation="Images/direction_tools.png" MyKey="KEY_TOOLS" Margin="0,5,0,5"/>
-                            <local:TvKeyControl ImageLocation="Images/direction_info.png" MyKey="KEY_INFO" Grid.Column="1" Margin="0,5,0,5"/>
-                            <local:TvKeyControl ImageLocation="Images/direction_return.png" MyKey="KEY_RETURN" Grid.Column="2" Margin="0,5,0,5"/>
-                            <local:TvKeyControl ImageLocation="Images/direction_exit.png" MyKey="KEY_EXIT" Grid.Column="3" Margin="0,5,0,5"/>
-                        </Grid>
-
-                        <Grid Grid.Row="2" Margin="0,15,0,15">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- navigation controls -->
-                            <Image Source="Images/nav_bg.png" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-                            <local:TvKeyControl ImageLocation="Images/key_keyboard.png" MyKey="KEY_ENTER"
-                                            Grid.Row="1" Grid.Column="1" Margin="3,4,5,5"/>
-                            <local:TvKeyControl ImageLocation="Images/key_down.png" MyKey="KEY_DOWN" AllowRepeats="True"
-                                            Grid.Row="2" Grid.Column="1"/>
-                            <local:TvKeyControl ImageLocation="Images/key_right.png" MyKey="KEY_RIGHT" AllowRepeats="True"
-                                            Grid.Row="1" Grid.Column="2"/>
-                            <local:TvKeyControl ImageLocation="Images/key_left.png" MyKey="KEY_LEFT" AllowRepeats="True"
-                                            Grid.Row="1"/>
-                            <local:TvKeyControl ImageLocation="Images/key_up.png" MyKey="KEY_UP" AllowRepeats="True"
-                                            Grid.Column="1"/>
-
-                            <!-- misc controls -->
-                            <local:TvKeyControl ImageLocation="Images/qwerty_btn.png" MyKey="KEY_INVALID" OnKeyPressed="OnQwertyButtonPressed"
-                                            Margin="20,20,20,20"/>
-                            <local:TvKeyControl ImageLocation="Images/source_btn.png" MyKey="KEY_SOURCE"
-                                            Margin="20,20,20,20" Grid.Column="2"/>
-                            <local:TvKeyControl ImageLocation="Images/3d_btn.png" MyKey="KEY_PANNEL_CHDOWN"
-                                            Margin="20,20,20,20" Grid.Row="2"/>
-                            <local:TvKeyControl ImageLocation="Images/power_btn.png" MyKey="KEY_POWEROFF" OnKeyPressed="OnPowerButtonPressed"
-                                            Margin="20,20,20,20" Grid.Column="2" Grid.Row="2"/>
-                        </Grid>
-                    </Grid>
-                </Viewbox>
-            </PivotItem>
-            <PivotItem Header="control">
-                <Viewbox Stretch="Uniform" VerticalAlignment="top">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- play/pause controls -->
-                            <!-- row 1 -->
-                            <Image Source="Images/rack.png" Grid.ColumnSpan="3" Margin="0,55,0,0"/>
-                            <local:TvKeyControl ImageLocation="Images/playcontrol_rew.png" MyKey="KEY_WHEEL_LEFT"
-                                                Margin="30,0,0,0" Height="120"/>
-                            <local:TvKeyControl ImageLocation="Images/playcontrol_pause.png" MyKey="KEY_PAUSE"
-                                                Grid.Column="1" Height="120"/>
-                            <local:TvKeyControl ImageLocation="Images/playcontrol_ff.png" MyKey="KEY_WHEEL_RIGHT"
-                                                Grid.Column="2" Margin="0,0,30,0" Height="120"/>
-                        </Grid>
-
-                        <Grid Grid.Row="1" Margin="0,25,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- row 2 -->
-                            <Image Source="Images/rack.png" Grid.ColumnSpan="3" Margin="0,55,0,0"/>
-                            <local:TvKeyControl ImageLocation="Images/playcontrol_rec.png" MyKey="KEY_REC"
-                                                Margin="30,0,0,0" Height="120"/>
-                            <local:TvKeyControl ImageLocation="Images/playcontrol_play.png" MyKey="KEY_PLAY"
-                                                Grid.Column="1" Height="120"/>
-                            <local:TvKeyControl ImageLocation="Images/playcontrol_stop.png" MyKey="KEY_STOP"
-                                                Grid.Column="2" Margin="0,0,30,0" Height="120"/>
-                        </Grid>
-
-                        <Grid Grid.Row="2" Margin="0,30,0,30">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- volume controls -->
-                            <Image Source="Images/volch_btn_bg.png" HorizontalAlignment="Right"/>
-                            <local:TvKeyControl ImageLocation="Images/volum_up.png" MyKey="KEY_VOLUP" AllowRepeats="True"
-                                                VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                            <Image Source="Images/volum_icon.png" HorizontalAlignment="Right"/>
-                            <local:TvKeyControl ImageLocation="Images/volum_down.png" MyKey="KEY_VOLDOWN" AllowRepeats="True"
-                                                VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-
-                            <local:TvKeyControl ImageLocation="Images/mute_btn.png" MyKey="KEY_MUTE"
-                                                Grid.Column="1" Width="100" Margin="15,0,15,0"/>
-
-                            <!-- channel controls -->
-                            <Image Source="Images/volch_btn_bg.png" Grid.Column="2" HorizontalAlignment="Left"/>
-                            <local:TvKeyControl ImageLocation="Images/ch_up.png" MyKey="KEY_CHUP" Grid.Column="2"
-                                                VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                            <Image Source="Images/ch_icon.png" Grid.Column="2" HorizontalAlignment="Left"/>
-                            <local:TvKeyControl ImageLocation="Images/ch_down.png" MyKey="KEY_CHDOWN" Grid.Column="2"
-                                                VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-                        </Grid>
-
-                        <Grid Grid.Row="3">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- color controls -->
-                            <Image Source="Images/colorkey_bg.png" Grid.ColumnSpan="4"/>
-                            <local:TvKeyControl ImageLocation="Images/color_btn01.png" MyKey="KEY_RED"
-                                                Margin="5,5,5,5"/>
-                            <local:TvKeyControl ImageLocation="Images/color_btn02.png" MyKey="KEY_GREEN"
-                                                Grid.Column="1" Margin="5,5,5,5"/>
-                            <local:TvKeyControl ImageLocation="Images/color_btn03.png" MyKey="KEY_YELLOW"
-                                                Grid.Column="2" Margin="5,5,5,5"/>
-                            <local:TvKeyControl ImageLocation="Images/color_btn04.png" MyKey="KEY_BLUE"
-                                                Grid.Column="3" Margin="5,5,5,5"/>
-                        </Grid>
-                    </Grid>
-                </Viewbox>
-            </PivotItem>
-            <PivotItem Header="misc">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <ListBox>
-                        <ListBox.Items>
-                            <local:TvKeyControl Text="Toggle Aspect Ratio" MyKey="KEY_ASPECT"/>
-                            <local:TvKeyControl Text="Energy Saving Mode" MyKey="KEY_ESAVING"/>
-                            <local:TvKeyControl Text="Sleep" MyKey="KEY_SLEEP"/>
-                            <local:TvKeyControl Text="PIP Toggle" MyKey="KEY_PIP_ONOFF"/>
-                            <local:TvKeyControl Text="PIP Size" MyKey="KEY_PIP_SIZE"/>
-                            <local:TvKeyControl Text="PIP Swap" MyKey="KEY_PIP_SWAP"/>
-                            <local:TvKeyControl Text="PIP Channel Up" MyKey="KEY_PIP_CHUP"/>
-                            <local:TvKeyControl Text="PIP Channel Down" MyKey="KEY_PIP_CHDOWN"/>
-                            <local:TvKeyControl Text="Closed Captioning" MyKey="KEY_CAPTION"/>
-                            <local:TvKeyControl Text="Game" MyKey="KEY_GAME"/>
-                            <local:TvKeyControl Text="Guide" MyKey="KEY_GUIDE"/>
-                            <local:TvKeyControl Text="Channel List" MyKey="KEY_CH_LIST"/>
-                            <local:TvKeyControl Text="Social" MyKey="KEY_TURBO"/>
-                            <local:TvKeyControl Text="Teletext Mix" MyKey="KEY_TTX_MIX"/>
-                            <local:TvKeyControl Text="Teletext Subface" MyKey="KEY_TTX_SUBFACE"/>
-                            <local:TvKeyControl Text="Multi-Track Sound" MyKey="KEY_MTS"/>
-                            <local:TvKeyControl Text="E-Manual" MyKey="KEY_TOPMENU"/>
-                            <local:TvKeyControl Text="W_Link" MyKey="KEY_W_LINK"/>
-                        </ListBox.Items>
-                    </ListBox>
-
-                    <ListBox Grid.Column="1">
-                        <ListBox.Items>
-                            <TextBlock Foreground="{ThemeResource SystemAccentColor}" Text="Note: not all inputs work with all TVs" TextWrapping="Wrap"/>
-                            <local:TvKeyControl Text="Input HDMI" MyKey="KEY_HDMI"/>
-                            <local:TvKeyControl Text="Input DVI" MyKey="KEY_DVI"/>
-                            <local:TvKeyControl Text="Input Component 1" MyKey="KEY_COMPONENT1"/>
-                            <local:TvKeyControl Text="Input Component 2" MyKey="KEY_COMPONENT2"/>
-                            <local:TvKeyControl Text="Input SVideo 1" MyKey="KEY_SVIDEO1"/>
-                            <local:TvKeyControl Text="Input SVideo 2" MyKey="KEY_SVIDEO2"/>
-                            <local:TvKeyControl Text="Input SVideo 3" MyKey="KEY_SVIDEO3"/>
-                            <local:TvKeyControl Text="Input AV 1" MyKey="KEY_AV1"/>
-                            <local:TvKeyControl Text="Input AV 2" MyKey="KEY_AV2"/>
-                            <local:TvKeyControl Text="Input AV 3" MyKey="KEY_AV3"/>
-                            <local:TvKeyControl Text="TV" MyKey="KEY_TV"/>
-                        </ListBox.Items>
-                    </ListBox>
-                </Grid>
-            </PivotItem>
-        </Pivot>
+            </SplitView.Pane>
+            <Frame x:Name="frame"
+                   Navigating="OnNavigatingToPage"
+                   Navigated="OnNavigatedToPage">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition>
+                            <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                                <EntranceNavigationTransitionInfo/>
+                            </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                        </NavigationThemeTransition>
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </SplitView>
+        <ToggleButton x:Name="TogglePaneButton"
+                      TabIndex="1"
+                      Style="{StaticResource SplitViewTogglePaneButtonStyle}"
+                      IsChecked="{Binding IsPaneOpen, ElementName=RootSplitView, Mode=TwoWay}"
+                      Unchecked="TogglePaneButton_Checked"
+                      AutomationProperties.Name="Menu"
+                      ToolTipService.ToolTip="Menu" />
         <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}" Opacity="0.85" Name="TextInputOverlay" Visibility="Collapsed">
             <StackPanel Margin="0,0,0,150" VerticalAlignment="Center">
                 <TextBlock Text="Press Enter to submit the entered text," TextAlignment="Center"/>
@@ -334,11 +126,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-    <Page.BottomAppBar>
-        <CommandBar Visibility="Collapsed">
-            <AppBarButton Label="refresh" Icon="Refresh" Click="RefreshTvList_Click"/>
-            <AppBarButton Label="info" Icon="Help" Click="ShowAppinfo_Click"/>
-            <AppBarButton Label="settings" Icon="Setting" Click="ShowSettings_Click"/>
-        </CommandBar>
-    </Page.BottomAppBar>
 </Page>

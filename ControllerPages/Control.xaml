@@ -1,0 +1,104 @@
+﻿<Page
+    x:Class="UnofficialSamsungRemote.ControllerPages.Control"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UnofficialSamsungRemote"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Viewbox Stretch="Uniform" VerticalAlignment="top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- play/pause controls -->
+                    <!-- row 1 -->
+                    <Image Source="../Images/rack.png" Grid.ColumnSpan="3" Margin="0,55,0,0"/>
+                    <local:TvKeyControl ImageLocation="Images/playcontrol_rew.png" MyKey="KEY_WHEEL_LEFT"
+                                                Margin="30,0,0,0" Height="120"/>
+                    <local:TvKeyControl ImageLocation="Images/playcontrol_pause.png" MyKey="KEY_PAUSE"
+                                                Grid.Column="1" Height="120"/>
+                    <local:TvKeyControl ImageLocation="Images/playcontrol_ff.png" MyKey="KEY_WHEEL_RIGHT"
+                                                Grid.Column="2" Margin="0,0,30,0" Height="120"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,25,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- row 2 -->
+                    <Image Source="../Images/rack.png" Grid.ColumnSpan="3" Margin="0,55,0,0"/>
+                    <local:TvKeyControl ImageLocation="Images/playcontrol_rec.png" MyKey="KEY_REC"
+                                                Margin="30,0,0,0" Height="120"/>
+                    <local:TvKeyControl ImageLocation="Images/playcontrol_play.png" MyKey="KEY_PLAY"
+                                                Grid.Column="1" Height="120"/>
+                    <local:TvKeyControl ImageLocation="Images/playcontrol_stop.png" MyKey="KEY_STOP"
+                                                Grid.Column="2" Margin="0,0,30,0" Height="120"/>
+                </Grid>
+
+                <Grid Grid.Row="2" Margin="0,30,0,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- volume controls -->
+                    <Image Source="../Images/volch_btn_bg.png" HorizontalAlignment="Right"/>
+                    <local:TvKeyControl ImageLocation="Images/volum_up.png" MyKey="KEY_VOLUP" AllowRepeats="True"
+                                                VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                    <Image Source="../Images/volum_icon.png" HorizontalAlignment="Right"/>
+                    <local:TvKeyControl ImageLocation="Images/volum_down.png" MyKey="KEY_VOLDOWN" AllowRepeats="True"
+                                                VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+
+                    <local:TvKeyControl ImageLocation="Images/mute_btn.png" MyKey="KEY_MUTE"
+                                                Grid.Column="1" Width="100" Margin="15,0,15,0"/>
+
+                    <!-- channel controls -->
+                    <Image Source="../Images/volch_btn_bg.png" Grid.Column="2" HorizontalAlignment="Left"/>
+                    <local:TvKeyControl ImageLocation="Images/ch_up.png" MyKey="KEY_CHUP" Grid.Column="2"
+                                                VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Image Source="../Images/ch_icon.png" Grid.Column="2" HorizontalAlignment="Left"/>
+                    <local:TvKeyControl ImageLocation="Images/ch_down.png" MyKey="KEY_CHDOWN" Grid.Column="2"
+                                                VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                </Grid>
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- color controls -->
+                    <Image Source="../Images/colorkey_bg.png" Grid.ColumnSpan="4"/>
+                    <local:TvKeyControl ImageLocation="Images/color_btn01.png" MyKey="KEY_RED"
+                                                Margin="5,5,5,5"/>
+                    <local:TvKeyControl ImageLocation="Images/color_btn02.png" MyKey="KEY_GREEN"
+                                                Grid.Column="1" Margin="5,5,5,5"/>
+                    <local:TvKeyControl ImageLocation="Images/color_btn03.png" MyKey="KEY_YELLOW"
+                                                Grid.Column="2" Margin="5,5,5,5"/>
+                    <local:TvKeyControl ImageLocation="Images/color_btn04.png" MyKey="KEY_BLUE"
+                                                Grid.Column="3" Margin="5,5,5,5"/>
+                </Grid>
+            </Grid>
+        </Viewbox>
+    </Grid>
+</Page>

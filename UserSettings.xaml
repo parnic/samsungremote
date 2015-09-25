@@ -7,26 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="480"
-    d:DesignHeight="768"
-    KeyUp="Page_KeyUp"
-    PointerPressed="Page_PointerPressed">
+    d:DesignHeight="768">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <StackPanel Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}"/>
-            <TextBlock Name="PageTitle" Text="settings" Margin="9,-7,0,0" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
-        </StackPanel>
-
-        <Grid Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" VerticalAlignment="Top">
-            <CheckBox Content="* Vibrate on key presses" IsChecked="{Binding LoadedSettings.bShouldVibrateOnKeyPress, Source={StaticResource XamlHelper}, Mode=TwoWay}"/>
+    <Grid>
+        <Grid Name="ContentPanel" Grid.Row="1" Margin="12,12,12,12" VerticalAlignment="Top">
+            <StackPanel>
+                <CheckBox Content="Vibrate on key presses" IsChecked="{x:Bind bShouldVibrateOnKeyPress, Mode=TwoWay}"
+                      Visibility="{x:Bind CanVibrateAsVisibility}"/>
+            </StackPanel>
         </Grid>
-        
-        <TextBlock Grid.Row="2" Text="* May not be available on all devices" Margin="12,12,12,12"/>
     </Grid>
 </Page>

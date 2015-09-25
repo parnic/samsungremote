@@ -1,0 +1,63 @@
+﻿<Page
+    x:Class="UnofficialSamsungRemote.ControllerPages.Numpad"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UnofficialSamsungRemote"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Viewbox Stretch="Uniform" VerticalAlignment="top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3"
+                           Source="../Images/rack.png" Margin="0,30,0,0"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_01.png" MyKey="KEY_1" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90"
+                           ImageLocation="Images/keypad_02.png" MyKey="KEY_2" Grid.Column="1" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_03.png" MyKey="KEY_3" Grid.Column="2" Margin="0,0,0,15"/>
+
+                <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Row="1"
+                           Source="../Images/rack.png" Margin="0,30,0,0"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_04.png" MyKey="KEY_4" Grid.Row="1" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_05.png" MyKey="KEY_5" Grid.Row="1" Grid.Column="1" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_06.png" MyKey="KEY_6" Grid.Row="1" Grid.Column="2" Margin="0,0,0,15"/>
+
+                <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Row="2"
+                           Source="../Images/rack.png" Margin="0,30,0,0"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_07.png" MyKey="KEY_7" Grid.Row="2" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_08.png" MyKey="KEY_8" Grid.Row="2" Grid.Column="1" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_09.png" MyKey="KEY_9" Grid.Row="2" Grid.Column="2" Margin="0,0,0,15"/>
+
+                <Image HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Row="3"
+                           Source="../Images/rack.png" Margin="0,30,0,0"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_minus.png" MyKey="KEY_PLUS100" Grid.Row="3" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_00.png" MyKey="KEY_0" Grid.Row="3" Grid.Column="1" Margin="0,0,0,15"/>
+                <local:TvKeyControl HorizontalAlignment="Center" VerticalAlignment="Center" Width="90" Height="140"
+                           ImageLocation="Images/keypad_ch.png" MyKey="KEY_PRECH" Grid.Row="3" Grid.Column="2" Margin="0,0,0,15"/>
+            </Grid>
+        </Viewbox>
+    </Grid>
+</Page>

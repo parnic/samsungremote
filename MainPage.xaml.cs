@@ -6,17 +6,22 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace UnofficialSamsungRemote
 {
     public sealed partial class MainPage : Page
     {
-        private Discovery discoverer;
-        private static TvConnection directConn;
+        internal static MainPage instance;
+
+        internal static Discovery discoverer;
+        internal static TvConnection directConn;
         private bool bFirstLoad = true;
         private DateTime inputShown;
         public static bool bEnabled { get; private set; }
@@ -24,11 +29,48 @@ namespace UnofficialSamsungRemote
         private const int IanaInterfaceType_Ethernet = 6;
         private const int IanaInterfaceType_WiFi = 71;
 
+        private Type AboutPageType { get { return typeof(About); } }
+        private Type SettingsPageType { get { return typeof(UserSettings); } }
+
+        private List<NavMenuItem> navlist = new List<NavMenuItem>()
+        {
+            new NavMenuItem()
+            {
+                Symbol = Symbol.List,
+                Label = "tv list",
+                DestPage = typeof(ControllerPages.TvList)
+            },
+            new NavMenuItem()
+            {
+                Symbol = Symbol.Keyboard,
+                Label = "numpad",
+                DestPage = typeof(ControllerPages.Numpad)
+            },
+            new NavMenuItem()
+            {
+                Symbol = Symbol.Forward,
+                Label = "navigation",
+                DestPage = typeof(ControllerPages.Navigation)
+            },
+            new NavMenuItem()
+            {
+                Symbol = Symbol.Play,
+                Label = "control",
+                DestPage = typeof(ControllerPages.Control)
+            },
+            new NavMenuItem()
+            {
+                Symbol = Symbol.More,
+                Label = "misc",
+                DestPage = typeof(ControllerPages.Misc)
+            },
+        };
+
         public MainPage()
         {
-            this.InitializeComponent();
+            instance = this;
 
-            MainPivot.Title = (MainPivot.Title as string).Replace("{v}", MainPage.GetVersionNumber());
+            this.InitializeComponent();
 
             DataContext = App.ViewModel;
 
@@ -36,7 +78,7 @@ namespace UnofficialSamsungRemote
 
             SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
 
-            NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+            NavigationCacheMode = NavigationCacheMode.Enabled;
 
             discoverer = new Discovery();
             discoverer.StartedSearching += new Discovery.StartedSearchingDelegate(discoverer_StartedSearching);
@@ -54,13 +96,20 @@ namespace UnofficialSamsungRemote
                     e.Handled = true;
                 }
                 txtInput.Text = "";
-                MainPivot.Focus(FocusState.Programmatic);
+                frame.Focus(FocusState.Programmatic);
             }
             else if (discoverer.HandleBackButton())
             {
                 if (e != null)
                 {
                     e.Handled = true;
+                }
+            }
+            else
+            {
+                if (frame.CanGoBack)
+                {
+                    frame.GoBack();
                 }
             }
         }
@@ -226,7 +275,7 @@ namespace UnofficialSamsungRemote
 
         private async Task SetMetaDataForTv(Windows.Networking.HostName TvHost, Dictionary<string, string> TvKeyValuePairs)
         {
-            await TvListBox.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 foreach (var i in App.ViewModel.TvItems)
                 {
@@ -341,6 +390,8 @@ namespace UnofficialSamsungRemote
             }
 
             bFirstLoad = false;
+
+            frame.Navigate(typeof(ControllerPages.TvList));
         }
 
         private async Task ConditionalFindDevices()
@@ -409,41 +460,6 @@ namespace UnofficialSamsungRemote
             });
         }
 
-        private void TvListBox_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            if (!bEnabled)
-            {
-                MainPivot.SelectedIndex = 1;
-                return;
-            }
-
-            var tv = (TvListBox.SelectedItem as TvItemViewModel);
-            if (tv != null)
-            {
-                MainPivot.SelectedIndex = 1;
-                discoverer.StopSearching(Discovery.SearchEndReason.Complete);
-                ConnectTo(new Windows.Networking.HostName(tv.TvAddress), ushort.Parse(tv.Port));
-            }
-        }
-
-        private void MainPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Pivot piv = sender as Pivot;
-            if (piv == null)
-            {
-                return;
-            }
-
-            if (piv.SelectedIndex == 0)
-            {
-                BottomAppBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                BottomAppBar.Visibility = Visibility.Collapsed;
-            }
-        }
-
         private void btnDemoMode_Click(object sender, RoutedEventArgs e)
         {
             bEnabled = false;
@@ -470,7 +486,7 @@ namespace UnofficialSamsungRemote
             await ConditionalFindDevices();
         }
 
-        private void OnQwertyButtonPressed(object sender, EventArgs args)
+        internal void OnQwertyButtonPressed(object sender, EventArgs args)
         {
             txtInput.Focus(FocusState.Programmatic);
             TextInputOverlay.Visibility = Visibility.Visible;
@@ -501,7 +517,7 @@ namespace UnofficialSamsungRemote
             inputShown = DateTime.Now;
         }
 
-        private void OnPowerButtonPressed(object sender, EventArgs args)
+        internal void OnPowerButtonPressed(object sender, EventArgs args)
         {
             if (directConn != null && directConn.ConnectedHostName != null)
             {
@@ -516,7 +532,7 @@ namespace UnofficialSamsungRemote
                 directConn.bSentPowerOff = true;
             }
 
-            MainPivot.SelectedIndex = 0;
+            frame.Navigate(typeof(ControllerPages.TvList));
         }
 
         public static void NotifyAppFreshStart()
@@ -542,7 +558,7 @@ namespace UnofficialSamsungRemote
         #endregion
 
         #region direct connection handling/callbacks
-        private void ConnectTo(Windows.Networking.HostName host, UInt16 port)
+        internal void ConnectTo(Windows.Networking.HostName host, UInt16 port)
         {
             directConn = new TvConnection(host, port);
             directConn.Connecting += new TvConnection.ConnectingDelegate(directConn_Connecting);
@@ -618,26 +634,6 @@ namespace UnofficialSamsungRemote
         }
         #endregion
 
-        private void ShowAppinfo_Click(object sender, RoutedEventArgs e)
-        {
-            if (discoverer != null)
-            {
-                discoverer.StopSearching();
-            }
-
-            Frame.Navigate(typeof(About));
-        }
-
-        private void ShowSettings_Click(object sender, RoutedEventArgs e)
-        {
-            if (discoverer != null)
-            {
-                discoverer.StopSearching();
-            }
-
-            Frame.Navigate(typeof(UserSettings));
-        }
-
         private void Page_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Escape)
@@ -650,6 +646,152 @@ namespace UnofficialSamsungRemote
         private void Page_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             App.OnCheckMouseBack(sender, e, () => { OnBackRequested(); });
+        }
+
+        private void NavMenuList_ItemInvoked(object sender, ListViewItem listViewItem)
+        {
+            var navListSender = sender as NavMenuListView;
+            var item = navListSender.ItemFromContainer(listViewItem) as NavMenuItem;
+
+            if (item != null)
+            {
+                if (!item.OnInvoked(frame, sender))
+                {
+                    SelectNavEntryMatching(frame.CurrentSourcePageType);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enable accessibility on each nav menu item by setting the AutomationProperties.Name on each container
+        /// using the associated Label of each item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void NavMenuItemContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (!args.InRecycleQueue && args.Item != null && args.Item is NavMenuItem)
+            {
+                args.ItemContainer.SetValue(AutomationProperties.NameProperty, ((NavMenuItem)args.Item).Label);
+            }
+            else
+            {
+                args.ItemContainer.ClearValue(AutomationProperties.NameProperty);
+            }
+        }
+
+        /// <summary>
+        /// Ensures the nav menu reflects reality when navigation is triggered outside of
+        /// the nav menu buttons.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnNavigatingToPage(object sender, NavigatingCancelEventArgs e)
+        {
+            SelectNavEntryMatching(e.SourcePageType);
+        }
+
+        private void SelectNavEntryMatching(Type type)
+        {
+            var item = (from p in NavMenuListControls.Items where (p as NavMenuItem).DestPage == type select p).FirstOrDefault();
+            if (item == null)
+            {
+                item = (from p in NavMenuList.Items where (p as NavMenuItem).DestPage == type select p).FirstOrDefault();
+            }
+            if (item == null && frame.BackStackDepth > 0)
+            {
+                // In cases where a page drills into sub-pages then we'll highlight the most recent
+                // navigation menu item that appears in the BackStack
+                foreach (var entry in frame.BackStack.Reverse())
+                {
+                    item = (from p in this.navlist where p.DestPage == entry.SourcePageType select p).FirstOrDefault();
+                    if (item != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            var NavMenu = NavMenuList;
+            var container = NavMenu.ContainerFromItem(item) as ListViewItem;
+            if (container == null)
+            {
+                NavMenu = NavMenuListControls;
+                container = NavMenu.ContainerFromItem(item) as ListViewItem;
+            }
+
+            // While updating the selection state of the item prevent it from taking keyboard focus.  If a
+            // user is invoking the back button via the keyboard causing the selected nav menu item to change
+            // then focus will remain on the back button.
+            if (container != null)
+            {
+                container.IsTabStop = false;
+                NavMenuList.SetSelectedItem(container);
+                NavMenuListControls.SetSelectedItem(container);
+                container.IsTabStop = true;
+            }
+        }
+
+        private void OnNavigatedToPage(object sender, NavigationEventArgs e)
+        {
+            // After a successful navigation set keyboard focus to the loaded page
+            if (e.Content is Page && e.Content != null)
+            {
+                var control = (Page)e.Content;
+                control.Loaded += NavToPage_Loaded;
+            }
+        }
+
+        private void NavToPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as Page).Focus(FocusState.Programmatic);
+            (sender as Page).Loaded -= NavToPage_Loaded;
+            this.CheckTogglePaneButtonSizeChanged();
+        }
+
+        /// <summary>
+        /// Callback when the SplitView's Pane is toggled open or close.  When the Pane is not visible
+        /// then the floating hamburger may be occluding other content in the app unless it is aware.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TogglePaneButton_Checked(object sender, RoutedEventArgs e)
+        {
+            this.CheckTogglePaneButtonSizeChanged();
+        }
+
+        public Rect TogglePaneButtonRect
+        {
+            get;
+            private set;
+        }
+
+        public event TypedEventHandler<MainPage, Rect> TogglePaneButtonRectChanged;
+
+        /// <summary>
+        /// Check for the conditions where the navigation pane does not occupy the space under the floating
+        /// hamburger button and trigger the event.
+        /// </summary>
+        private void CheckTogglePaneButtonSizeChanged()
+        {
+            if (this.RootSplitView.DisplayMode == SplitViewDisplayMode.Inline ||
+                this.RootSplitView.DisplayMode == SplitViewDisplayMode.Overlay)
+            {
+                var transform = this.TogglePaneButton.TransformToVisual(this);
+                var rect = transform.TransformBounds(new Rect(0, 0, this.TogglePaneButton.ActualWidth, this.TogglePaneButton.ActualHeight));
+                this.TogglePaneButtonRect = rect;
+            }
+            else
+            {
+                this.TogglePaneButtonRect = new Rect();
+            }
+
+            var handler = this.TogglePaneButtonRectChanged;
+            if (handler != null)
+            {
+                // handler(this, this.TogglePaneButtonRect);
+                handler.DynamicInvoke(this, this.TogglePaneButtonRect);
+            }
         }
     }
 }

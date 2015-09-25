@@ -7,20 +7,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="480"
-    d:DesignHeight="768"
-    KeyUp="Page_KeyUp"
-    PointerPressed="Page_PointerPressed">
+    d:DesignHeight="768">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <StackPanel Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}"/>
-            <TextBlock Name="PageTitle" Text="about" Margin="9,-7,0,0" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
-        </StackPanel>
+        <TextBlock Name="ApplicationTitle" Text="Unofficial Samsung Remote v{v}" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"
+                   Margin="12,17,0,28"/>
 
         <Grid Name="ContentPanel" Grid.Row="1">
             <ScrollViewer>
@@ -33,6 +29,7 @@
                     <TextBlock TextWrapping="Wrap" Text="Not working for you? Here are some things to try:" Margin="0,0,0,15" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
                     <StackPanel Margin="15,0,0,0">
                         <TextBlock TextWrapping="Wrap">Make sure your TV fits one of the following categories:</TextBlock>
+                        <TextBlock TextWrapping="Wrap">* Model year 2011-2013</TextBlock>
                         <TextBlock TextWrapping="Wrap">* LED 6500 series or higher (model starts with 'U')</TextBlock>
                         <TextBlock TextWrapping="Wrap">* LCD 650 series or higher (model starts with 'L')</TextBlock>
                         <TextBlock TextWrapping="Wrap">* PDP 6500 series or higher (model starts with 'P')</TextBlock>
