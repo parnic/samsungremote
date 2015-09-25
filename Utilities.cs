@@ -7,7 +7,7 @@ namespace UnofficialSamsungRemote
     {
         public static string GetAnonymousId()
         {
-            return Windows.System.Profile.AnalyticsInfo.DeviceForm;
+            return Windows.System.UserProfile.AdvertisingManager.AdvertisingId ?? String.Empty;
         }
 
         public static bool CanVibrate
