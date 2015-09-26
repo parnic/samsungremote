@@ -97,6 +97,7 @@ namespace UnofficialSamsungRemote
             {
                 var settings = ApplicationData.Current.RoamingSettings.Values;
                 Settings.LoadedSettings.bShouldVibrateOnKeyPress = settings.ContainsKey(nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)) ? (bool)settings[nameof(Settings.LoadedSettings.bShouldVibrateOnKeyPress)] : true;
+                Settings.LoadedSettings.bAlwaysShowNavBar = settings.ContainsKey(nameof(Settings.LoadedSettings.bAlwaysShowNavBar)) ? (bool)settings[nameof(Settings.LoadedSettings.bAlwaysShowNavBar)] : false;
 
                 Settings.LoadedSettings.OnLoaded();
 

@@ -14,6 +14,7 @@
             <StackPanel>
                 <CheckBox Content="Vibrate on key presses" IsChecked="{x:Bind bShouldVibrateOnKeyPress, Mode=TwoWay}"
                       Visibility="{x:Bind CanVibrateAsVisibility}"/>
+                <CheckBox Content="Always show nav bar" IsChecked="{x:Bind bAlwaysShowNavBar, Mode=TwoWay}"/>
             </StackPanel>
         </Grid>
     </Grid>

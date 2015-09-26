@@ -39,6 +39,21 @@ namespace UnofficialSamsungRemote
             }
         }
 
+        private bool? bAlwaysShowNavBar
+        {
+            get
+            {
+                return LoadedSettings?.bAlwaysShowNavBar ?? false;
+            }
+            set
+            {
+                if (LoadedSettings != null)
+                {
+                    LoadedSettings.bAlwaysShowNavBar = value.HasValue ? value.Value : false;
+                }
+            }
+        }
+
         public UserSettings()
         {
             this.InitializeComponent();

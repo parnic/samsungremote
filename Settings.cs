@@ -27,6 +27,25 @@ namespace UnofficialSamsungRemote
             }
         }
 
+        private bool _bAlwaysShowNavBar = false;
+        public bool bAlwaysShowNavBar
+        {
+            get
+            {
+                return _bAlwaysShowNavBar;
+            }
+            set
+            {
+                _bAlwaysShowNavBar = value;
+                NotifyPropertyChanged(nameof(bAlwaysShowNavBar));
+
+                if (!bIsLoading)
+                {
+                    App.SaveSetting(nameof(bAlwaysShowNavBar), bAlwaysShowNavBar);
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string propertyName)
         {

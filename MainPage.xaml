@@ -5,6 +5,9 @@
     xmlns:local="using:UnofficialSamsungRemote"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:logicaltrigger="using:AdaptiveTriggerLibrary.Triggers.LogicalTriggers"
+    xmlns:uitrigger="using:AdaptiveTriggerLibrary.Triggers.UserInterfaceTriggers"
+    xmlns:comparableModifiers="using:AdaptiveTriggerLibrary.ConditionModifiers.ComparableModifiers"
     d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
     mc:Ignorable="d"
     d:DesignWidth="480"
@@ -36,6 +39,8 @@
                 <TextBlock x:Name="Text" Grid.Column="1" Text="{x:Bind Label}" />
             </Grid>
         </DataTemplate>
+
+        <comparableModifiers:LessThanModifier x:Key="LessThanModifier"/>
     </Page.Resources>
 
     <Grid>
@@ -47,21 +52,43 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="RootSplitView.DisplayMode" Value="CompactInline"/>
+                        <Setter Target="RowSpaceForMenu.Height" Value="0"/>
                         <Setter Target="RootSplitView.IsPaneOpen" Value="True"/>
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
+                        <logicaltrigger:MultiTrigger>
+                            <logicaltrigger:MultiTrigger.Triggers>
+                                <uitrigger:WindowWidthTrigger Condition="720" ConditionModifier="{StaticResource LessThanModifier}"/>
+                                <local:ShowNavBarStateTrigger Condition="False"/>
+                            </logicaltrigger:MultiTrigger.Triggers>
+                        </logicaltrigger:MultiTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.DisplayMode" Value="Overlay"/>
+                        <Setter Target="RowSpaceForMenu.Height" Value="48"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <logicaltrigger:MultiTrigger>
+                            <logicaltrigger:MultiTrigger.Triggers>
+                                <uitrigger:WindowWidthTrigger Condition="720" ConditionModifier="{StaticResource LessThanModifier}"/>
+                                <local:ShowNavBarStateTrigger Condition="True"/>
+                            </logicaltrigger:MultiTrigger.Triggers>
+                        </logicaltrigger:MultiTrigger>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="RootSplitView.DisplayMode" Value="CompactOverlay"/>
+                        <Setter Target="RowSpaceForMenu.Height" Value="0"/>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="False"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <SplitView DisplayMode="CompactOverlay"  Name="RootSplitView" CompactPaneLength="48" OpenPaneLength="200">
+        <SplitView DisplayMode="Inline" Name="RootSplitView" CompactPaneLength="48" OpenPaneLength="200">
             <SplitView.Pane>
                 <Grid>
                 <local:NavMenuListView x:Name="NavMenuListControls"
@@ -86,19 +113,27 @@
                     </local:NavMenuListView>
                 </Grid>
             </SplitView.Pane>
-            <Frame x:Name="frame"
-                   Navigating="OnNavigatingToPage"
-                   Navigated="OnNavigatedToPage">
-                <Frame.ContentTransitions>
-                    <TransitionCollection>
-                        <NavigationThemeTransition>
-                            <NavigationThemeTransition.DefaultNavigationTransitionInfo>
-                                <EntranceNavigationTransitionInfo/>
-                            </NavigationThemeTransition.DefaultNavigationTransitionInfo>
-                        </NavigationThemeTransition>
-                    </TransitionCollection>
-                </Frame.ContentTransitions>
-            </Frame>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition x:Name="RowSpaceForMenu" Height="48"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <Frame x:Name="frame"
+                       Navigating="OnNavigatingToPage"
+                       Navigated="OnNavigatedToPage"
+                       Grid.Row="1">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <NavigationThemeTransition>
+                                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                                    <EntranceNavigationTransitionInfo/>
+                                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                            </NavigationThemeTransition>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+            </Grid>
         </SplitView>
         <ToggleButton x:Name="TogglePaneButton"
                       TabIndex="1"
