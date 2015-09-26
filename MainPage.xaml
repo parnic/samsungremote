@@ -14,7 +14,6 @@
     d:DesignHeight="768"
     Loaded="Page_Loaded"
     KeyUp="Page_KeyUp"
-    MinHeight="432"
     PointerPressed="Page_PointerPressed"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -88,29 +87,44 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <SplitView DisplayMode="Inline" Name="RootSplitView" CompactPaneLength="48" OpenPaneLength="200">
+        <SplitView DisplayMode="CompactOverlay" IsPaneOpen="False" Name="RootSplitView" CompactPaneLength="48" OpenPaneLength="200">
             <SplitView.Pane>
                 <Grid>
-                <local:NavMenuListView x:Name="NavMenuListControls"
-                                       Margin="0,48,0,0"
-                                       ContainerContentChanging="NavMenuItemContainerContentChanging"
-                                       ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
-                                       ItemTemplate="{StaticResource NavMenuItemTemplate}"
-                                       ItemInvoked="NavMenuList_ItemInvoked"
-                                       ItemsSource="{x:Bind navlist}"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ScrollViewer Grid.Row="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-                    <local:NavMenuListView x:Name="NavMenuList"
-                                          VerticalAlignment="Bottom"
-                                          ContainerContentChanging="NavMenuItemContainerContentChanging"
-                                          ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
-                                          ItemTemplate="{StaticResource NavMenuItemTemplate}"
-                                          ItemInvoked="NavMenuList_ItemInvoked">
-                        <local:NavMenuListView.Items>
-                            <local:NavMenuItem Symbol="Refresh" Label="refresh" Selected="RefreshTvList_Click"/>
-                            <local:NavMenuItem Symbol="Help" Label="about" DestPage="{x:Bind AboutPageType}"/>
-                            <local:NavMenuItem Symbol="Setting" Label="settings" DestPage="{x:Bind SettingsPageType}"/>
-                        </local:NavMenuListView.Items>
-                    </local:NavMenuListView>
+                            <local:NavMenuListView x:Name="NavMenuListControls"
+                                                   VerticalAlignment="Stretch"
+                                                   VerticalContentAlignment="Stretch"
+                                                   ContainerContentChanging="NavMenuItemContainerContentChanging"
+                                                   ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
+                                                   ItemTemplate="{StaticResource NavMenuItemTemplate}"
+                                                   ItemInvoked="NavMenuList_ItemInvoked"
+                                                   ItemsSource="{x:Bind navlist}"/>
+
+                            <local:NavMenuListView x:Name="NavMenuList"
+                                                   Grid.Row="1"
+                                                   VerticalAlignment="Bottom"
+                                                   ContainerContentChanging="NavMenuItemContainerContentChanging"
+                                                   ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
+                                                   ItemTemplate="{StaticResource NavMenuItemTemplate}"
+                                                   ItemInvoked="NavMenuList_ItemInvoked">
+                                <local:NavMenuListView.Items>
+                                    <local:NavMenuItem Symbol="Refresh" Label="refresh" Selected="RefreshTvList_Click"/>
+                                    <local:NavMenuItem Symbol="Help" Label="about" DestPage="{x:Bind AboutPageType}"/>
+                                    <local:NavMenuItem Symbol="Setting" Label="settings" DestPage="{x:Bind SettingsPageType}"/>
+                                </local:NavMenuListView.Items>
+                            </local:NavMenuListView>
+                        </Grid>
+                    </ScrollViewer>
                 </Grid>
             </SplitView.Pane>
             <Grid>
@@ -118,7 +132,7 @@
                     <RowDefinition x:Name="RowSpaceForMenu" Height="48"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                
+
                 <Frame x:Name="frame"
                        Navigating="OnNavigatingToPage"
                        Navigated="OnNavigatedToPage"
