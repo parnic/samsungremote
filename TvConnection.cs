@@ -369,14 +369,11 @@ namespace UnofficialSamsungRemote
             {
                 if (status == AsyncStatus.Completed)
                 {
-                    using (var reader = new DataReader(TvDirectSocket.InputStream))
-                    {
-                        reader.InputStreamOptions = InputStreamOptions.Partial;
-                        await reader.LoadAsync(MaxBytesToRead);
-                        ReadResponseHeader(reader);
-                        /*var regResponse = */
-                        GetBytes(reader);
-                    }
+                    Reader.InputStreamOptions = InputStreamOptions.Partial;
+                    await Reader.LoadAsync(MaxBytesToRead);
+                    ReadResponseHeader(Reader);
+                    /*var regResponse = */
+                    GetBytes(Reader);
                 }
             }
             catch
@@ -420,13 +417,10 @@ namespace UnofficialSamsungRemote
         {
             if (status == AsyncStatus.Completed)
             {
-                using (var reader = new DataReader(TvDirectSocket.InputStream))
-                {
-                    reader.InputStreamOptions = InputStreamOptions.Partial;
-                    await reader.LoadAsync(MaxBytesToRead);
-                    ReadResponseHeader(reader);
-                    /*var regResponse = */GetBytes(reader);
-                }
+                Reader.InputStreamOptions = InputStreamOptions.Partial;
+                await Reader.LoadAsync(MaxBytesToRead);
+                ReadResponseHeader(Reader);
+                /*var regResponse = */GetBytes(Reader);
             }
             else
             {
