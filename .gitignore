@@ -7,3 +7,6 @@ obj
 .vs
 AppPackages
 UnofficialSamsungRemote_StoreKey.pfx
+BundleArtifacts
+_pkginfo.txt
+_scale-*.appx
