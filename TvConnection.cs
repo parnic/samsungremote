@@ -414,23 +414,7 @@ namespace UnofficialSamsungRemote
 		    WriteText(writer, appName);
 		    WriteText(writer, GetTextPayload(text));
 
-            SendBytes(Encoding.UTF8.GetBytes(writer.ToString()), SendTextResponse);
-        }
-
-        private async void SendTextResponse(IAsyncOperation<UInt32> info, AsyncStatus status)
-        {
-            if (status == AsyncStatus.Completed)
-            {
-                Reader.InputStreamOptions = InputStreamOptions.Partial;
-                await Reader.LoadAsync(MaxBytesToRead);
-                ReadResponseHeader(Reader);
-                /*var regResponse = */GetBytes(Reader);
-            }
-            else
-            {
-                Cleanup();
-                NotifyDisconnected();
-            }
+            SendBytes(Encoding.UTF8.GetBytes(writer.ToString()), null);
         }
 
         public void SendText(String text)
