@@ -112,7 +112,11 @@ namespace UnofficialSamsungRemote
         private void SendBytes(byte[] reg, AsyncOperationCompletedHandler<uint> completed)
         {
             Writer.WriteBytes(reg);
-            Writer.StoreAsync().Completed += completed;
+            var storeResult = Writer.StoreAsync();
+            if (completed != null)
+            {
+                storeResult.Completed += completed;
+            }
         }
 
         private async void newRegistrationSent(IAsyncOperation<uint> info, AsyncStatus status)
