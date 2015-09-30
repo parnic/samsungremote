@@ -16,4 +16,4 @@ Additionally, Samsung completely changed how the network remote feature worked s
 
 This app was not written by an employee of Samsung and is not an officially-licensed, -endorsed, or -approved Samsung product. All trademarks and copyrights are the property of their owners.
 
-[View the app on the Windows Phone Marketplace](http://windowsphone.com/s?appId=eee32829-f405-40b4-93d1-568bbda1664d)
+[View the app on the Windows Phone Marketplace](https://www.microsoft.com/store/apps/9wzdncrdlz3c)
