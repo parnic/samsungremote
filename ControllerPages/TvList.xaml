@@ -5,8 +5,10 @@
     xmlns:local="using:UnofficialSamsungRemote.ControllerPages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ads="using:Microsoft.Advertising.WinRT.UI"
     mc:Ignorable="d"
-    d:DataContext="{d:DesignData ../SampleData/MainViewModelSampleData.xaml}">
+    d:DataContext="{d:DesignData ../SampleData/MainViewModelSampleData.xaml}"
+    Loaded="Page_Loaded">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -31,5 +33,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <Viewbox Grid.Row="1" Stretch="Uniform" MaxHeight="160" HorizontalAlignment="Center" VerticalAlignment="Center" Name="AdViewbox">
+            <ads:AdControl Grid.Row="1" Height="160" Width="600" Name="MSAdControl"
+                       ApplicationId="573f914d-ba9a-47f7-9867-69fab7266eab"
+                       AdUnitId="79235"/>
+        </Viewbox>
     </Grid>
 </Page>
