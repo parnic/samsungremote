@@ -1,10 +1,12 @@
 ﻿{
   "dependencies": {
-    "AdaptiveTriggerLibrary": "1.2.1",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
+    "AdaptiveTriggerLibrary": "1.2.2",
+    "Microsoft.Advertising.XAML": "10.1805.7001",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Microsoft.Services.Store.SDK": "10.1705.16001"
   },
   "frameworks": {
-    "uap10.0": {}
+    "uap10.0.10240": {}
   },
   "runtimes": {
     "win10-arm": {},
