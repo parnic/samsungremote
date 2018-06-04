@@ -95,10 +95,7 @@ namespace UnofficialSamsungRemote
                 Reader = new DataReader(TvDirectSocket.InputStream);
                 Writer = new DataWriter(TvDirectSocket.OutputStream);
 
-                if (Connected != null)
-                {
-                    Connected();
-                }
+                Connected?.Invoke();
 
                 var reg = GetRegistration();
                 SendBytes(reg, newRegistrationSent);
@@ -123,20 +120,12 @@ namespace UnofficialSamsungRemote
         {
             if (status == AsyncStatus.Completed)
             {
-                if (Registering != null)
-                {
-                    Registering();
-                }
-
+                Registering?.Invoke();
                 await ListenForRegistrationResponse();
             }
             else
             {
-                if (RegistrationFailed != null)
-                {
-                    RegistrationFailed();
-                }
-
+                RegistrationFailed?.Invoke();
                 ConnectionState = TvConnectionState.Disconnected;
             }
         }
@@ -162,43 +151,28 @@ namespace UnofficialSamsungRemote
             {
                 System.Diagnostics.Debug.WriteLine("ALLOWED");
                 bDisconnect = false;
-                if (RegistrationAccepted != null)
-                {
-                    RegistrationAccepted();
-                }
+                RegistrationAccepted?.Invoke();
             }
             else if (AreArraysEqual(regResponse, DENIED_BYTES))
             {
                 System.Diagnostics.Debug.WriteLine("DENIED");
-                if (RegistrationDenied != null)
-                {
-                    RegistrationDenied();
-                }
+                RegistrationDenied?.Invoke();
             }
             else if (AreArraysEqual(regResponse, TIMEOUT_BYTES))
             {
                 System.Diagnostics.Debug.WriteLine("TIMEOUT");
-                if (RegistrationTimedOut != null)
-                {
-                    RegistrationTimedOut();
-                }
+                RegistrationTimedOut?.Invoke();
             }
             else if (ArrayStartsWith(AWAITING_APPROVAL_PREFIX, regResponse, AWAITING_APPROVAL_TOTAL))
             {
                 System.Diagnostics.Debug.WriteLine("AWAITING");
-                if (RegistrationWaiting != null)
-                {
-                    RegistrationWaiting();
-                }
+                RegistrationWaiting?.Invoke();
                 bDisconnect = false;
                 bUpdateConnectionState = false;
             }
             else
             {
-                //if (RegistrationDenied != null)
-                //{
-                //    RegistrationDenied();
-                //}
+                //RegistrationDenied?.Invoke();
                 System.Diagnostics.Debug.WriteLine("UNKNOWN");
                 bDisconnect = false;
                 bUpdateConnectionState = false;
@@ -238,10 +212,7 @@ namespace UnofficialSamsungRemote
             TvDirectSocket.ConnectAsync(ConnectedHostName, ConnectedPort.ToString()).Completed += newConnected;
             ConnectionState = TvConnectionState.Connecting;
 
-            if (Connecting != null)
-            {
-                Connecting();
-            }
+            Connecting?.Invoke();
         }
 
         private byte GetLengthHeader(DataReader reader)
@@ -468,10 +439,7 @@ namespace UnofficialSamsungRemote
         protected void NotifyDisconnected()
         {
             ConnectionState = TvConnectionState.Disconnected;
-            if (Disconnected != null)
-            {
-                Disconnected();
-            }
+            Disconnected?.Invoke();
         }
 
         protected bool AreArraysEqual(byte[] arr1, byte[] arr2)
