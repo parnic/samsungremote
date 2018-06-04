@@ -341,9 +341,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="Microsoft.AdMediator.Universal, Version=1.0">
-      <Name>Microsoft Advertising Universal SDK</Name>
-    </SDKReference>
     <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0">
       <Name>Microsoft Advertising SDK for XAML</Name>
     </SDKReference>
