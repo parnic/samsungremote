@@ -82,15 +82,15 @@ namespace UnofficialSamsungRemote.ControllerPages
         {
             if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile")
             {
-                MSAdControl.Width = 480;
-                MSAdControl.Height = 80;
+                MSAdControl.Width = 320;
+                MSAdControl.Height = 50;
                 AdViewbox.MaxHeight = MSAdControl.Height;
             }
 
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                MSAdControl.ApplicationId = "test_client";
-                MSAdControl.AdUnitId = "Image480_80";
+                //MSAdControl.ApplicationId = "3f83fe91-d6be-434d-a0ae-7351c5a997f1";
+                //MSAdControl.AdUnitId = "test";
             }
             else
             {

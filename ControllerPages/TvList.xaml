@@ -34,9 +34,9 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <Viewbox Grid.Row="1" Stretch="Uniform" MaxHeight="160" HorizontalAlignment="Center" VerticalAlignment="Center" Name="AdViewbox">
-            <ads:AdControl Grid.Row="1" Height="160" Width="600" Name="MSAdControl"
-                       ApplicationId="573f914d-ba9a-47f7-9867-69fab7266eab"
-                       AdUnitId="79235"/>
+            <ads:AdControl Grid.Row="1" Height="90" Width="728" Name="MSAdControl"
+                       ApplicationId="9wzdncrdlz3c"
+                       AdUnitId="1100024397"/>
         </Viewbox>
     </Grid>
 </Page>
