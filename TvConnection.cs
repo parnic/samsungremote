@@ -147,7 +147,10 @@ namespace UnofficialSamsungRemote
             await Reader.LoadAsync(MaxBytesToRead);
             ReadResponseHeader(Reader);
             var regResponse = GetBytes(Reader);
-            HandleRegistrationResponse(regResponse);
+            if (regResponse != null)
+            {
+                HandleRegistrationResponse(regResponse);
+            }
         }
 
         private async void HandleRegistrationResponse(byte[] regResponse)
@@ -222,8 +225,11 @@ namespace UnofficialSamsungRemote
 
         private void ReadResponseHeader(DataReader reader)
         {
-            reader.ReadByte();
-            /*var appName = */GetString(reader);
+            if (reader.UnconsumedBufferLength > 0)
+            {
+                reader.ReadByte();
+                /*var appName = */GetString(reader);
+            }
         }
 
         public void Connect()
@@ -240,11 +246,15 @@ namespace UnofficialSamsungRemote
 
         private byte GetLengthHeader(DataReader reader)
         {
-            var length = reader.ReadByte();
-            var delimiter = reader.ReadByte();
-            if (delimiter != 0)
+            byte length = 0;
+            if (reader.UnconsumedBufferLength > 2)
             {
-                throw new Exception("Unexpected input " + delimiter);
+                length = reader.ReadByte();
+                var delimiter = reader.ReadByte();
+                if (delimiter != 0)
+                {
+                    throw new Exception("Unexpected input " + delimiter);
+                }
             }
             return length;
         }
@@ -256,8 +266,13 @@ namespace UnofficialSamsungRemote
 
         private byte[] GetBytes(DataReader reader)
         {
-            var ret = new byte[GetLengthHeader(reader)];
-            reader.ReadBytes(ret);
+            var len = GetLengthHeader(reader);
+            byte[] ret = null;
+            if (len > 0)
+            {
+                ret = new byte[len];
+                reader.ReadBytes(ret);
+            }
             return ret;
         }
 
