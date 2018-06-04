@@ -358,7 +358,13 @@ namespace UnofficialSamsungRemote
 
         private StringBuilder WriteText(StringBuilder writer, String text)
         {
-            return writer.Append((char)text.Length).Append((char)0x0).Append(text);
+            var bytes = BitConverter.GetBytes((UInt16)text.Length);
+            if (!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(bytes);
+            }
+
+            return writer.Append(Encoding.ASCII.GetChars(bytes)).Append(text);
         }
 
         private StringBuilder WriteBase64Text(StringBuilder writer, String text)
